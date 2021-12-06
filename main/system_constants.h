@@ -1,0 +1,52 @@
+// systems states
+#define INTRO_STATE 0
+#define PRINCIPAL_MENU_STATE 1
+#define TRANSITION_FROM_PRINCIPAL_MENU_STATE 2
+#define IN_GAME_STATE 3
+#define HIGHSCORE_BOARD_STATE 4
+#define SETTINGS_MENU_STATE 5
+#define ABOUT_STATE 6
+#define TRANSITION_FROM_HIGHSCORE_BOARD_STATE 7
+#define START_LEVEL_SETTINGS_STATE 8
+#define CONTRAST_SETTINGS_STATE 9
+#define BRIGHTNESS_SETTINGS_STATE 10
+#define INTENSITY_SETTINGS_STATE 11
+#define TRANSITION_FROM_SETTINGS_MENU_STATE 12
+#define TRANSITION_FROM_SETTINGS_SECTION_STATE 13
+#define TRANSITION_FROM_ABOUT_STATE 14
+
+// principal menu items' corresponding positions
+#define START_GAME_POSITION 0
+#define HIGHSCORE_POSITION 1
+#define SETTINGS_POSITION 2
+#define ABOUT_POSITION 3
+
+// game constants
+#define MAX_LEVEL 10
+#define MAX_LIVES 3
+
+// map constants
+#define MAP_STEP 4
+#define MAPS 4
+#define MIN_MAP_SIZE 8
+#define MAX_MAP_SIZE MIN_MAP_SIZE + MAP_STEP * (MAPS - 1)
+#define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS) + 1
+
+// enemies
+#define ENEMIES_STEP 2
+#define MAX_ENEMIES (int)((MAX_LEVEL - 1) / LEVEL_MAP_STEP) * ENEMIES_STEP + 1
+
+// food items
+#define FOOD_ITEMS_STEP 3
+#define MAX_FOOD_ITEMS MAX_LEVEL * FOOD_ITEMS_STEP
+
+// highscore board constants
+#define HIGHSCORE_TOP 5
+#define MAX_NAME_LENGTH 8
+
+// setttings menu items' corresponding positions
+#define START_LEVEL_POSITION 0
+#define CONTRAST_POSITION 1
+#define BRIGHTNESS_POSITION 2
+#define INTENSITY_POSITION 3
+#define BACK_POSITION 4
