@@ -24,6 +24,7 @@ void loop() {
     game.playGame();
   } else if (systemState == PAUSE_GAME_STATE) {
     // in pause game
+    // TO DO
   } else if (systemState == LOST_GAME_STATE) {
     // in lost game
     game.lostGame();
@@ -44,7 +45,7 @@ void loop() {
     game.navigateEnterName();
   } else if (systemState == END_GAME_STATE) {
     // in end game
-    game.endGame();
+    game.navigateEndGame();
   } else if (systemState == HIGHSCORE_BOARD_STATE) {
     // in highscore board
     game.navigateHighscoreBoard();

@@ -43,6 +43,34 @@ class Display {
     };
     int principalMenuCursor = 0;
 
+    // pause game menu
+    String pauseGameMenu[PAUSE_GAME_MENU_ITEMS] = {
+      "Resume",
+      "Exit",
+    }
+    int pauseGameMenuCursor = 0;
+    String pauseGameMenuTitle = "PAUSE";
+
+    // enter name menu
+    String keyboard[KEYBOARD_LINES] = {
+      "abcdefghijklmn",
+      "opqrstuvwxyz12",
+      "34567890_-"
+    }
+    String enterNameMenu[ENTER_NAME_ITEMS] = { 
+      "Delete",
+      "Done"
+    };
+    int enterNameMenuCursor = 0;
+
+    // end game menu
+    String endGameMenu[END_GAME_MENU_ITEMS] = {
+      "Restart",
+      "Exit",
+    }
+    int endGameMenuCursor = 0;
+    String endGameMenuTitle = "END GAME";
+
     // highscore board
     int highscoreBoardCursor = 0;
 
@@ -310,6 +338,21 @@ class Display {
       lcd.print("Name: " + name);
     }
 
+
+    // --- PAUSE GAME MENU ---
+
+    // --- ENTER NAME MENU ---
+    // showing the enter name menu
+    void showEnterNameMenu() {
+      // TO DO
+    }
+
+
+    // -- END GAME MENU ---
+    // showing the end game menu
+    void showEndGameMenu() {
+      
+    }
 
     
     // --- HIGHSCORE BOARD ---

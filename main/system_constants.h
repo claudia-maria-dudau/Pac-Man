@@ -121,6 +121,17 @@
 #define NAME_RESTRICTIONS_DISPLAY 2
 #define ENTER_NAME_DISPLAY 3
 
+// pause game menu
+#define PAUSE_GAME_MENU_ITEMS 2
+
+// enter name menu
+#define KEYBOARD_LINES 3
+#define KEYBOARD_COLUMNS 14
+#define ENTER_NAME_MENU_ITEMS 2
+
+// end game menu
+#define END_GAME_MENU_ITEMS 2
+
 
 // --- HIGHSCORE BOARD ---
 #define HIGHSCORE_TOP 5

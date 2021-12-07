@@ -489,10 +489,10 @@ class Game {
       display.showNameRestrictionsDisplay();
     }
 
-    // showing the enter name display
+    // showing the enter name menu
     void showEnterName() {
       display.clear();
-      display.showEnterNameDisplay(currentName);
+      display.showEnterNameMenu(currentName);
     }
     
     // the player has beaten the highscore
@@ -521,7 +521,14 @@ class Game {
       // TO DO
     }
 
-    void endGame() {
+    // shwoing the end game menu
+    void showEndGame() {
+      display.clear();
+      display.showEndGameMenu();
+    }
+
+    // navigating through the end game menu
+    void navigateEndGame() {
       // TO DO
     }
     
