@@ -27,12 +27,12 @@
 #define IN_GAME_STATE 3
 #define PAUSE_GAME_STATE 4
 #define LOST_GAME_STATE 5
-#define WON_GAME_STATE 6
-#define STATISTICS_STATE 7
-#define DONE_LEVEL_STATE 8
-#define DONE_GAME_STATE 9
-#define BEAT_HIGHSCORE_STATE 10
-#define ENTER_NAME_STATE 11
+#define DONE_LEVEL_STATE 6
+#define WON_GAME_STATE 7
+#define STATISTICS_STATE 8
+#define BEAT_HIGHSCORE_STATE 9
+#define ENTER_NAME_STATE 10
+#define END_GAME_STATE 11
 #define HIGHSCORE_BOARD_STATE 12
 #define SETTINGS_MENU_STATE 13
 #define ABOUT_STATE 14
@@ -73,8 +73,9 @@
 // --- GAME ---
 // level
 #define MIN_LEVEL 1
-#define MAX_LEVEL 10
+#define MAX_LEVEL 2
 #define LEVEL_STEP 1
+#define BETWEEN_LEVELS_INTERVAL 1000
 
 // lives
 #define MAX_LIVES 3
@@ -82,10 +83,11 @@
 
 // player
 #define PLAYER_BLINKING_INTERVAL 100
+#define PLAYER_SPEED 200
 
 // map constants
 #define MAP_STEP 4
-#define MAPS 4
+#define MAPS 1
 #define MIN_MAP_SIZE 8
 #define MAX_MAP_SIZE MIN_MAP_SIZE + MAP_STEP * (MAPS - 1)
 #define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS + 1)
@@ -109,6 +111,15 @@
 // food items
 #define FOOD_ITEMS_STEP 3
 #define MAX_FOOD_ITEMS MAX_LEVEL * FOOD_ITEMS_STEP
+
+// timers between states
+#define BETWEEN_END_SECTIONS 5000
+
+// beat highscore display
+#define BEAT_HIGHSCORE_DISPLAY 0
+#define ENTER_NAME_TEXT_DISPLAY 1
+#define NAME_RESTRICTIONS_DISPLAY 2
+#define ENTER_NAME_DISPLAY 3
 
 
 // --- HIGHSCORE BOARD ---

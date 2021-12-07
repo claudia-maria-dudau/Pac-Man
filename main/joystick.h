@@ -131,39 +131,42 @@ class Joystick {
 
 
     // --- GAME NAVIGATION ---
-    int* movePlayer(int* position, int matrixSize) {
+    // moving the player on the rows
+    int movePlayerX(int position, int matrixSize) {
       int xValue = analogRead(X_PIN);
-      int yValue = analogRead(Y_PIN);
-
-      int newPosition[2];
-      newPosition[0] = position[0];
-      newPosition[1] = position[1];
 
       // moving up 
       if (xValue < MIN_THRESHOLD) {
-        if (newPosition[0] < matrixSize - 1)
-          newPosition[0]++;
+        if (position > 0)
+          return --position;
       }
 
       // moving down
       if (xValue > MAX_THRESHOLD) {
-        if (newPosition[0] > 0)
-          newPosition[0]--;
-      }
+        if (position < matrixSize - 1)
+          return ++position;
+      } 
+
+      return position;
+    }
+
+    // moving the player on the columns
+    int movePlayerY(int position, int matrixSize) {
+      int yValue = analogRead(Y_PIN);
 
       // moving right
       if (yValue > MAX_THRESHOLD) {
-        if (newPosition[1] < matrixSize - 1)
-          newPosition[1]++;
+        if (position > 0)
+          return --position;
       }
 
       // moving left
       if (yValue < MIN_THRESHOLD) {
-        if (newPosition[0] > 0)
-          newPosition[1]--;
-      }
+        if (position < matrixSize - 1)
+          return ++position;
+      }    
 
-      return newPosition;
+      return position;
     }
 };
 

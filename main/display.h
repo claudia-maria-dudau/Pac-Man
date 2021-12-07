@@ -258,7 +258,60 @@ class Display {
       lcd.print("Score: " + String(score));
     }
 
+    // showing the lost game display
+    void showLostGameDisplay() {
+      lcd.setCursor(2, 0);
+      lcd.print("You lost! :(");
+      lcd.setCursor(0, 1);
+      lcd.print("Sad Marinel bark");
+    }
+    
+    // showing the won game display
+    void showWonGameDisplay() {
+      lcd.setCursor(0, 0);
+      lcd.print("CONGRATULATIONS!");
+      lcd.setCursor(0, 1);
+      lcd.print("You won the game");
+    }
 
+    // shwoing the statistics of the game
+    void showStatistics(int lives, int score) {
+      lcd.setCursor(0, 0);
+      lcd.print("Lives: " + String(lives));
+      lcd.setCursor(0, 1);
+      lcd.print("Score: " + String(score));
+    }
+
+    // showing the beat highscore displays
+    void showBeatHighscoreDisplay() {
+      lcd.setCursor(2, 0);
+      lcd.print("You beat the");
+      lcd.setCursor(3, 1);
+      lcd.print("HIGHSCORE!");
+    }
+
+    void showEnterNameTextDisplay() {
+      lcd.setCursor(2, 0);
+      lcd.print("Please enter");
+      lcd.setCursor(3, 1);
+      lcd.print("your name");
+    }
+
+    void showNameRestrictionsDisplay() {
+      lcd.setCursor(1, 0);
+      lcd.print("Name must have");
+      lcd.setCursor(1, 1);
+      lcd.print("max " + String(MAX_NAME_LENGTH) + " charact.");
+    }
+
+    // showing the enter name display
+    void showEnterNameDisplay(String name) {
+      lcd.setCursor(0, 0);
+      lcd.print("Name: " + name);
+    }
+
+
+    
     // --- HIGHSCORE BOARD ---
     // getting the position of the highscore board cursor
     int getHighscoreBoardCursor() {

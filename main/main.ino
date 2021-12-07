@@ -22,6 +22,29 @@ void loop() {
   } else if (systemState == IN_GAME_STATE) {
     // in game
     game.playGame();
+  } else if (systemState == PAUSE_GAME_STATE) {
+    // in pause game
+  } else if (systemState == LOST_GAME_STATE) {
+    // in lost game
+    game.lostGame();
+  } else if (systemState == DONE_LEVEL_STATE) {
+    // in done level
+    game.doneLevel();
+  } else if (systemState == WON_GAME_STATE) {
+    // in won game
+    game.wonGame();
+  } else if (systemState == STATISTICS_STATE) {
+    // in statistics
+    game.statistics();
+  } else if (systemState == BEAT_HIGHSCORE_STATE) {
+    // in beat highscore
+    game.beatHighscore();
+  } else if (systemState == ENTER_NAME_STATE) {
+    // in enter name
+    game.navigateEnterName();
+  } else if (systemState == END_GAME_STATE) {
+    // in end game
+    game.endGame();
   } else if (systemState == HIGHSCORE_BOARD_STATE) {
     // in highscore board
     game.navigateHighscoreBoard();

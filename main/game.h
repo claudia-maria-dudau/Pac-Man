@@ -12,11 +12,17 @@ class Game {
     // in game variables
     int lives;
     int currentScore;
+
+    // level
     int level;
+    unsigned long doneLevelTime;
+    int startLevelValue;
 
     // player
     int playerPosition[2];
+    unsigned long lastChangedPlayerPosition;
     unsigned long lastChangedPlayerBlinking;
+    String currentName;
 
     // enemies
     int noEnemies;
@@ -34,8 +40,13 @@ class Game {
     // map size
     int mapSize;
 
-    // level settings
-    int startLevelValue = 1;
+    // time variables
+    unsigned long startStatisticsTime;
+    unsigned long startBeatHighscoreTime;
+    unsigned long startEnterNameTime;
+    unsigned long startEndGameTime;
+
+    int highscoreDisplay;
 
     // highscore board
     String names[HIGHSCORE_TOP] = { "", "", "", "", "" };
@@ -83,6 +94,8 @@ class Game {
           names[i] += (char)EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1) + j]);
 
       }
+
+      startLevelValue = MIN_LEVEL;
     }
 
 
@@ -201,6 +214,8 @@ class Game {
 
     // game initialization based on level
     void initializeLevel() {
+      showGameDisplay();
+      
       // initializing the seed for the random numbers
       randomSeed(millis());
 
@@ -215,8 +230,13 @@ class Game {
       initializePlayer();
       initializeEnemies();
       initializeFoodItems();
-    }
 
+      // resetting timers
+      lastChangedPlayerPosition = millis();
+      lastChangedPlayerBlinking = millis();
+      lastChangedEnemiesPositions = millis();
+      lastChangedEnemiesBlinking = millis();
+    }
 
     // decreasing the number of lives of the player
     void decreaseLife() {
@@ -232,6 +252,7 @@ class Game {
       } else {
         // the player has no more lives => loses game
         joystick.setSystemState(LOST_GAME_STATE);
+        matrix.clear();
       }
     }
 
@@ -256,10 +277,11 @@ class Game {
             foodItems[j - 1][1] = foodItems[j][1];
           }
 
-          noFoodItems--;
           break;
         }
       }
+
+      noFoodItems--;
     }
 
     // blinking the player's position at a given interval
@@ -335,32 +357,34 @@ class Game {
     void movePlayer() {
       char currentSymbol;
 
-      int* newPosition = joystick.movePlayer(playerPosition, mapSize);
-      Serial.println(newPosition[0]);
-      Serial.println(newPosition[1]);
-
-      // player moved => update position
-//      if (newPosition[0] != playerPosition[0] || newPosition[1] != playerPosition[1]) {
-//        currentSymbol = matrix.getSymbol(newPosition[0], newPosition[1]);
-//
-//        matrix.changePosition(newPosition, playerPosition, PLAYER_SYMBOL);
-//        playerPosition[0] = newPosition[0];
-//        playerPosition[1] = newPosition[1];
-//
-//        //verifying if the player landed on the same position as one of the enemies
-//        if (currentSymbol == ENEMY_SYMBOL)
-//          decreaseLife();
-//
-//        // verifying id the player landed on the position of a food item
-//        // => the player eats the food item
-//        if (currentSymbol == FOOD_ITEM_SYMBOL) {
-//          removeFoodItem();
-//
-//          // increasing the player's score
-//          // (each food item values as much as the current level of the game)
-//          updateScore(level);
-//        }
-//      }
+      if (millis() - lastChangedPlayerPosition > PLAYER_SPEED) {
+        int newPosition[2] = { joystick.movePlayerX(playerPosition[0], mapSize), joystick.movePlayerY(playerPosition[1], mapSize)};
+       
+        // player moved => update position
+        if (newPosition[0] != playerPosition[0] || newPosition[1] != playerPosition[1]) {
+          currentSymbol = matrix.getSymbol(newPosition[0], newPosition[1]);
+  
+          matrix.changePosition(playerPosition, newPosition, PLAYER_SYMBOL);
+          playerPosition[0] = newPosition[0];
+          playerPosition[1] = newPosition[1];
+  
+          //verifying if the player landed on the same position as one of the enemies
+          if (currentSymbol == ENEMY_SYMBOL)
+            decreaseLife();
+  
+          // verifying id the player landed on the position of a food item
+          // => the player eats the food item
+          if (currentSymbol == FOOD_ITEM_SYMBOL) {
+            removeFoodItem();
+  
+            // increasing the player's score
+            // (each food item values as much as the current level of the game)
+            updateScore(level);
+          }
+        }
+  
+        lastChangedPlayerPosition = millis();
+      }
     }
 
     // the flow of the game
@@ -368,6 +392,10 @@ class Game {
       if (noFoodItems == 0) {
         // no more food items on the map => leve is done
         joystick.setSystemState(DONE_LEVEL_STATE);
+        matrix.clear();
+
+        // memorying the time when the level was finished
+        doneLevelTime = millis();
       } else {
         // continue playing
         blinkPlayer();
@@ -378,7 +406,125 @@ class Game {
       }
     }
 
+    // showing the lots game display
+    void showLostGame() {
+      display.clear();
+      display.showLostGameDisplay();
+    }
+    
+    // the player lost the game
+    void lostGame() {
+      showLostGame();
+      joystick.setSystemState(STATISTICS_STATE);
+      startStatisticsTime = millis();
+    }
+    
+    // moving to the next level
+    void doneLevel() {
+      if (level < MAX_LEVEL) {
+        // taking a few moments before next level starts
+        if (millis() - doneLevelTime > BETWEEN_LEVELS_INTERVAL) {
+          // increasing level
+          level++;
+          initializeLevel();
+          joystick.setSystemState(IN_GAME_STATE);
+        }
+      } else {
+        // the player has completed the last level of the game => the game is done
+        joystick.setSystemState(WON_GAME_STATE);
+      }
+    }
 
+    // showing the won game display
+    void showWonGame() {
+      display.clear();
+      display.showWonGameDisplay();
+
+      matrix.startAnimation();
+    }
+    
+    // the player won the game
+    void wonGame() {
+      showWonGame();
+      joystick.setSystemState(STATISTICS_STATE);
+      startStatisticsTime = millis();
+    }
+
+    // showing the statistics of the game
+    void showStatistics() {
+      display.clear();
+      display.showStatistics(lives, currentScore);  
+    }
+    
+    // statistics of the game
+    void statistics() {
+       // taking a few moments before the statistics are shown
+       if (millis() - startStatisticsTime > BETWEEN_END_SECTIONS) {
+          showStatistics();
+
+          if (currentScore > scores[HIGHSCORE_TOP - 1]) {
+            // the current score of the player is in greater than the last score in the highscore board
+            joystick.setSystemState(BEAT_HIGHSCORE_STATE);
+            startBeatHighscoreTime = millis();
+          } else {
+            joystick.setSystemState(END_GAME_STATE);
+            startEndGameTime = millis();
+          }
+       }
+    }
+
+    // shwoing the beat highscore displays
+    void showBeatHighscore() {
+      display.clear();
+      display.showBeatHighscoreDisplay();
+    }
+
+    void showEnterNameText() {
+      display.clear();
+      display.showEnterNameTextDisplay();
+    }
+
+    void showNameRestrictions() {
+      display.clear();
+      display.showNameRestrictionsDisplay();
+    }
+
+    // showing the enter name display
+    void showEnterName() {
+      display.clear();
+      display.showEnterNameDisplay(currentName);
+    }
+    
+    // the player has beaten the highscore
+    void beatHighscore() {
+      // taking a few moments before changing between the messages
+      if (millis() - startBeatHighscoreTime > BETWEEN_END_SECTIONS) {
+        highscoreDisplay++;
+
+        if (highscoreDisplay == BEAT_HIGHSCORE_DISPLAY) {
+          showBeatHighscore();
+        } else if (highscoreDisplay == ENTER_NAME_TEXT_DISPLAY) {
+          showEnterNameText();
+        } else if (highscoreDisplay == NAME_RESTRICTIONS_DISPLAY) {
+          showNameRestrictions();
+        } else if (highscoreDisplay == ENTER_NAME_DISPLAY) {
+          joystick.setSystemState(ENTER_NAME_STATE);
+          showEnterName();
+        }
+
+        startBeatHighscoreTime = millis();
+      }
+    }
+
+    // navigating through the enter name menu
+    void navigateEnterName() {
+      // TO DO
+    }
+
+    void endGame() {
+      // TO DO
+    }
+    
     // --- HIGHSCORE BOARD ---
     // updating highscore board
     void updateHighscoreBoard(String name, int score) {
@@ -585,15 +731,11 @@ class Game {
         lives = MAX_LIVES;
         currentScore = 0;
         level = startLevelValue;
+        currentName = "";
+        highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
 
         joystick.setSystemState(IN_GAME_STATE);
-        showGameDisplay();
         initializeLevel();
-
-        // resetting timers
-        lastChangedPlayerBlinking = millis();
-        lastChangedEnemiesPositions = millis();
-        lastChangedEnemiesBlinking = millis();
       } else if (cursorPosition == HIGHSCORE_POSITION) {
         // highscore
         joystick.setSystemState(HIGHSCORE_BOARD_STATE);
