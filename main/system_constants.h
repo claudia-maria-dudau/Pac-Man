@@ -1,19 +1,67 @@
-// systems states
+// --- PINS ---
+// lcd display pins
+#define RS 13
+#define ENABLE 8
+#define D4 7
+#define D5 6
+#define D6 5
+#define D7 4
+#define CONTRAST_PIN 3
+#define BRIGHTNESS_PIN 9
+
+// joystick pins
+#define X_PIN A0
+#define Y_PIN A1
+#define SW_PIN 2
+
+// shift register pins for matrix
+#define DIN_PIN 12
+#define CLOCK_PIN 11
+#define LOAD_PIN 10
+
+
+// --- SYSTEM STATES ---
 #define INTRO_STATE 0
 #define PRINCIPAL_MENU_STATE 1
 #define TRANSITION_FROM_PRINCIPAL_MENU_STATE 2
 #define IN_GAME_STATE 3
-#define HIGHSCORE_BOARD_STATE 4
-#define SETTINGS_MENU_STATE 5
-#define ABOUT_STATE 6
-#define TRANSITION_FROM_HIGHSCORE_BOARD_STATE 7
-#define START_LEVEL_SETTINGS_STATE 8
-#define CONTRAST_SETTINGS_STATE 9
-#define BRIGHTNESS_SETTINGS_STATE 10
-#define INTENSITY_SETTINGS_STATE 11
-#define TRANSITION_FROM_SETTINGS_MENU_STATE 12
-#define TRANSITION_FROM_SETTINGS_SECTION_STATE 13
-#define TRANSITION_FROM_ABOUT_STATE 14
+#define PAUSE_GAME_STATE 4
+#define LOST_GAME_STATE 5
+#define WON_GAME_STATE 6
+#define STATISTICS_STATE 7
+#define DONE_LEVEL_STATE 8
+#define DONE_GAME_STATE 9
+#define BEAT_HIGHSCORE_STATE 10
+#define ENTER_NAME_STATE 11
+#define HIGHSCORE_BOARD_STATE 12
+#define SETTINGS_MENU_STATE 13
+#define ABOUT_STATE 14
+#define TRANSITION_FROM_HIGHSCORE_BOARD_STATE 15
+#define START_LEVEL_SETTINGS_STATE 16
+#define CONTRAST_SETTINGS_STATE 17
+#define BRIGHTNESS_SETTINGS_STATE 18
+#define INTENSITY_SETTINGS_STATE 19
+#define TRANSITION_FROM_SETTINGS_MENU_STATE 20
+#define TRANSITION_FROM_SETTINGS_SECTION_STATE 21
+#define TRANSITION_FROM_ABOUT_STATE 22
+
+
+// --- DISPLAY CONSTANTS ---
+#define DISPLAY_COLUMNS 16
+#define MENU_ITEM_LENGTH DISPLAY_COLUMNS - 3
+#define LINES 8
+
+
+// --- JOYSTICK CONSTANTS ---
+#define DEBOUNCE_INTERVAL 200
+
+// joystick thresholds
+#define MIN_THRESHOLD 200
+#define MAX_THRESHOLD 600
+
+
+// --- PRINCIPAL MENU ---
+#define PRINCIPAL_MENU_ITEMS 4
 
 // principal menu items' corresponding positions
 #define START_GAME_POSITION 0
@@ -21,28 +69,55 @@
 #define SETTINGS_POSITION 2
 #define ABOUT_POSITION 3
 
-// game constants
+
+// --- GAME ---
+// level
+#define MIN_LEVEL 1
 #define MAX_LEVEL 10
+#define LEVEL_STEP 1
+
+// lives
 #define MAX_LIVES 3
+#define LIFE_SCORE 1
+
+// player
+#define PLAYER_BLINKING_INTERVAL 100
 
 // map constants
 #define MAP_STEP 4
 #define MAPS 4
 #define MIN_MAP_SIZE 8
 #define MAX_MAP_SIZE MIN_MAP_SIZE + MAP_STEP * (MAPS - 1)
-#define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS) + 1
+#define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS + 1)
+
+// symbols
+#define EMPTY_SYMBOL '#'
+#define PLAYER_SYMBOL 'P'
+#define ENEMY_SYMBOL 'E'
+#define FOOD_ITEM_SYMBOL 'F'
 
 // enemies
 #define ENEMIES_STEP 2
-#define MAX_ENEMIES (int)((MAX_LEVEL - 1) / LEVEL_MAP_STEP) * ENEMIES_STEP + 1
+#define MAX_ENEMIES (int)((MAX_LEVEL - 1) / LEVEL_MAP_STEP * ENEMIES_STEP + 1)
+#define DIST_FROM_INITIAL_PLAYER_POSITION 3
+#define ENEMIES_SPEED_STEP 100
+#define ENEMIES_MAX_SPEED 400
+#define ENEMIES_MIN_SPEED ENEMIES_MAX_SPEED + MAX_LEVEL * ENEMIES_SPEED_STEP
+#define ENEMIES_BLINKING_INTERVAL 300
+#define MOVES 8
 
 // food items
 #define FOOD_ITEMS_STEP 3
 #define MAX_FOOD_ITEMS MAX_LEVEL * FOOD_ITEMS_STEP
 
-// highscore board constants
+
+// --- HIGHSCORE BOARD ---
 #define HIGHSCORE_TOP 5
 #define MAX_NAME_LENGTH 8
+
+
+// --- SETTINGS MENU ---
+#define SETTINGS_MENU_ITEMS 5
 
 // setttings menu items' corresponding positions
 #define START_LEVEL_POSITION 0
@@ -50,3 +125,28 @@
 #define BRIGHTNESS_POSITION 2
 #define INTENSITY_POSITION 3
 #define BACK_POSITION 4
+
+// settings limits
+#define MIN_SETTINGS 0
+#define MAX_SETTINGS_LCD 255
+#define MAX_SETTINGS_LC 15
+
+// settings steps
+#define CONTRAST_STEP 5
+#define BRIGHTNESS_STEP 10
+#define INTENSITY_STEP 1
+
+
+// --- ABOUT SECTION ---
+#define ABOUT_SECTION_ITEMS 4
+#define SCROLL_ABOUT_SECTION_INTERVAL 500
+
+// --- MEMORY ADDRESSES ---
+// settings
+#define CONTRAST_ADDRESS 0
+#define BRIGHTNESS_ADDRESS 1
+#define INTENSITY_ADDRESS 2
+
+// highscore
+#define START_NAMES_ADDRESS 3
+#define START_SCORES_ADDRESS START_NAMES_ADDRESS + HIGHSCORE_TOP * 2

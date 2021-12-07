@@ -3,135 +3,151 @@
 #include "system_constants.h"
 
 class Matrix {
-  // shift register pins
-  const int dinPin = 12;
-  const int clockPin = 11;
-  const int loadPin = 10;
+    // matrix
+    LedControl lc = LedControl(DIN_PIN, CLOCK_PIN, LOAD_PIN, 1);
 
-  // matrix 
-  LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);
+    // matrix settings
+    int intensity;
 
-  // matrix settings
-  int intensity;
-  const int intensityAddress = 2;
-  const int intensityStep = 1;
-  const int minIntensity = 0;
-  const int maxIntensity = 15;
-  
-  int matrixSize;
-  bool matrixChanged;
+    // map of the game
+    int matrixSize;
+    char matrix[MAX_MAP_SIZE][MAX_MAP_SIZE];
 
-  // map of the game:
-  // 1 - pac man
-  // 2 - food
-  // 3 - ghost
-  bool matrix[MAX_MAP_SIZE][MAX_MAP_SIZE] = {
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0}  
-  };
+    // blinking objects states
+    bool playerState;
+    bool enemiesState;
 
-public:
-  // matrix initialization
-  Matrix() {
-    // loading values from memory
-    intensity = EEPROM.read(intensityAddress);
-    
-    lc.shutdown(0, false); 
-    lc.clearDisplay(0);
-    showIntensity();
+  public:
+    // matrix initialization
+    Matrix() {
+      // loading values from memory
+      intensity = EEPROM.read(INTENSITY_ADDRESS);
 
-    matrixChanged = false;
-    matrixSize = MIN_MAP_SIZE;
-  }
+      lc.shutdown(0, false);
+      lc.clearDisplay(0);
+      showIntensity();
 
+      initialize(MIN_MAP_SIZE);
+    }
 
-  // displaying the matrix
-  void show() {
-   for (int row = 0; row < matrixSize; row++) {
-    for (int col = 0; col < matrixSize; col++) {
-      lc.setLed(0, row, col, matrix[row][col]);
+    // initializing the matrix
+    void initialize(int size) {
+      matrixSize = size;
+
+      // reinitializing the matrix (0 on al positions)
+      clear();
+
+      //resetting blinking objects states
+      playerState = false;
+      enemiesState = false;
+    }
+
+    // clearing the matrix
+    void clear() {
+      for (int i = 0; i < matrixSize; i++) {
+        for (int j = 0; j < matrixSize; j++) {
+          matrix[i][j] = EMPTY_SYMBOL;
+          lc.setLed(0, i, j, 0);
+        }
       }
     }
-  }
 
-  void clear() {
-   for (int i = 0; i < matrixSize; i++) {
-    for (int j = 0; j < matrixSize; j++) {
-      matrix[i][j] = 0;
+    // getting the symbol at a given position on the matrix
+    char getSymbol(int row, int col) {
+      return matrix[row][col];
+    }
+
+
+    // --- INTRO ---
+    // showing animation at the start of the game
+    void startAnimation() {
+      int i;
+
+      for (i = 2; i <= 4; i++) {
+        lc.setLed(0, 0, i, 1);
+      }
+      for (i = 1; i <= 5; i++) {
+        if (i != 2)
+          lc.setLed(0, 1, i, 1);
+      }
+      for (i = 0; i <= 4; i++) {
+        lc.setLed(0, 2, i, 1);
+      }
+      for (i = 0; i <= 3; i++) {
+        lc.setLed(0, 3, i, 1);
+      }
+      lc.setLed(0, 3, 7, 1);
+      for (i = 0; i <= 4; i++) {
+        lc.setLed(0, 4, i, 1);
+      }
+      for (i = 1; i <= 5; i++) {
+        lc.setLed(0, 5, i, 1);
+      }
+      for (i = 2; i <= 4; i++) {
+        lc.setLed(0, 6, i, 1);
       }
     }
-  }
 
 
-  // --- INTRO ---
-  // showing animation at the start of the game
-  void startAnimation() {
-    int i;
+    // --- GAME ---
+    // setting the position of an object
+    void setPosition(int* position, char symbol) {
+      matrix[position[0]][position[1]] = symbol;
 
-    for (i = 2; i <= 4; i++) {
-      matrix[0][i] = 1;
+      // showing the position on the matrix
+      lc.setLed(0, position[0], position[1], 1);
     }
-    for (i = 1; i <= 5; i++) {
-      if (i != 2)
-        matrix[1][i] = 1;
+
+    // changing the positon of the player or of an enemy
+    void changePosition(int* lastPosition, int* currentPosition, char symbol) {
+      matrix[lastPosition[0]][lastPosition[1]] = EMPTY_SYMBOL;
+      matrix[currentPosition[0]][currentPosition[1]] = symbol;
+
+      // updating the matrix to show the updated position
+      lc.setLed(0, lastPosition[0], lastPosition[1], 0);
+      lc.setLed(0, currentPosition[0], currentPosition[1], 1);
     }
-    for (i = 0; i<= 4; i++) {
-      matrix[2][i] = 1;
+
+    // blinking the player's position
+    void blinkPlayer(int* position) {
+      playerState = !playerState;
+      lc.setLed(0, position[0], position[1], playerState);
     }
-    for (i = 0; i<= 3; i++) {
-      matrix[3][i] = 1;
+
+    // blinking the enemy's position
+    void blinkEnemy(int* position, bool first) {
+      if (first) {
+        // changing the enemies' state only once for all enemies
+        enemiesState = !enemiesState;
+      }
+
+      lc.setLed(0, position[0], position[1], enemiesState);
     }
-    matrix[3][7] = 1;
-    for (i = 0; i<= 4; i++) {
-      matrix[4][i] = 1;
+
+    // removing a food item from the map
+    void removeFoodItem(int* position) {
+      matrix[position[0]][position[1]] = EMPTY_SYMBOL;
+
+      // not showing the position anymore on the matrix
+      lc.setLed(0, position[0], position[1], 0);
     }
-    for (i = 1; i <= 5; i++) {
-        matrix[5][i] = 1;
-    }
-    for (i = 2; i <= 4; i++) {
-      matrix[6][i] = 1;
-    }
+
     
-    show();
-  }
+    // --- INTENSITY SETTINGS ---
+    // getting the intensity value
+    int getIntensity() {
+      return intensity;
+    }
 
+    // setting intensity value
+    void showIntensity() {
+      lc.setIntensity(0, intensity);
+    }
 
-  // --- INTENSITY SETTINGS ---
-  // getting the intensity value
-  int getIntensity(){
-    return intensity;
-  }
-  
-  // setting intensity value
-  void showIntensity() {
-    lc.setIntensity(0, intensity); 
-  }
-
-  // changing intensity value
-  void setIntensity(int value) {
-    intensity = value;
-    EEPROM.update(intensityAddress, value);
-    showIntensity();
-  }
-
-  // getting intensity step
-  int getIntensityStep() {
-    return intensityStep;
-  }
-
-  // getting minimum value for intensity
-  int getMinIntensity() {
-    return minIntensity;
-  }
-
-  // getting maximum value for intensity
-  int getMaxIntensity() {
-    return maxIntensity;
-  }
+    // changing intensity value
+    void setIntensity(int value) {
+      intensity = value;
+      EEPROM.update(INTENSITY_ADDRESS, value);
+      showIntensity();
+    }
 };
