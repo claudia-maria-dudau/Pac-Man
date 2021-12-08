@@ -1,7 +1,8 @@
 #include "system_constants.h"
 
 class Joystick {
-    bool joyMoved;
+    bool joyMovedX;
+    bool joyMovedY;
 
     // marking the state in which the system is:
     volatile static int systemState;
@@ -15,6 +16,19 @@ class Joystick {
         if (systemState == PRINCIPAL_MENU_STATE) {
           // button was pressed from within the principal menu
           setSystemState(TRANSITION_FROM_PRINCIPAL_MENU_STATE);
+        }  else if (systemState == IN_GAME_STATE) {
+          // button was pressed from within the in game state
+          // => pausing the game
+          setSystemState(TRANSITION_TO_PAUSE_GAME_STATE);
+        } else if (systemState == PAUSE_GAME_STATE) {
+          // button was pressed from within the pause game menu
+          setSystemState(TRANSITION_FROM_PAUSE_GAME_STATE);
+        } else if (systemState == ENTER_NAME_STATE) {
+          // button was pressed from within the enter name menu
+          setSystemState(TRANSITION_FROM_ENTER_NAME_STATE);
+        } else if (systemState == END_GAME_STATE) {
+          // button was pressed from within the end game menu
+          setSystemState(TRANSITION_FROM_END_GAME_STATE);
         } else if (systemState == HIGHSCORE_BOARD_STATE) {
           // button was pressed from within the highscore board
           setSystemState(TRANSITION_FROM_HIGHSCORE_BOARD_STATE);
@@ -52,7 +66,8 @@ class Joystick {
       pinMode(SW_PIN, INPUT_PULLUP);
       attachInterrupt(digitalPinToInterrupt(SW_PIN), toggleButton, FALLING);
 
-      joyMoved = false;
+      joyMovedX = false;
+      joyMovedY = false;
     }
 
     // getting the curent state of the system
@@ -67,13 +82,14 @@ class Joystick {
 
 
     // --- MENUS NAVIGATION ---
-    int updateMenuPosition(int position, int noItems) {
+    // updating the position of a cursor on the X axis
+    int updateMenuPositionX(int position, int noItems) {
       // reading value from joystick
       int xValue = analogRead(X_PIN);
 
       // cursor moving donwards
-      if (xValue < MIN_THRESHOLD && !joyMoved) {
-        joyMoved = true;
+      if (xValue < MIN_THRESHOLD && !joyMovedX) {
+        joyMovedX = true;
 
         if (position > 0) {
           return --position;
@@ -81,8 +97,8 @@ class Joystick {
       }
 
       // cursor moving upwards
-      if (xValue > MAX_THRESHOLD && !joyMoved) {
-        joyMoved = true;
+      if (xValue > MAX_THRESHOLD && !joyMovedX) {
+        joyMovedX = true;
 
         if (position < noItems - 1) {
           return ++position;
@@ -90,7 +106,37 @@ class Joystick {
       }
 
       if (xValue > MIN_THRESHOLD && xValue < MAX_THRESHOLD) {
-        joyMoved = false;
+        joyMovedX = false;
+      }
+
+      return position;
+    }
+
+    // updating the position of a cursor on the Y axis
+    int updateMenuPositionY(int position, int noItems) {
+      // reading value from joystick
+      int yValue = analogRead(Y_PIN);
+
+      // cursor moving right
+      if (yValue < MIN_THRESHOLD && !joyMovedY) {
+        joyMovedY = true;
+
+        if (position < noItems - 1) {
+          return ++position;
+        }
+      }
+
+      // cursor moving left
+      if (yValue > MAX_THRESHOLD && !joyMovedY) {
+        joyMovedY = true;
+
+        if (position > 0) {
+          return --position;
+        }
+      }
+
+      if (yValue > MIN_THRESHOLD && yValue < MAX_THRESHOLD) {
+        joyMovedY = false;
       }
 
       return position;
@@ -98,13 +144,14 @@ class Joystick {
 
 
     // --- VALUE EDITING ---
+    // updating the value of a setting
     int updateValue(int value, int minVal, int maxVal, int step) {
       // reading value from joystick
       int xValue = analogRead(X_PIN);
 
       // increasing value
-      if (xValue < MIN_THRESHOLD && !joyMoved) {
-        joyMoved = true;
+      if (xValue < MIN_THRESHOLD && !joyMovedX) {
+        joyMovedX = true;
 
         int newVal = value + step;
         if (newVal < maxVal + 1) {
@@ -113,8 +160,8 @@ class Joystick {
       }
 
       // decreasing value
-      if (xValue > MAX_THRESHOLD && !joyMoved) {
-        joyMoved = true;
+      if (xValue > MAX_THRESHOLD && !joyMovedX) {
+        joyMovedX = true;
 
         int newVal = value - step;
         if (newVal > minVal - 1) {
@@ -123,7 +170,7 @@ class Joystick {
       }
 
       if (xValue > MIN_THRESHOLD && xValue < MAX_THRESHOLD) {
-        joyMoved = false;
+        joyMovedX = false;
       }
 
       return value;
@@ -135,7 +182,7 @@ class Joystick {
     int movePlayerX(int position, int matrixSize) {
       int xValue = analogRead(X_PIN);
 
-      // moving up 
+      // moving up
       if (xValue < MIN_THRESHOLD) {
         if (position > 0)
           return --position;
@@ -145,7 +192,7 @@ class Joystick {
       if (xValue > MAX_THRESHOLD) {
         if (position < matrixSize - 1)
           return ++position;
-      } 
+      }
 
       return position;
     }
@@ -154,17 +201,17 @@ class Joystick {
     int movePlayerY(int position, int matrixSize) {
       int yValue = analogRead(Y_PIN);
 
-      // moving right
+      // moving left
       if (yValue > MAX_THRESHOLD) {
         if (position > 0)
           return --position;
       }
 
-      // moving left
+      // moving right
       if (yValue < MIN_THRESHOLD) {
         if (position < matrixSize - 1)
           return ++position;
-      }    
+      }
 
       return position;
     }

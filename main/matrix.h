@@ -132,7 +132,7 @@ class Matrix {
       lc.setLed(0, position[0], position[1], 0);
     }
 
-    
+
     // --- INTENSITY SETTINGS ---
     // getting the intensity value
     int getIntensity() {

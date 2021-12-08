@@ -11,7 +11,7 @@ void setup() {
 
 void loop() {
   int systemState = game.getSystemState();
-  
+
   // each system state has a different flow
   if (systemState == PRINCIPAL_MENU_STATE) {
     // in principal menu
@@ -22,9 +22,15 @@ void loop() {
   } else if (systemState == IN_GAME_STATE) {
     // in game
     game.playGame();
+  } else if (systemState == TRANSITION_TO_PAUSE_GAME_STATE) {
+    // changing from in game to pause game
+    game.changeToPause();
   } else if (systemState == PAUSE_GAME_STATE) {
     // in pause game
-    // TO DO
+    game.navigatePauseGameMenu();
+  } else if (systemState == TRANSITION_FROM_PAUSE_GAME_STATE) {
+    // in transition from pause game menu
+    game.changeFromPauseGameMenu();
   } else if (systemState == LOST_GAME_STATE) {
     // in lost game
     game.lostGame();
@@ -41,11 +47,17 @@ void loop() {
     // in beat highscore
     game.beatHighscore();
   } else if (systemState == ENTER_NAME_STATE) {
-    // in enter name
-    game.navigateEnterName();
+    // in enter name menu
+    game.navigateEnterNameMenu();
+  } else if (systemState == TRANSITION_FROM_ENTER_NAME_STATE) {
+    // in transition from enter name menu
+    game.changeFromEnterNameMenu();
   } else if (systemState == END_GAME_STATE) {
     // in end game
-    game.navigateEndGame();
+    game.navigateEndGameMenu();
+  } else if (systemState == TRANSITION_FROM_END_GAME_STATE) {
+    // in transition form end game menu
+    game.changeFromEndGameMenu();
   } else if (systemState == HIGHSCORE_BOARD_STATE) {
     // in highscore board
     game.navigateHighscoreBoard();

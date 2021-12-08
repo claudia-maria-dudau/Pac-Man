@@ -47,27 +47,26 @@ class Display {
     String pauseGameMenu[PAUSE_GAME_MENU_ITEMS] = {
       "Resume",
       "Exit",
-    }
+    };
     int pauseGameMenuCursor = 0;
     String pauseGameMenuTitle = "PAUSE";
 
     // enter name menu
     String keyboard[KEYBOARD_LINES] = {
-      "abcdefghijklmn",
-      "opqrstuvwxyz12",
-      "34567890_-"
-    }
-    String enterNameMenu[ENTER_NAME_ITEMS] = { 
+      "abcdefghijklm",
+      "nopqrstuvwxyz"
+    };
+    String enterNameMenu[ENTER_NAME_MENU_OPTIONS] = {
       "Delete",
       "Done"
     };
-    int enterNameMenuCursor = 0;
+    int enterNameMenuCursor[2] = { 0 , 0 };
 
     // end game menu
     String endGameMenu[END_GAME_MENU_ITEMS] = {
       "Restart",
       "Exit",
-    }
+    };
     int endGameMenuCursor = 0;
     String endGameMenuTitle = "END GAME";
 
@@ -133,9 +132,9 @@ class Display {
       }
     }
 
-    // showing the cursor at the given line
-    void showCursor(int line) {
-      lcd.setCursor(0, line);
+    // showing the cursor at a given position on the display
+    void showCursor(int row, int col) {
+      lcd.setCursor(row, col);
       lcd.write(0b00111110);
     }
 
@@ -145,26 +144,43 @@ class Display {
       if (cursorPosition == noItems - 1) {
         // the cursor is on the last item of the menu
         // => showing the last 2 items
-        lcd.setCursor(2, 0);
+        lcd.setCursor(OPTIONS_OFFSET, 0);
         lcd.print(menu[cursorPosition - 1].substring(0, MENU_ITEM_LENGTH));
-        lcd.setCursor(2, 1);
+        lcd.setCursor(OPTIONS_OFFSET, 1);
         lcd.print(menu[cursorPosition].substring(0, MENU_ITEM_LENGTH));
 
         // showing where the cursor is currently
-        showCursor(1);
+        showCursor(0, 1);
 
       } else {
         // showing the item the cursor is pointing at + the next one
-        lcd.setCursor(2, 0);
+        lcd.setCursor(OPTIONS_OFFSET, 0);
         lcd.print(menu[cursorPosition].substring(0, MENU_ITEM_LENGTH));
-        lcd.setCursor(2, 1);
+        lcd.setCursor(OPTIONS_OFFSET, 1);
         lcd.print(menu[cursorPosition + 1].substring(0, MENU_ITEM_LENGTH));
 
         // showing where the cursor is currently
-        showCursor(0);
+        showCursor(0, 0);
       }
 
       showNavigationArrows();
+    }
+
+    // showing the given game menu
+    void showGameMenu(String title, String* menu, int cursorPosition, int noItems) {
+      // showing the title of the menu
+      int offset = (DISPLAY_COLUMNS - title.length()) / 2;
+      lcd.setCursor(offset, 0);
+      lcd.print(title);
+
+      // showing the options
+      lcd.setCursor(2, 1);
+      lcd.print(menu[noItems - 2]);
+      lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
+      lcd.print(menu[noItems - 1]);
+
+      // showing where4 the cursor is currently
+      showCursor(cursorPosition * BETWEEN_OPTIONS_OFFSET, 1);
     }
 
   public:
@@ -293,7 +309,7 @@ class Display {
       lcd.setCursor(0, 1);
       lcd.print("Sad Marinel bark");
     }
-    
+
     // showing the won game display
     void showWonGameDisplay() {
       lcd.setCursor(0, 0);
@@ -332,29 +348,94 @@ class Display {
       lcd.print("max " + String(MAX_NAME_LENGTH) + " charact.");
     }
 
-    // showing the enter name display
-    void showEnterNameDisplay(String name) {
-      lcd.setCursor(0, 0);
-      lcd.print("Name: " + name);
-    }
-
 
     // --- PAUSE GAME MENU ---
+    // getting the pause game menu cursor
+    int getPauseGameMenuCursor() {
+      return pauseGameMenuCursor;
+    }
+
+    // setting the pause game menu cursor
+    void setPauseGameMenuCursor(int position) {
+      pauseGameMenuCursor = position;
+    }
+
+    // showing the end game menu
+    void showPauseGameMenu() {
+      showGameMenu(pauseGameMenuTitle, pauseGameMenu, pauseGameMenuCursor, PAUSE_GAME_MENU_ITEMS);
+    }
 
     // --- ENTER NAME MENU ---
+    // getting the character at a certain position from the keyboard
+    char getCharacter(int row, int col) {
+      return keyboard[row][col];
+    }
+
+    // gettings the position of the enter menu cursor
+    int getEnterNameMenuCursorX() {
+      return enterNameMenuCursor[0];
+    }
+
+    int getEnterNameMenuCursorY() {
+      return enterNameMenuCursor[1];
+    }
+
+    // setting the position of the enter menu cursor
+    void setEnterNameMenuCursorX(int position) {
+      enterNameMenuCursor[0] = position;
+      setArrows(enterNameMenuCursor[0], ENTER_NAME_MENU_ITEMS + 1);
+    }
+
+    void setEnterNameMenuCursorY(int position) {
+      enterNameMenuCursor[1] = position;
+    }
+
     // showing the enter name menu
-    void showEnterNameMenu() {
-      // TO DO
+    void showEnterNameMenu(String name) {
+      showNavigationArrows();
+
+      // the name is always showing on the first row of the display
+      lcd.setCursor(0, 0);
+      lcd.print("Name: " + name);
+
+      lcd.setCursor(OPTIONS_OFFSET, 1);
+
+      if (enterNameMenuCursor[0] < KEYBOARD_LINES) {
+        // the cursor is on a character on the keyboard
+        lcd.print(keyboard[enterNameMenuCursor[0]]);
+
+        // showing the selected character on the keyboard
+        lcd.setCursor(enterNameMenuCursor[1] + KEYBOARD_START_COLUMN, 1);
+        lcd.blink();
+      } else {
+        // the cursor is on an option from the menu
+        setEnterNameMenuCursorY(0);
+        lcd.print(enterNameMenu[enterNameMenuCursor[0] - KEYBOARD_LINES]);
+
+        // showing where the cursor is currently
+        showCursor(0, 1);
+        lcd.noBlink();
+      }
     }
 
 
     // -- END GAME MENU ---
-    // showing the end game menu
-    void showEndGameMenu() {
-      
+    // getting the end game menu cursor
+    int getEndGameMenuCursor() {
+      return endGameMenuCursor;
     }
 
-    
+    // setting the end game menu cursor
+    void setEndGameMenuCursor(int position) {
+      endGameMenuCursor = position;
+    }
+
+    // showing the end game menu
+    void showEndGameMenu() {
+      showGameMenu(endGameMenuTitle, endGameMenu, endGameMenuCursor, END_GAME_MENU_ITEMS);
+    }
+
+
     // --- HIGHSCORE BOARD ---
     // getting the position of the highscore board cursor
     int getHighscoreBoardCursor() {
@@ -369,19 +450,11 @@ class Display {
 
     // showing a highscore on the board at a given line
     void showHighscore(String name, int score, int line) {
-      lcd.setCursor(2, line);
+      lcd.setCursor(OPTIONS_OFFSET, line);
       lcd.print(name);
 
       // aligning score to the right
-      if (score > 999) {
-        lcd.setCursor(11, line);
-      } else if (score > 99) {
-        lcd.setCursor(12, line);
-      } else if (score > 9) {
-        lcd.setCursor(13, line);
-      } else {
-        lcd.setCursor(14, line);
-      }
+      lcd.setCursor(SCORE_OFFSET - String(score).length(), line);
       lcd.print(score);
     }
 
@@ -393,22 +466,22 @@ class Display {
         // => showing the last highscore + the "back" option
         showHighscore(names[highscoreBoardCursor - 1], scores[highscoreBoardCursor - 1], 0);
 
-        lcd.setCursor(2, 1);
+        lcd.setCursor(OPTIONS_OFFSET, 1);
         lcd.print("Back");
 
         // showing where the cursor is currently
-        showCursor(1);
+        showCursor(0, 1);
 
       } else  if (highscoreBoardCursor == HIGHSCORE_TOP - 1) {
         // the cursor is on the last highscore
         // => showing showing the last highscore + the "back" option
         showHighscore(names[highscoreBoardCursor], scores[highscoreBoardCursor], 0);
 
-        lcd.setCursor(2, 1);
+        lcd.setCursor(OPTIONS_OFFSET, 1);
         lcd.print("Back");
 
         // showing where the cursor is currently
-        showCursor(0);
+        showCursor(0, 0);
 
       } else {
         // showing the highscore the cursor is pointing at + the next one
@@ -416,7 +489,7 @@ class Display {
         showHighscore(names[highscoreBoardCursor + 1], scores[highscoreBoardCursor + 1], 1);
 
         // showing where the cursor is currently
-        showCursor(0);
+        showCursor(0, 0);
       }
 
       showNavigationArrows();
@@ -445,13 +518,12 @@ class Display {
     // showing the starting level settings section
     void showStartLevelSettings(int startLevel) {
       // showing current position
-      lcd.setCursor(0, 0);
-      lcd.write(0b00111110);
-      lcd.setCursor(2, 0);
+      showCursor(0, 0);
+      lcd.setCursor(OPTIONS_OFFSET, 0);
       lcd.print("Start level");
 
       // showing starting level value
-      lcd.setCursor(4, 1);
+      lcd.setCursor(SETTINGS_OFFSET, 1);
       lcd.print(startLevel);
     }
 
@@ -477,13 +549,12 @@ class Display {
     // showing the scontrast settings section
     void showContrastSettings() {
       // showing current position
-      lcd.setCursor(0, 0);
-      lcd.write(0b00111110);
-      lcd.setCursor(2, 0);
+      showCursor(0, 0);
+      lcd.setCursor(OPTIONS_OFFSET, 0);
       lcd.print("Contrast");
 
       // showing contrast value
-      lcd.setCursor(4, 1);
+      lcd.setCursor(SETTINGS_OFFSET, 1);
       lcd.print(contrast);
     }
 
@@ -509,13 +580,12 @@ class Display {
     // showing the brightness settings section
     void showBrightnessSettings() {
       // showing current position
-      lcd.setCursor(0, 0);
-      lcd.write(0b00111110);
-      lcd.setCursor(2, 0);
+      showCursor(0, 0);
+      lcd.setCursor(OPTIONS_OFFSET, 0);
       lcd.print("Brightness");
 
       // showing contrast value
-      lcd.setCursor(4, 1);
+      lcd.setCursor(SETTINGS_OFFSET, 1);
       lcd.print(brightness);
     }
 
@@ -524,13 +594,12 @@ class Display {
     // showing the intensity settings section
     void showIntensitySettings(int intensity) {
       // showing current position
-      lcd.setCursor(0, 0);
-      lcd.write(0b00111110);
-      lcd.setCursor(2, 0);
+      showCursor(0, 0);
+      lcd.setCursor(OPTIONS_OFFSET, 0);
       lcd.print("Intensity");
 
       // showing starting level value
-      lcd.setCursor(4, 1);
+      lcd.setCursor(SETTINGS_OFFSET, 1);
       lcd.print(intensity);
     }
 
@@ -558,7 +627,7 @@ class Display {
       if (aboutSectionCursor != ABOUT_SECTION_ITEMS - 1) {
         int startPosition = scrollPosition - DISPLAY_COLUMNS;
 
-        lcd.setCursor(2, 0);
+        lcd.setCursor(OPTIONS_OFFSET, 0);
         lcd.print(aboutSection[aboutSectionCursor].substring(startPosition, startPosition + MENU_ITEM_LENGTH));
 
         if (aboutSection[aboutSectionCursor].length() - startPosition < MENU_ITEM_LENGTH) {
