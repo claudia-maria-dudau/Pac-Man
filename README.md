@@ -106,7 +106,11 @@
   - accesing one of the options is done using the button of the joystick
   
 ### Game Requirments
-
+ There are 3 distinct objects in the game:
+  - The Player => shown by a fast blinking led
+  - The Enemies => shown by a blinking led (slower than the one of the player)
+  - The Food Items => shown by a static led
+ 
  
 ## Implementation details
 
