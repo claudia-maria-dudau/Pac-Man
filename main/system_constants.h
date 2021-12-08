@@ -147,7 +147,6 @@
 // --- HIGHSCORE BOARD ---
 #define HIGHSCORE_TOP 5
 #define MAX_NAME_LENGTH 8
-#define SCORE_OFFSET 14
 
 
 // --- SETTINGS MENU ---
