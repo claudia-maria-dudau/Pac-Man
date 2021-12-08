@@ -7,7 +7,7 @@ class Joystick {
     // marking the state in which the system is:
     volatile static int systemState;
 
-    volatile static unsigned int lastDebounceTime;
+    volatile static unsigned long lastDebounceTime;
 
 
     // interruption function
@@ -83,7 +83,7 @@ class Joystick {
 
     // --- MENUS NAVIGATION ---
     // updating the position of a cursor on the X axis
-    short int updateMenuPositionX(short int position, short int noItems) {
+    int updateMenuPositionX(int position, int noItems) {
       // reading value from joystick
       int xValue = analogRead(X_PIN);
 
@@ -113,7 +113,7 @@ class Joystick {
     }
 
     // updating the position of a cursor on the Y axis
-    short int updateMenuPositionY(short int position, short int noItems) {
+    int updateMenuPositionY(int position, int noItems) {
       // reading value from joystick
       int yValue = analogRead(Y_PIN);
 
@@ -145,7 +145,7 @@ class Joystick {
 
     // --- VALUE EDITING ---
     // updating the value of a setting
-    short int updateValue(short int value, short int minVal, short int maxVal, short int step) {
+    int updateValue(int value, int minVal, int maxVal, int step) {
       // reading value from joystick
       int xValue = analogRead(X_PIN);
 
@@ -153,7 +153,7 @@ class Joystick {
       if (xValue < MIN_THRESHOLD && !joyMovedX) {
         joyMovedX = true;
 
-        short int newVal = value + step;
+        int newVal = value + step;
         if (newVal < maxVal + 1) {
           return newVal;
         }
@@ -163,7 +163,7 @@ class Joystick {
       if (xValue > MAX_THRESHOLD && !joyMovedX) {
         joyMovedX = true;
 
-        short int newVal = value - step;
+        int newVal = value - step;
         if (newVal > minVal - 1) {
           return newVal;
         }
@@ -179,7 +179,7 @@ class Joystick {
 
     // --- GAME NAVIGATION ---
     // moving the player on the rows
-    short int movePlayerX(short int position, short int matrixSize) {
+    int movePlayerX(int position, int matrixSize) {
       int xValue = analogRead(X_PIN);
 
       // moving up
@@ -198,7 +198,7 @@ class Joystick {
     }
 
     // moving the player on the columns
-    short int movePlayerY(short int position, short int matrixSize) {
+    int movePlayerY(int position, int matrixSize) {
       int yValue = analogRead(Y_PIN);
 
       // moving left
@@ -218,4 +218,4 @@ class Joystick {
 };
 
 volatile int Joystick::systemState = 0;
-volatile unsigned int Joystick::lastDebounceTime = 0;
+volatile unsigned long Joystick::lastDebounceTime = 0;

@@ -10,67 +10,67 @@ class Game {
     Joystick joystick = Joystick();
 
     // in game variables
-    short int lives;
+    int lives;
     int currentScore;
 
     // level
-    short int level;
-    unsigned int doneLevelTime;
-    short int startLevelValue;
+    int level;
+    unsigned long doneLevelTime;
+    int startLevelValue;
 
     // player
-    short int playerPosition[2];
-    unsigned int lastChangedPlayerPosition;
-    unsigned int lastChangedPlayerBlinking;
+    int playerPosition[2];
+    unsigned long lastChangedPlayerPosition;
+    unsigned long lastChangedPlayerBlinking;
     String currentName;
 
     // enemies
-    short int noEnemies;
-    short int enemies[MAX_ENEMIES][2]; // each enemy has a set of (x, y) coordinates to indicate its position
-    short int enemiesSpeed;
-    unsigned int lastChangedEnemiesPositions;
-    unsigned int lastChangedEnemiesBlinking;
-    const short int movesX[MOVES] = { -1, -1, -1, 0, 1, 1, 1, 0 };
-    const short int movesY[MOVES] = { -1, 0, 1, 1, 1, 0, -1, -1 };
+    int noEnemies;
+    int enemies[MAX_ENEMIES][2]; // each enemy has a set of (x, y) coordinates to indicate its position
+    int enemiesSpeed;
+    unsigned long lastChangedEnemiesPositions;
+    unsigned long lastChangedEnemiesBlinking;
+    const int movesX[MOVES] = { -1, -1, -1, 0, 1, 1, 1, 0 };
+    const int movesY[MOVES] = { -1, 0, 1, 1, 1, 0, -1, -1 };
 
     // food items
-    short int noFoodItems;
-    short int foodItems[MAX_FOOD_ITEMS][2]; // each food item has a set of (x, y) coordinates to indicate its position
+    int noFoodItems;
+    int foodItems[MAX_FOOD_ITEMS][2]; // each food item has a set of (x, y) coordinates to indicate its position
 
     // map size
-    short int mapSize;
+    int mapSize;
 
     // time variables
-    unsigned int startStatisticsTime;
-    unsigned int startBeatHighscoreTime;
-    unsigned int startEnterNameTime;
+    unsigned long startStatisticsTime;
+    unsigned long startBeatHighscoreTime;
+    unsigned long startEnterNameTime;
 
     bool shownStatistics;
-    short int highscoreDisplay;
+    int highscoreDisplay;
 
     // highscore board
-    String names[HIGHSCORE_TOP] = { "", "", "" };
-    short int scores[HIGHSCORE_TOP] = { 0, 0, 0 };
-    short int namesAddresses[HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1)];
-    short int scoresAddresses[HIGHSCORE_TOP * 2];
+    String names[HIGHSCORE_TOP] = { "", "", "", "", "" };
+    int scores[HIGHSCORE_TOP] = { 0, 0, 0, 0, 0 };
+    int namesAddresses[HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1)];
+    int scoresAddresses[HIGHSCORE_TOP * 2];
 
     // about section
-    unsigned int lastChangedScrollAbout;
+    unsigned long lastChangedScrollAbout;
 
   public:
     Game() {
       // memory addresses for highscore top
       // scores
-      for (short int i = 0; i < HIGHSCORE_TOP * 2; i++)
+      for (int i = 0; i < HIGHSCORE_TOP * 2; i++)
         scoresAddresses[i] = START_NAMES_ADDRESS + i;
 
       // names
-      for (short int i = 0; i < HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1); i++)
+      for (int i = 0; i < HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1); i++)
         namesAddresses[i] = START_SCORES_ADDRESS + i;
 
       // reading highscore top from memory
       // scores
-      for (short int i = 0; i < HIGHSCORE_TOP; i++) {
+      for (int i = 0; i < HIGHSCORE_TOP; i++) {
         // int value needs 2 bytes to be stored
         // => the value is stored into 2 addresses on the EEPROM
         byte byte1 = EEPROM.read(scoresAddresses[2 * i]);
@@ -82,15 +82,15 @@ class Game {
       }
 
       // names
-      for (short int i = 0; i < HIGHSCORE_TOP; i ++) {
+      for (int i = 0; i < HIGHSCORE_TOP; i ++) {
         // string value has each of its characters stored at consecutive addresses on the EEPROM
         // the length of the string is also stored in the address right before its characters
         // in order to know how many characters need to be read to reconstruct the string
-        short int length =  EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1)]);
+        int length =  EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1)]);
 
         // reconstructing the string value:
         // concatenating all the characters
-        for (short int j = 1; j < length + 1; j++)
+        for (int j = 1; j < length + 1; j++)
           names[i] += (char)EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1) + j]);
 
       }
@@ -131,8 +131,8 @@ class Game {
 
     // navigating through the pricipal menu
     void navigatePrincipalMenu() {
-      short int cursorPosition = display.getPrincipalMenuCursor();
-      short int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, PRINCIPAL_MENU_ITEMS);
+      int cursorPosition = display.getPrincipalMenuCursor();
+      int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, PRINCIPAL_MENU_ITEMS);
 
       // cursor moved => update display
       if (cursorPosition != newCursorPosition) {
@@ -170,10 +170,10 @@ class Game {
 
     // initializing the positions of the enemies
     void initializeEnemies() {
-      short int xCoord, yCoord;
+      int xCoord, yCoord;
 
       // generating random positions for enemies
-      for (short int i = 0; i < noEnemies; i++) {
+      for (int i = 0; i < noEnemies; i++) {
         bool coordOk = false;
 
         while (!coordOk) {
@@ -203,10 +203,10 @@ class Game {
 
     // initialize the positions of the food items
     void initializeFoodItems() {
-      short int xCoord, yCoord;
+      int xCoord, yCoord;
 
       // generating random positions for food items
-      for (short int i = 0; i < noFoodItems; i++) {
+      for (int i = 0; i < noFoodItems; i++) {
         bool coordOk = false;
 
         while (!coordOk) {
@@ -282,13 +282,13 @@ class Game {
 
     // removing food item from the map
     void removeFoodItem() {
-      for (short int i = 0; i < noFoodItems; i++) {
+      for (int i = 0; i < noFoodItems; i++) {
         if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]) {
           // erasing the respective food item form the map
           matrix.removeFoodItem(foodItems[i]);
 
           // erasing the respective food item from the list of food items
-          for (short int j = noFoodItems - 1; j > i; j--) {
+          for (int j = noFoodItems - 1; j > i; j--) {
             foodItems[j - 1][0] = foodItems[j][0];
             foodItems[j - 1][1] = foodItems[j][1];
           }
@@ -312,7 +312,7 @@ class Game {
     // blinking the enemies' position at a given intervla
     void blinkEnemies() {
       if (millis() - lastChangedEnemiesBlinking > ENEMIES_BLINKING_INTERVAL) {
-        for (short int i = 0; i < noEnemies; i++) {
+        for (int i = 0; i < noEnemies; i++) {
           matrix.blinkEnemy(enemies[i], i == 0);
         }
 
@@ -325,11 +325,11 @@ class Game {
       char currentSymbol;
 
       if (millis() - lastChangedEnemiesPositions > enemiesSpeed) {
-        short int move;
-        short int next[2];
+        int move;
+        int next[2];
 
         // generating a random move for each enemy
-        for (short int i = 0; i < noEnemies; i++) {
+        for (int i = 0; i < noEnemies; i++) {
           bool moveOk = false;
 
           while (!moveOk) {
@@ -374,7 +374,7 @@ class Game {
       char currentSymbol;
 
       if (millis() - lastChangedPlayerPosition > PLAYER_SPEED) {
-        short int newPosition[2] = { joystick.movePlayerX(playerPosition[0], mapSize), joystick.movePlayerY(playerPosition[1], mapSize)};
+        int newPosition[2] = { joystick.movePlayerX(playerPosition[0], mapSize), joystick.movePlayerY(playerPosition[1], mapSize)};
 
         // player moved => update position
         if (newPosition[0] != playerPosition[0] || newPosition[1] != playerPosition[1]) {
@@ -547,8 +547,8 @@ class Game {
 
     // navigating through the pause game menu
     void navigatePauseGameMenu() {
-      short int cursorPosition = display.getPauseGameMenuCursor();
-      short int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, PAUSE_GAME_MENU_ITEMS);
+      int cursorPosition = display.getPauseGameMenuCursor();
+      int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, PAUSE_GAME_MENU_ITEMS);
 
       // cursor moved => update display
       if (cursorPosition != newCursorPosition) {
@@ -567,8 +567,8 @@ class Game {
     // navigating through the enter name menu
     void navigateEnterNameMenu() {
       // cursor on the X axis
-      short int cursorPositionX = display.getEnterNameMenuCursorX();
-      short int newCursorPositionX = joystick.updateMenuPositionX(cursorPositionX, ENTER_NAME_MENU_ITEMS);
+      int cursorPositionX = display.getEnterNameMenuCursorX();
+      int newCursorPositionX = joystick.updateMenuPositionX(cursorPositionX, ENTER_NAME_MENU_ITEMS);
 
       // cursor moved => update display
       if (newCursorPositionX != cursorPositionX) {
@@ -577,8 +577,8 @@ class Game {
       }
 
       // cursor on the Y axis
-      short int cursorPositionY = display.getEnterNameMenuCursorY();
-      short int newCursorPositionY = joystick.updateMenuPositionY(cursorPositionY, KEYBOARD_COLUMNS);
+      int cursorPositionY = display.getEnterNameMenuCursorY();
+      int newCursorPositionY = joystick.updateMenuPositionY(cursorPositionY, KEYBOARD_COLUMNS);
 
       if (newCursorPositionY != cursorPositionY) {
         display.setEnterNameMenuCursorY(newCursorPositionY);
@@ -596,8 +596,8 @@ class Game {
 
     // navigating through the end game menu
     void navigateEndGameMenu() {
-      short int cursorPosition = display.getEndGameMenuCursor();
-      short int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, END_GAME_MENU_ITEMS);
+      int cursorPosition = display.getEndGameMenuCursor();
+      int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, END_GAME_MENU_ITEMS);
 
       // cursor moved => update display
       if (cursorPosition != newCursorPosition) {
@@ -609,19 +609,19 @@ class Game {
 
     // --- HIGHSCORE BOARD ---
     // updating highscore board
-    void updateHighscoreBoard() {
+    void updateHighscoreBoard(String name, int score) {
       // inserting the value into the top
-      for (short int i = 0; i < HIGHSCORE_TOP; i++) {
-        if (currentScore > scores[i]) {
+      for (int i = 0; i < HIGHSCORE_TOP; i++) {
+        if (score > scores[i]) {
           // moving the bottom of the top with one position lower
-          for (short int j = HIGHSCORE_TOP - 1; j > i; j--) {
+          for (int j = HIGHSCORE_TOP - 1; j > i; j--) {
             scores[j] = scores[j - 1];
             names[j] = names[j - 1];
           }
 
           // inserting value
-          scores[i] = currentScore;
-          names[i] = currentName;
+          scores[i] = score;
+          names[i] = name;
 
           break;
         }
@@ -629,7 +629,7 @@ class Game {
 
       // updating values into the memory
       // scores
-      for (short int i = 0; i < HIGHSCORE_TOP; i++) {
+      for (int i = 0; i < HIGHSCORE_TOP; i++) {
         // int value needs to be stored into 2 addresses on the EEPROM
         // => the value is split into 2 bytes:
         // the first byte needs to be shifted right by 8 (in order to only get the firts 8 bits of the number)
@@ -641,9 +641,9 @@ class Game {
 
 
       // names
-      for (short int i = 0; i < HIGHSCORE_TOP; i ++) {
+      for (int i = 0; i < HIGHSCORE_TOP; i ++) {
         // string value needs to have each of its characters stored at consecutive addresses on the EEPROM
-        for (short int j = 1; j < names[i].length() + 1; j++)
+        for (int j = 1; j < names[i].length() + 1; j++)
           EEPROM.update(namesAddresses[i * (MAX_NAME_LENGTH + 1) + j], names[i][j - 1]);
 
         // the length of the string is also stored in the address right before its characters
@@ -660,8 +660,8 @@ class Game {
 
     // navigating through the highscore board
     void navigateHighscoreBoard() {
-      short int cursorPosition = display.getHighscoreBoardCursor();
-      short int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, HIGHSCORE_TOP + 1);
+      int cursorPosition = display.getHighscoreBoardCursor();
+      int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, HIGHSCORE_TOP + 1);
 
       // cursor moved => update display
       if (cursorPosition != newCursorPosition) {
@@ -680,8 +680,8 @@ class Game {
 
     // navigating through the settings menu
     void navigateSettingsMenu() {
-      short int cursorPosition = display.getSettingsMenuCursor();
-      short int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, SETTINGS_MENU_ITEMS);
+      int cursorPosition = display.getSettingsMenuCursor();
+      int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, SETTINGS_MENU_ITEMS);
 
       // cursor moved => update display
       if (cursorPosition != newCursorPosition) {
@@ -700,7 +700,7 @@ class Game {
 
     // navigating through the levels values
     void navigateStartLevelValues() {
-      short int newStartLevelValue = joystick.updateValue(startLevelValue, MIN_LEVEL, MAX_LEVEL, LEVEL_STEP);
+      int newStartLevelValue = joystick.updateValue(startLevelValue, MIN_LEVEL, MAX_LEVEL, LEVEL_STEP);
 
       // value changed => update display
       if (startLevelValue != newStartLevelValue) {
@@ -718,8 +718,8 @@ class Game {
 
     // navigating through the contrast values
     void navigateContrastValues() {
-      short int contrastValue = display.getContrast();
-      short int newContrastValue = joystick.updateValue(contrastValue, MIN_SETTINGS, MAX_SETTINGS_LCD, CONTRAST_STEP);
+      int contrastValue = display.getContrast();
+      int newContrastValue = joystick.updateValue(contrastValue, MIN_SETTINGS, MAX_SETTINGS_LCD, CONTRAST_STEP);
 
       // value changed => update display
       if (contrastValue != newContrastValue) {
@@ -738,8 +738,8 @@ class Game {
 
     // navigating through the contrast values
     void navigateBrightnessValues() {
-      short int brightnessValue = display.getBrightness();
-      short int newBrightnessValue = joystick.updateValue(brightnessValue, MIN_SETTINGS, MAX_SETTINGS_LCD, BRIGHTNESS_STEP);
+      int brightnessValue = display.getBrightness();
+      int newBrightnessValue = joystick.updateValue(brightnessValue, MIN_SETTINGS, MAX_SETTINGS_LCD, BRIGHTNESS_STEP);
 
       // value changed => update display
       if (brightnessValue != newBrightnessValue) {
@@ -758,8 +758,8 @@ class Game {
 
     // navigating through the contrast values
     void navigateIntensityValues() {
-      short int intensityValue = matrix.getIntensity();
-      short int newIntensityValue = joystick.updateValue(intensityValue, MIN_SETTINGS, MAX_SETTINGS_LC, INTENSITY_STEP);
+      int intensityValue = matrix.getIntensity();
+      int newIntensityValue = joystick.updateValue(intensityValue, MIN_SETTINGS, MAX_SETTINGS_LC, INTENSITY_STEP);
 
       // value changed => update display
       if (intensityValue != newIntensityValue) {
@@ -778,8 +778,8 @@ class Game {
 
     // navigate through the about section
     void navigateAbout() {
-      short int cursorPosition = display.getAboutSectionCursor();
-      short int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, ABOUT_SECTION_ITEMS);
+      int cursorPosition = display.getAboutSectionCursor();
+      int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, ABOUT_SECTION_ITEMS);
 
       // cursor moved => update display
       if (cursorPosition != newCursorPosition) {
@@ -805,7 +805,7 @@ class Game {
     // --- TRANSITIONS FROM MENUS ---
     // changing from the principal menu to one of the options
     void changeFromPrincipalMenu() {
-      short int cursorPosition = display.getPrincipalMenuCursor();
+      int cursorPosition = display.getPrincipalMenuCursor();
 
       if (cursorPosition == START_GAME_POSITION) {
         // start game
@@ -835,7 +835,7 @@ class Game {
 
     // changing from pause game menu
     void changeFromPauseGameMenu() {
-      short int cursorPosition = display.getPauseGameMenuCursor();
+      int cursorPosition = display.getPauseGameMenuCursor();
 
       if (cursorPosition == PAUSE_GAME_MENU_ITEMS - 1) {
         // "exit" option => going back to the principal menu
@@ -852,8 +852,8 @@ class Game {
 
     // changing from enter name menu
     void changeFromEnterNameMenu() {
-      short int cursorPositionX = display.getEnterNameMenuCursorX();
-      short int cursorPositionY = display.getEnterNameMenuCursorY();
+      int cursorPositionX = display.getEnterNameMenuCursorX();
+      int cursorPositionY = display.getEnterNameMenuCursorY();
 
       if (cursorPositionX < KEYBOARD_LINES) {
         // one of the characters has been selected
@@ -870,7 +870,7 @@ class Game {
         if (cursorPositionX == ENTER_NAME_MENU_ITEMS - 1) {
           // "done" option
           // updating highscore board
-          updateHighscoreBoard();
+          updateHighscoreBoard(currentName, currentScore);
 
           // going to the next state
           joystick.setSystemState(END_GAME_STATE);
@@ -889,7 +889,7 @@ class Game {
 
     // changing from end game menu
     void changeFromEndGameMenu() {
-      short int cursorPosition = display.getEndGameMenuCursor();
+      int cursorPosition = display.getEndGameMenuCursor();
 
       if (cursorPosition == END_GAME_MENU_ITEMS - 1) {
         // "exit" option => going back to the principal menu
@@ -906,7 +906,7 @@ class Game {
 
     // changing from the highscore board
     void changeFromHighscoreBoard() {
-      short int cursorPosition = display.getHighscoreBoardCursor();
+      int cursorPosition = display.getHighscoreBoardCursor();
 
       if (cursorPosition == HIGHSCORE_TOP) {
         // going back to the principal menu
@@ -921,7 +921,7 @@ class Game {
 
     // changing from the settings menu to one of the options
     void changeFromSettingsMenu() {
-      short int cursorPosition = display.getSettingsMenuCursor();
+      int cursorPosition = display.getSettingsMenuCursor();
 
       if (cursorPosition == START_LEVEL_POSITION) {
         // starting level
@@ -954,7 +954,7 @@ class Game {
 
     // changing from the about section
     void changeFromAbout() {
-      short int cursorPosition = display.getAboutSectionCursor();
+      int cursorPosition = display.getAboutSectionCursor();
 
       if (cursorPosition == ABOUT_SECTION_ITEMS - 1) {
         // going back to the principal menu

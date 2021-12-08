@@ -4,8 +4,8 @@
 
 class Display {
     // display settings
-    short int contrast;
-    short int brightness;
+    int contrast;
+    int brightness;
 
     // display
     LiquidCrystal lcd = LiquidCrystal(RS, ENABLE, D4, D5, D6, D7);
@@ -41,14 +41,14 @@ class Display {
       "Settings",
       "About"
     };
-    short int principalMenuCursor = 0;
+    int principalMenuCursor = 0;
 
     // pause game menu
     String pauseGameMenu[PAUSE_GAME_MENU_ITEMS] = {
       "Resume",
       "Exit",
     };
-    short int pauseGameMenuCursor = 0;
+    int pauseGameMenuCursor = 0;
     String pauseGameMenuTitle = "PAUSE";
 
     // enter name menu
@@ -60,18 +60,18 @@ class Display {
       "Delete",
       "Done"
     };
-    short int enterNameMenuCursor[2] = { 0 , 0 };
+    int enterNameMenuCursor[2] = { 0 , 0 };
 
     // end game menu
     String endGameMenu[END_GAME_MENU_ITEMS] = {
       "Restart",
       "Exit",
     };
-    short int endGameMenuCursor = 0;
+    int endGameMenuCursor = 0;
     String endGameMenuTitle = "END GAME";
 
     // highscore board
-    short int highscoreBoardCursor = 0;
+    int highscoreBoardCursor = 0;
 
     // settings menu
     String settingsMenu[SETTINGS_MENU_ITEMS] = {
@@ -81,7 +81,7 @@ class Display {
       "Intensity",
       "Back"
     };
-    short int settingsMenuCursor = 0;
+    int settingsMenuCursor = 0;
 
     // about section
     String aboutSection[ABOUT_SECTION_ITEMS] = {
@@ -90,8 +90,8 @@ class Display {
       "Github: https://github.com/claudia-maria-dudau/Pac-Man   ",
       "Back"
     };
-    short int aboutSectionCursor = 0;
-    short int scrollPosition = 0;
+    int aboutSectionCursor = 0;
+    int scrollPosition = 0;
 
     bool upArrow = false;
     bool downArrow = true;
@@ -259,7 +259,7 @@ class Display {
       delay(4000);
       lcd.clear();
 
-      for (short int i = 0; i < DISPLAY_COLUMNS; i++) {
+      for (int i = 0; i < DISPLAY_COLUMNS; i++) {
         lcd.setCursor(i, i % 2);
         lcd.write((byte)0);
         delay(300);
@@ -269,12 +269,12 @@ class Display {
 
     // --- PRINCIPAL MENU ---
     // getting the position of the principal menu cursor
-    short int getPrincipalMenuCursor() {
+    int getPrincipalMenuCursor() {
       return principalMenuCursor;
     }
 
     // setting the position of the principal menu cursor
-    void setPrincipalMenuCursor(short int position) {
+    void setPrincipalMenuCursor(int position) {
       principalMenuCursor = position;
       setArrows(principalMenuCursor, PRINCIPAL_MENU_ITEMS);
     }
@@ -286,7 +286,7 @@ class Display {
 
     // --- GAME ---
     // showing the in game display
-    void showGameDisplay(short int level, short int lives, int score) {
+    void showGameDisplay(int level, int lives, int score) {
       // showing the level of the game
       lcd.setCursor(0, 0);
       lcd.print("Level: " + String(level));
@@ -319,7 +319,7 @@ class Display {
     }
 
     // shwoing the statistics of the game
-    void showStatistics(short int lives, int score) {
+    void showStatistics(int lives, int score) {
       lcd.setCursor(0, 0);
       lcd.print("Lives: " + String(lives));
       lcd.setCursor(0, 1);
@@ -351,12 +351,12 @@ class Display {
 
     // --- PAUSE GAME MENU ---
     // getting the pause game menu cursor
-    short int getPauseGameMenuCursor() {
+    int getPauseGameMenuCursor() {
       return pauseGameMenuCursor;
     }
 
     // setting the pause game menu cursor
-    void setPauseGameMenuCursor(short int position) {
+    void setPauseGameMenuCursor(int position) {
       pauseGameMenuCursor = position;
     }
 
@@ -367,26 +367,26 @@ class Display {
 
     // --- ENTER NAME MENU ---
     // getting the character at a certain position from the keyboard
-    char getCharacter(short int row, short int col) {
+    char getCharacter(int row, int col) {
       return keyboard[row][col];
     }
 
     // gettings the position of the enter menu cursor
-    short int getEnterNameMenuCursorX() {
+    int getEnterNameMenuCursorX() {
       return enterNameMenuCursor[0];
     }
 
-    short int getEnterNameMenuCursorY() {
+    int getEnterNameMenuCursorY() {
       return enterNameMenuCursor[1];
     }
 
     // setting the position of the enter menu cursor
-    void setEnterNameMenuCursorX(short int position) {
+    void setEnterNameMenuCursorX(int position) {
       enterNameMenuCursor[0] = position;
       setArrows(enterNameMenuCursor[0], ENTER_NAME_MENU_ITEMS + 1);
     }
 
-    void setEnterNameMenuCursorY(short int position) {
+    void setEnterNameMenuCursorY(int position) {
       enterNameMenuCursor[1] = position;
     }
 
@@ -421,12 +421,12 @@ class Display {
 
     // -- END GAME MENU ---
     // getting the end game menu cursor
-    short int getEndGameMenuCursor() {
+    int getEndGameMenuCursor() {
       return endGameMenuCursor;
     }
 
     // setting the end game menu cursor
-    void setEndGameMenuCursor(short int position) {
+    void setEndGameMenuCursor(int position) {
       endGameMenuCursor = position;
     }
 
@@ -438,18 +438,18 @@ class Display {
 
     // --- HIGHSCORE BOARD ---
     // getting the position of the highscore board cursor
-    short int getHighscoreBoardCursor() {
+    int getHighscoreBoardCursor() {
       return highscoreBoardCursor;
     }
 
     // setting the position of the principal menu cursor
-    void setHighscoreBoardCursor(short int position) {
+    void setHighscoreBoardCursor(int position) {
       highscoreBoardCursor = position;
       setArrows(highscoreBoardCursor, HIGHSCORE_TOP + 1);
     }
 
     // showing a highscore on the board at a given line
-    void showHighscore(String name, int score, short int line) {
+    void showHighscore(String name, int score, int line) {
       lcd.setCursor(OPTIONS_OFFSET, line);
       lcd.print(name);
 
@@ -498,7 +498,7 @@ class Display {
 
     // --- SETTINGS MENU ---
     // getting the position of the principal menu cursor
-    short int getSettingsMenuCursor() {
+    int getSettingsMenuCursor() {
       return settingsMenuCursor;
     }
 
@@ -508,7 +508,7 @@ class Display {
     }
 
     // setting the position of the settingsmenu cursor
-    void setSettingsMenuCursor(short int position) {
+    void setSettingsMenuCursor(int position) {
       settingsMenuCursor = position;
       setArrows(settingsMenuCursor, SETTINGS_MENU_ITEMS);
     }
@@ -535,14 +535,14 @@ class Display {
     }
 
     // changing contrast value
-    void setContrast(short int value) {
+    void setContrast(int value) {
       contrast = value;
       EEPROM.update(CONTRAST_ADDRESS, value);
       showContrast();
     }
 
     // getting contrast value
-    short int getContrast() {
+    int getContrast() {
       return contrast;
     }
 
@@ -566,14 +566,14 @@ class Display {
     }
 
     // changing brightness value
-    void setBrightness(short int value) {
+    void setBrightness(int value) {
       brightness = value;
       EEPROM.update(BRIGHTNESS_ADDRESS, value);
       showBrightness();
     }
 
     // getting brightness value
-    short int getBrightness() {
+    int getBrightness() {
       return brightness;
     }
 
@@ -592,7 +592,7 @@ class Display {
 
     // --- INTENSITY SETTINGS SECTION ---
     // showing the intensity settings section
-    void showIntensitySettings(short int intensity) {
+    void showIntensitySettings(int intensity) {
       // showing current position
       showCursor(0, 0);
       lcd.setCursor(OPTIONS_OFFSET, 0);
@@ -606,12 +606,12 @@ class Display {
 
     // --- ABOUT SECTION ---
     // getting the position of the about section cursor
-    short int getAboutSectionCursor() {
+    int getAboutSectionCursor() {
       return aboutSectionCursor;
     }
 
     // setting the position of the about cursor
-    void setAboutSectionCursor(short int position) {
+    void setAboutSectionCursor(int position) {
       aboutSectionCursor = position;
       setArrows(aboutSectionCursor, ABOUT_SECTION_ITEMS);
     }
@@ -625,7 +625,7 @@ class Display {
     // scrolling the current line in the about section
     void scrollCurrentAboutSection() {
       if (aboutSectionCursor != ABOUT_SECTION_ITEMS - 1) {
-        short int startPosition = scrollPosition - DISPLAY_COLUMNS;
+        int startPosition = scrollPosition - DISPLAY_COLUMNS;
 
         lcd.setCursor(OPTIONS_OFFSET, 0);
         lcd.print(aboutSection[aboutSectionCursor].substring(startPosition, startPosition + MENU_ITEM_LENGTH));
