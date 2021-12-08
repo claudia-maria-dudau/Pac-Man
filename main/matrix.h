@@ -55,7 +55,7 @@ class Matrix {
     // showing animation at the start of the game
     void startAnimation() {
       int i;
-      
+
       for (i = 2; i <= 4; i++) {
         lc.setLed(0, 0, i, 1);
       }

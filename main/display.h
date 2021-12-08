@@ -212,7 +212,7 @@ class Display {
 
     // --- INTRO ---
     // showing text at the start of the game
-    void startText() {      
+    void startText() {
       lcd.setCursor(0, 0);
       lcd.print("Once upon a time");
       lcd.setCursor(1, 1);
