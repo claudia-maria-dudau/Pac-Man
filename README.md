@@ -178,6 +178,7 @@
 to be added once the game is complete
 
 ## BTW
-In case you are wondering who Marinel is, here's a picture:
+In case you're wondering who Marinel is, here's a picture:
+<br/>
 <br/>
 <img src="https://user-images.githubusercontent.com/62221313/145267826-f689cb21-f235-435f-a546-14fdef400233.jpeg" width="400" height="300" />
