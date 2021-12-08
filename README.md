@@ -144,6 +144,10 @@
 
 
 ## Pciture of setup
-
+![Setup](https://user-images.githubusercontent.com/62221313/145267815-c676f33c-b4ff-4640-9214-0565705099f5.jpeg)
 
 ## Video of setup
+
+## BTW
+In case you are wondering who Marinel is, here's a picture:
+![Marinel](https://user-images.githubusercontent.com/62221313/145267826-f689cb21-f235-435f-a546-14fdef400233.jpeg)
