@@ -7,10 +7,10 @@ class Matrix {
     LedControl lc = LedControl(DIN_PIN, CLOCK_PIN, LOAD_PIN, 1);
 
     // matrix settings
-    int intensity;
+    short int intensity;
 
     // map of the game
-    int matrixSize;
+    short int matrixSize;
     char matrix[MAX_MAP_SIZE][MAX_MAP_SIZE];
 
     // blinking objects states
@@ -31,7 +31,7 @@ class Matrix {
     }
 
     // initializing the matrix
-    void initialize(int size) {
+    void initialize(short int size) {
       matrixSize = size;
 
       // reinitializing the matrix (0 on al positions)
@@ -44,8 +44,8 @@ class Matrix {
 
     // clearing the matrix
     void clear() {
-      for (int i = 0; i < matrixSize; i++) {
-        for (int j = 0; j < matrixSize; j++) {
+      for (short int i = 0; i < matrixSize; i++) {
+        for (short int j = 0; j < matrixSize; j++) {
           matrix[i][j] = EMPTY_SYMBOL;
           lc.setLed(0, i, j, 0);
         }
@@ -53,7 +53,7 @@ class Matrix {
     }
 
     // getting the symbol at a given position on the matrix
-    char getSymbol(int row, int col) {
+    char getSymbol(short int row, short int col) {
       return matrix[row][col];
     }
 
@@ -61,8 +61,8 @@ class Matrix {
     // --- INTRO ---
     // showing animation at the start of the game
     void startAnimation() {
-      int i;
-
+      short int i;
+      
       for (i = 2; i <= 4; i++) {
         lc.setLed(0, 0, i, 1);
       }
@@ -91,7 +91,7 @@ class Matrix {
 
     // --- GAME ---
     // setting the position of an object
-    void setPosition(int* position, char symbol) {
+    void setPosition(short int* position, char symbol) {
       matrix[position[0]][position[1]] = symbol;
 
       // showing the position on the matrix
@@ -99,7 +99,7 @@ class Matrix {
     }
 
     // changing the positon of the player or of an enemy
-    void changePosition(int* lastPosition, int* currentPosition, char symbol) {
+    void changePosition(short int* lastPosition, short int* currentPosition, char symbol) {
       matrix[lastPosition[0]][lastPosition[1]] = EMPTY_SYMBOL;
       matrix[currentPosition[0]][currentPosition[1]] = symbol;
 
@@ -109,13 +109,13 @@ class Matrix {
     }
 
     // blinking the player's position
-    void blinkPlayer(int* position) {
+    void blinkPlayer(short int* position) {
       playerState = !playerState;
       lc.setLed(0, position[0], position[1], playerState);
     }
 
     // blinking the enemy's position
-    void blinkEnemy(int* position, bool first) {
+    void blinkEnemy(short int* position, bool first) {
       if (first) {
         // changing the enemies' state only once for all enemies
         enemiesState = !enemiesState;
@@ -125,7 +125,7 @@ class Matrix {
     }
 
     // removing a food item from the map
-    void removeFoodItem(int* position) {
+    void removeFoodItem(short int* position) {
       matrix[position[0]][position[1]] = EMPTY_SYMBOL;
 
       // not showing the position anymore on the matrix
@@ -135,7 +135,7 @@ class Matrix {
 
     // --- INTENSITY SETTINGS ---
     // getting the intensity value
-    int getIntensity() {
+    short int getIntensity() {
       return intensity;
     }
 
@@ -145,7 +145,7 @@ class Matrix {
     }
 
     // changing intensity value
-    void setIntensity(int value) {
+    void setIntensity(short int value) {
       intensity = value;
       EEPROM.update(INTENSITY_ADDRESS, value);
       showIntensity();
