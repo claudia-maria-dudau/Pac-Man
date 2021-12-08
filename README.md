@@ -7,8 +7,17 @@
 ## Requirements
 ### Menu Requirments
  The menu is shown on the lcd display and the joystick is used to scroll through it. On power up, the intro of the game is shown, followed by the principal menu of the game.
+
+<details>
+ <summary>Details about the game's menus</summary>
+ <h4>Principal Menu</h4>
+ Characteristics:
+ <br/>
+ <br/>
+ <ul>
+  <li>shown right after the intro or after the game has ended</li>
+ </ul>
  
-#### Principal Menu
  Sections:
   - Start Game => starts the game at the initial level set by the player
   - Highscore => shows highscore board 
@@ -23,8 +32,8 @@
  Characteristics:
   - accessed via click from the principal menu
   - the top highscores update after every game end if the score of the player is higher than at least the last highscore in the top
-  - the top highscores (player name + score) are stored in the EEPROM memory of the ARDUINO UNO
-  
+  - the top highscores (player name + score) are stored in the memory
+
  Sections:
   - Top 5 Highscores => player name + score shown in descending order
   - Back => goes back to the principal menu
@@ -104,7 +113,8 @@
  Motions:
   - scrolling through the options is accomplished using the Y axis of the joystick
   - accesing one of the options is done using the button of the joystick
-  
+</details>
+
 ### Game Requirments
  There are 3 distinct objects in the game:
   - The Player => shown by a fast blinking led
@@ -115,10 +125,16 @@
  <br/>
  Both the player and the enemies are allowed to move up, down, right, left and diagonally. The enemies are not allowed to move to a position where there is either already another enemy, or a food item. If the player finds himself on the same position as an enemy, he loses a life.
 
-#### Intro Display
+<details>
+ <summary>Details about the game's displays</summary>
+ <h4>Intro Display</h4>
  Characteristics:
-  - plays at the begining of the game
-  - nothings happenes during this part if the joystick moves or the button is pressed
+ <br/>
+ <br/>
+ <ul>
+  <li>plays at the begining of the game</li>
+  <li>nothings happenes during this part if the joystick moves or the button is pressed</li>
+ </ul>
 
 #### In Game Display
  Characteristics:
@@ -143,17 +159,14 @@
   - shows corresponding message
   - informs the player to enter his name and about the name restrictions
   - nothings happenes during this part if the joystick moves or the button is pressed
- 
+</details>
+
 ## Implementation details
- The system has 27 states to ensure the flow of the game. The button has attached an interrupt function which helps change between the different states.
- <br/>
- The highscore top, the display settings and the matrix settings are stored in the EEPROM memory of the ARDUINO UNO.
- <br/>
- Each component of the game has its own separate class (display, matrix, joystick). There is also a class for the game logic which combines all the components' functionlities and ensures the correct flow of the game.
- <br/>
- There are 2 custom characters created for the lcd display: a dog and a down arrow. There is also a custom design for the matrix which shows a drawing of PAC-MAN.
- <br/>
- The initial positions for the player, enemies and food items are randomly generated using the current system time as the seed, to avoid any repetitiveness which may occur.
+ - The system has 27 states to ensure the flow of the game. The button has attached an interrupt function which helps change between the different states.
+ - The highscore top, the display settings and the matrix settings are stored in the EEPROM memory of the ARDUINO UNO.
+ - Each component of the game has its own separate class (display, matrix, joystick). There is also a class for the game logic which combines all the components' functionlities and ensures the correct flow of the game.
+ - There are 2 custom characters created for the lcd display: a dog and a down arrow. There is also a custom design for the matrix which shows a drawing of PAC-MAN.
+ - The initial positions for the player, enemies and food items are randomly generated using the current system time as the seed, to avoid any repetitiveness which may occur.
  
 
 ## Pciture of setup
