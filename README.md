@@ -111,6 +111,10 @@
   - The Enemies => shown by a blinking led (slower than the one of the player)
   - The Food Items => shown by a static led
 
+ The difficulty of the game is based on the level, which means the difficulty increases liniary as the game progresses. On each level, there are more food items to gather and the speed of the enemies increases. At given intervals between levels, the size of the map and the number of enemies increases as well.
+ <br/>
+ Both the player and the enemies are allowed to move up, down, right, left and diagonally. The enemies are not allowed to move to a position where there is either already another enemy, or a food item. If the player finds himself on the same position as an enemy, he loses a life.
+
 #### Intro Display
  Characteristics:
   - plays at the begining of the game
@@ -141,7 +145,16 @@
   - nothings happenes during this part if the joystick moves or the button is pressed
  
 ## Implementation details
-
+ The system has 27 states to ensure the flow of the game. The button has attached an interrupt function which helps change between the different states.
+ <br/>
+ The highscore top, the display settings and the matrix settings are stored in the EEPROM memory of the ARDUINO UNO.
+ <br/>
+ Each component of the game has its own separate class (display, matrix, joystick). There is also a class for the game logic which combines all the components' functionlities and ensures the correct flow of the game.
+ <br/>
+ There are 2 custom characters created for the lcd display: a dog and a down arrow. There is also a custom design for the matrix which shows a drawing of PAC-MAN.
+ <br/>
+ The initial positions for the player, enemies and food items are randomly generated using the current system time as the seed, to avoid any repetitiveness which may occur.
+ 
 
 ## Pciture of setup
 <img src="https://user-images.githubusercontent.com/62221313/145267815-c676f33c-b4ff-4640-9214-0565705099f5.jpeg" width="400" height="400" />
