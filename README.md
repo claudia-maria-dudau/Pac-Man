@@ -77,6 +77,7 @@
 #### Pause Game Menu
  Characteristics:
   - accessed via click while in game
+  - the game freezes in its current state
 
  Sections:
   - Resume => resumes the current game
