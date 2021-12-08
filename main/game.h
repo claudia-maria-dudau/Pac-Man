@@ -49,8 +49,8 @@ class Game {
     int highscoreDisplay;
 
     // highscore board
-    String names[HIGHSCORE_TOP] = { "", "", "", "", "" };
-    int scores[HIGHSCORE_TOP] = { 0, 0, 0, 0, 0 };
+    String names[HIGHSCORE_TOP] = { "", "", "" };
+    int scores[HIGHSCORE_TOP] = { 0, 0, 0 };
     int namesAddresses[HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1)];
     int scoresAddresses[HIGHSCORE_TOP * 2];
 
@@ -117,7 +117,7 @@ class Game {
     void intro() {
       joystick.setSystemState(INTRO_STATE);
       matrix.startAnimation();
-      display.startText();
+//      display.startText();
       joystick.setSystemState(PRINCIPAL_MENU_STATE);
     }
 
@@ -165,7 +165,7 @@ class Game {
       // the intial position of the player
       playerPosition[0] = random(mapSize);
       playerPosition[1] = random(mapSize);
-      matrix.setPosition(playerPosition, PLAYER_SYMBOL);
+      matrix.setPosition(playerPosition);
     }
 
     // initializing the positions of the enemies
@@ -189,15 +189,22 @@ class Game {
               (xCoord > playerPosition[0] - DIST_FROM_INITIAL_PLAYER_POSITION && yCoord > playerPosition[1] - DIST_FROM_INITIAL_PLAYER_POSITION))
             coordOk = false;
 
-          // verifying that the position of the coordinates is empty
-          if (matrix.getSymbol(xCoord, yCoord) != EMPTY_SYMBOL)
-            coordOk = false;
+          if (coordOk) {
+            // verifying that the position of the coordinates is empty
+            // (there isn;t already another enemy placed there)
+            for (int j = 0; j < i; j++) {
+              if (enemies[j][0] == xCoord && enemies[j][1] == yCoord){
+                coordOk = false;
+                break;
+              }
+            }
+          }
         }
 
         enemies[i][0] = xCoord;
         enemies[i][1] = yCoord;
 
-        matrix.setPosition(enemies[i], ENEMY_SYMBOL);
+        matrix.setPosition(enemies[i]);
       }
     }
 
@@ -216,15 +223,38 @@ class Game {
 
           coordOk = true;
 
-          // verifying that the position of the generated coordinates is empty
-          if (matrix.getSymbol(xCoord, yCoord) != EMPTY_SYMBOL)
+          // verifying that the position of the generated coordinates 
+          // is not already taken by the player
+          if (xCoord == playerPosition[0] && yCoord == playerPosition[1])
             coordOk = false;
+
+          if (coordOk) {
+            // verifying that the position of the generated coordinates 
+            // is not already taken by an enemy
+            for (int j = 0; j < noEnemies; j++) {
+              if (enemies[j][0] == xCoord && enemies[j][1] == yCoord){
+                coordOk = false;
+                break;
+              }
+            }
+          }
+
+          if (coordOk) {
+            // verifying that the position of the generated coordinates 
+            // is not already taken by another food item
+            for (int j = 0; j < i; j++) {
+              if (foodItems[j][0] == xCoord && foodItems[j][1] == yCoord){
+                coordOk = false;
+                break;
+              }
+            }
+          }
         }
 
         foodItems[i][0] = xCoord;
         foodItems[i][1] = yCoord;
 
-        matrix.setPosition(foodItems[i], FOOD_ITEM_SYMBOL);
+        matrix.setPosition(foodItems[i]);
       }
     }
 
@@ -281,24 +311,22 @@ class Game {
     }
 
     // removing food item from the map
-    void removeFoodItem() {
-      for (int i = 0; i < noFoodItems; i++) {
-        if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]) {
-          // erasing the respective food item form the map
-          matrix.removeFoodItem(foodItems[i]);
+    void eatFoodItem(int position) {
+      // erasing the respective food item form the map
+      matrix.removeFoodItem(foodItems[position]);
 
-          // erasing the respective food item from the list of food items
-          for (int j = noFoodItems - 1; j > i; j--) {
-            foodItems[j - 1][0] = foodItems[j][0];
-            foodItems[j - 1][1] = foodItems[j][1];
-          }
+     // erasing the respective food item from the list of food items
+     for (int j = position; j < noFoodItems - 1; j++) {
+      foodItems[j][0] = foodItems[j + 1][0];
+      foodItems[j][1] = foodItems[j + 1][1];
+     }
+     
+     noFoodItems--;
 
-          break;
-        }
-      }
-
-      noFoodItems--;
-    }
+     // increasing the player's score
+     // (each food item values as much as the current level of the game)
+     updateScore(level);
+   }
 
     // blinking the player's position at a given interval
     void blinkPlayer() {
@@ -322,8 +350,6 @@ class Game {
 
     // moving enemies at a given interval
     void moveEnemies() {
-      char currentSymbol;
-
       if (millis() - lastChangedEnemiesPositions > enemiesSpeed) {
         int move;
         int next[2];
@@ -346,22 +372,33 @@ class Game {
               moveOk = false;
 
             if (moveOk) {
-              currentSymbol = matrix.getSymbol(next[0], next[1]);
+              // verifying that the next position is not already occupied by another enemy
+              for (int j = 0; j < i; j++) {
+                if (enemies[j][0] == next[0] && enemies[j][1] == next[1]){
+                  moveOk = false;
+                  break;
+                }
+              }
+            }
 
-              // the next position is not already occupied by
-              // another enemy or a food item
-              if (currentSymbol != EMPTY_SYMBOL && currentSymbol != PLAYER_SYMBOL)
-                moveOk = false;
+            if (moveOk) {
+              // verifying that the next position is not already occupied by a food item
+              for (int j = 0; j < noFoodItems; j++) {
+                if (foodItems[j][0] == next[0] && foodItems[j][1] == next[1]){
+                  moveOk = false;
+                  break;
+                }
+              }
             }
           }
 
-          matrix.changePosition(enemies[i], next, ENEMY_SYMBOL);
+          matrix.changePosition(enemies[i], next);
           enemies[i][0] = next[0];
           enemies[i][1] = next[1];
 
 
           // verifying if the enemy landed on the same position as the player
-          if (currentSymbol == PLAYER_SYMBOL)
+          if (playerPosition[0] == enemies[i][0] && playerPosition[1] == enemies[i][1])
             decreaseLife();
         }
 
@@ -371,31 +408,31 @@ class Game {
 
     // moving the player with the joystick
     void movePlayer() {
-      char currentSymbol;
-
       if (millis() - lastChangedPlayerPosition > PLAYER_SPEED) {
         int newPosition[2] = { joystick.movePlayerX(playerPosition[0], mapSize), joystick.movePlayerY(playerPosition[1], mapSize)};
 
         // player moved => update position
         if (newPosition[0] != playerPosition[0] || newPosition[1] != playerPosition[1]) {
-          currentSymbol = matrix.getSymbol(newPosition[0], newPosition[1]);
-
-          matrix.changePosition(playerPosition, newPosition, PLAYER_SYMBOL);
+          matrix.changePosition(playerPosition, newPosition);
           playerPosition[0] = newPosition[0];
           playerPosition[1] = newPosition[1];
 
           //verifying if the player landed on the same position as one of the enemies
-          if (currentSymbol == ENEMY_SYMBOL)
-            decreaseLife();
+          for (int i = 0; i < noEnemies; i++) {
+            if (enemies[i][0] == playerPosition[0] && enemies[i][1] == playerPosition[1]){
+              // player loses a life
+              decreaseLife();
+              break;
+            }
+          }
 
           // verifying id the player landed on the position of a food item
-          // => the player eats the food item
-          if (currentSymbol == FOOD_ITEM_SYMBOL) {
-            removeFoodItem();
-
-            // increasing the player's score
-            // (each food item values as much as the current level of the game)
-            updateScore(level);
+          for (int i = 0; i < noFoodItems; i++) {
+            if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]){
+              // player eats the food item
+              eatFoodItem(i);
+              break;
+            }
           }
         }
 
@@ -405,6 +442,7 @@ class Game {
 
     // the flow of the game
     void playGame() {
+//      Serial.println(noFoodItems);
       if (noFoodItems == 0) {
         // no more food items on the map => leve is done
         joystick.setSystemState(DONE_LEVEL_STATE);
@@ -609,10 +647,10 @@ class Game {
 
     // --- HIGHSCORE BOARD ---
     // updating highscore board
-    void updateHighscoreBoard(String name, int score) {
+    void updateHighscoreBoard() {
       // inserting the value into the top
       for (int i = 0; i < HIGHSCORE_TOP; i++) {
-        if (score > scores[i]) {
+        if (currentScore > scores[i]) {
           // moving the bottom of the top with one position lower
           for (int j = HIGHSCORE_TOP - 1; j > i; j--) {
             scores[j] = scores[j - 1];
@@ -620,8 +658,8 @@ class Game {
           }
 
           // inserting value
-          scores[i] = score;
-          names[i] = name;
+          scores[i] = currentScore;
+          names[i] = currentName;
 
           break;
         }
@@ -870,7 +908,7 @@ class Game {
         if (cursorPositionX == ENTER_NAME_MENU_ITEMS - 1) {
           // "done" option
           // updating highscore board
-          updateHighscoreBoard(currentName, currentScore);
+          updateHighscoreBoard();
 
           // going to the next state
           joystick.setSystemState(END_GAME_STATE);

@@ -11,7 +11,6 @@ class Matrix {
 
     // map of the game
     int matrixSize;
-    char matrix[MAX_MAP_SIZE][MAX_MAP_SIZE];
 
     // blinking objects states
     bool playerState;
@@ -46,15 +45,9 @@ class Matrix {
     void clear() {
       for (int i = 0; i < matrixSize; i++) {
         for (int j = 0; j < matrixSize; j++) {
-          matrix[i][j] = EMPTY_SYMBOL;
           lc.setLed(0, i, j, 0);
         }
       }
-    }
-
-    // getting the symbol at a given position on the matrix
-    char getSymbol(int row, int col) {
-      return matrix[row][col];
     }
 
 
@@ -62,7 +55,7 @@ class Matrix {
     // showing animation at the start of the game
     void startAnimation() {
       int i;
-
+      
       for (i = 2; i <= 4; i++) {
         lc.setLed(0, 0, i, 1);
       }
@@ -91,19 +84,12 @@ class Matrix {
 
     // --- GAME ---
     // setting the position of an object
-    void setPosition(int* position, char symbol) {
-      matrix[position[0]][position[1]] = symbol;
-
-      // showing the position on the matrix
+    void setPosition(int* position) {
       lc.setLed(0, position[0], position[1], 1);
     }
 
     // changing the positon of the player or of an enemy
-    void changePosition(int* lastPosition, int* currentPosition, char symbol) {
-      matrix[lastPosition[0]][lastPosition[1]] = EMPTY_SYMBOL;
-      matrix[currentPosition[0]][currentPosition[1]] = symbol;
-
-      // updating the matrix to show the updated position
+    void changePosition(int* lastPosition, int* currentPosition) {
       lc.setLed(0, lastPosition[0], lastPosition[1], 0);
       lc.setLed(0, currentPosition[0], currentPosition[1], 1);
     }
@@ -126,9 +112,6 @@ class Matrix {
 
     // removing a food item from the map
     void removeFoodItem(int* position) {
-      matrix[position[0]][position[1]] = EMPTY_SYMBOL;
-
-      // not showing the position anymore on the matrix
       lc.setLed(0, position[0], position[1], 0);
     }
 
