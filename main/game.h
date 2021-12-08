@@ -117,7 +117,7 @@ class Game {
     void intro() {
       joystick.setSystemState(INTRO_STATE);
       matrix.startAnimation();
-      //    display.startText();
+      display.startText();
       joystick.setSystemState(PRINCIPAL_MENU_STATE);
     }
 
