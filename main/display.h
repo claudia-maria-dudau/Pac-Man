@@ -212,35 +212,21 @@ class Display {
 
     // --- INTRO ---
     // showing text at the start of the game
-    void startText() {
+    void startText() {      
       lcd.setCursor(0, 0);
       lcd.print("Once upon a time");
+      lcd.setCursor(1, 1);
+      lcd.print("lived Marinel");
 
-      delay(4000);
-      lcd.clear();
-
-      lcd.setCursor(2, 0);
-      lcd.print("In a galaxy");
-      lcd.setCursor(2, 1);
-      lcd.print("far away...");
-
-      delay(4000);
+      delay(INTRO_SECTIONS_INTERVAL);
       lcd.clear();
 
       lcd.setCursor(0, 0);
-      lcd.print("There was a dog");
-      lcd.setCursor(1, 1);
-      lcd.print("named Marinel");
+      lcd.print("A dog with a big");
+      lcd.setCursor(0, 1);
+      lcd.print("passion for food");
 
-      delay(4000);
-      lcd.clear();
-
-      lcd.setCursor(0, 0);
-      lcd.print("Who had a great");
-      lcd.setCursor(1, 1);
-      lcd.print("love for food");
-
-      delay(4000);
+      delay(INTRO_SECTIONS_INTERVAL);
       lcd.clear();
 
       lcd.setCursor(2, 0);
@@ -248,7 +234,7 @@ class Display {
       lcd.setCursor(3, 1);
       lcd.print("to get it");
 
-      delay(4000);
+      delay(INTRO_SECTIONS_INTERVAL);
       lcd.clear();
 
       lcd.setCursor(0, 0);
@@ -256,7 +242,7 @@ class Display {
       lcd.setCursor(0, 1);
       lcd.print("uncharted ground");
 
-      delay(4000);
+      delay(INTRO_SECTIONS_INTERVAL);
       lcd.clear();
 
       for (int i = 0; i < DISPLAY_COLUMNS; i++) {

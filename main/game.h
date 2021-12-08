@@ -49,8 +49,8 @@ class Game {
     int highscoreDisplay;
 
     // highscore board
-    String names[HIGHSCORE_TOP] = { "", "", "" };
-    int scores[HIGHSCORE_TOP] = { 0, 0, 0 };
+    String names[HIGHSCORE_TOP] = { "", "", "", "", "" };
+    int scores[HIGHSCORE_TOP] = { 0, 0, 0, 0, 0 };
     int namesAddresses[HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1)];
     int scoresAddresses[HIGHSCORE_TOP * 2];
 
@@ -117,7 +117,7 @@ class Game {
     void intro() {
       joystick.setSystemState(INTRO_STATE);
       matrix.startAnimation();
-//      display.startText();
+      display.startText();
       joystick.setSystemState(PRINCIPAL_MENU_STATE);
     }
 
