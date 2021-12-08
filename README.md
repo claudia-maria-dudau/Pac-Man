@@ -110,7 +110,35 @@
   - The Player => shown by a fast blinking led
   - The Enemies => shown by a blinking led (slower than the one of the player)
   - The Food Items => shown by a static led
- 
+
+#### Intro Display
+ Characteristics:
+  - plays at the begining of the game
+  - nothings happenes during this part if the joystick moves or the button is pressed
+
+#### In Game Display
+ Characteristics:
+  - shows the level, number of lives and socore of the player
+  - updates when either the score, or the number of lives changes
+  - the joystick movements control the movement of the player on the matrix
+  - the press of the button pauses the game and enteres to the puase game menu
+
+#### Won Game Display / Lost Game Display
+ Characteristics:
+  - shows corresponding message for the player
+  - nothings happenes during this part if the joystick moves or the button is pressed
+
+#### Statisctics Display
+ Characteristics:
+  - shows the statistics of the game (lives remaining + score obtained)
+  - nothings happenes during this part if the joystick moves or the button is pressed
+
+#### Beat Highscore Display
+ Characteristics:
+  - shown when the player has beaten the highscore to anounce him of his accomplishment
+  - shows corresponding message
+  - informs the player to enter his name and about the name restrictions
+  - nothings happenes during this part if the joystick moves or the button is pressed
  
 ## Implementation details
 
