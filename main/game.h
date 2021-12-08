@@ -916,8 +916,11 @@ class Game {
           showEndGameMenu();
         } else {
           // "delete" option
-          // deletting the last character of the current name
-          currentName = currentName.substring(0, currentName.length() - 1);
+          if (currentName.length() > 0) {
+            // deletting the last character of the current name if the
+            // name is different than ""
+            currentName = currentName.substring(0, currentName.length() - 1);
+          }
 
           joystick.setSystemState(ENTER_NAME_STATE);
           showEnterNameMenu();
