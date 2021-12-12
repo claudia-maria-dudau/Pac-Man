@@ -13,8 +13,14 @@ class Joystick {
     // interruption function
     static void toggleButton() {
       if (millis() - lastDebounceTime > DEBOUNCE_INTERVAL) {
+        if (systemState == INTRO_STATE) {
+          // button was pressed during the intro 
+          // => skipping intro and going to the principal menu
+          setSystemState(TRANSITION_FROM_INTRO_STATE);
+        }
         if (systemState == PRINCIPAL_MENU_STATE) {
           // button was pressed from within the principal menu
+          // => entering one of the options of the menu
           setSystemState(TRANSITION_FROM_PRINCIPAL_MENU_STATE);
         }  else if (systemState == IN_GAME_STATE) {
           // button was pressed from within the in game state
@@ -22,33 +28,56 @@ class Joystick {
           setSystemState(TRANSITION_TO_PAUSE_GAME_STATE);
         } else if (systemState == PAUSE_GAME_STATE) {
           // button was pressed from within the pause game menu
+          // => chosing one of the options of the menu
           setSystemState(TRANSITION_FROM_PAUSE_GAME_STATE);
+        } else if (systemState == LOST_GAME_STATE) {
+          // button was pressed during the lost game display
+          // => moving to the next display
+          setSystemState(TRANSITION_FROM_END_SECTIONS_STATE);
+        } else if (systemState == WON_GAME_STATE) {
+          // button was pressed during the won game display
+          // => moving to the next display
+          setSystemState(TRANSITION_FROM_END_SECTIONS_STATE);
+        } else if (systemState == STATISTICS_STATE) {
+          // button was pressed during the statistics display
+          // => moving to the next display
+          setSystemState(TRANSITION_FROM_END_SECTIONS_STATE);
+        } else if (systemState == BEAT_HIGHSCORE_STATE) {
+          // button was pressed during the beat highscore display
+          // => moving to the next display
+          setSystemState(TRANSITION_FROM_END_SECTIONS_STATE);
         } else if (systemState == ENTER_NAME_STATE) {
           // button was pressed from within the enter name menu
           setSystemState(TRANSITION_FROM_ENTER_NAME_STATE);
         } else if (systemState == END_GAME_STATE) {
           // button was pressed from within the end game menu
+          // => chosing one of the options of the menu
           setSystemState(TRANSITION_FROM_END_GAME_STATE);
         } else if (systemState == HIGHSCORE_BOARD_STATE) {
           // button was pressed from within the highscore board
           setSystemState(TRANSITION_FROM_HIGHSCORE_BOARD_STATE);
         } else if (systemState == SETTINGS_MENU_STATE) {
           // button was pressed from within the settings menu state
+          // => entering one of the settings
           setSystemState(TRANSITION_FROM_SETTINGS_MENU_STATE);
         } else if (systemState == ABOUT_STATE) {
           // button was pressed from within the about section
           setSystemState(TRANSITION_FROM_ABOUT_STATE);
         } else if (systemState == START_LEVEL_SETTINGS_STATE) {
           // button was pressed from within editing starting level section
+          // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         } else if (systemState == CONTRAST_SETTINGS_STATE) {
           // button was pressed from within editing starting level section
+          // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         } else if (systemState == BRIGHTNESS_SETTINGS_STATE) {
           // button was pressed from within editing starting level section
+          // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         } else if (systemState == INTENSITY_SETTINGS_STATE) {
           // button was pressed from within editing starting level section
+          // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         }
       }

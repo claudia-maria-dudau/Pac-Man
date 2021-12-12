@@ -4,16 +4,19 @@ Game game = Game();
 
 void setup() {
   Serial.begin(9600);
-
-  game.intro();
-  game.showPrincipalMenu();
 }
 
 void loop() {
   int systemState = game.getSystemState();
 
   // each system state has a different flow
-  if (systemState == PRINCIPAL_MENU_STATE) {
+  if (systemState == INTRO_STATE) {
+    // in intro
+    game.intro();
+  } else if (systemState == TRANSITION_FROM_INTRO_STATE){
+    // in transition from intro
+    game.changeFromIntro();
+  } else if (systemState == PRINCIPAL_MENU_STATE) {
     // in principal menu
     game.navigatePrincipalMenu();
   } else if (systemState == TRANSITION_FROM_PRINCIPAL_MENU_STATE) {
@@ -46,6 +49,9 @@ void loop() {
   } else if (systemState == BEAT_HIGHSCORE_STATE) {
     // in beat highscore
     game.beatHighscore();
+  } else if (systemState == TRANSITION_FROM_END_SECTIONS_STATE) {
+    // in transition from end sections
+    game.changeFromEndSections();
   } else if (systemState == ENTER_NAME_STATE) {
     // in enter name menu
     game.navigateEnterNameMenu();

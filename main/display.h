@@ -34,6 +34,13 @@ class Display {
       B00100
     };
 
+    // intro
+    int introSection;
+    int animationCursor = 0;
+    bool isDoneIntro;
+    unsigned int startIntroTime;
+    unsigned int startAnimationTime;
+
     // principal menu
     String principalMenu[PRINCIPAL_MENU_ITEMS] = {
       "Start game",
@@ -202,6 +209,11 @@ class Display {
       // creating custom characters
       lcd.createChar(0, dogChar);
       lcd.createChar(1, downArrowChar);
+
+      // initializing intro variables
+      startIntroTime = 0;
+      introSection = TEXT_SECTION_1;
+      isDoneIntro = false;
     }
 
     // claering the display
@@ -211,44 +223,58 @@ class Display {
 
 
     // --- INTRO ---
+    bool getIsDoneIntro() {
+      return isDoneIntro;
+    }
+
     // showing text at the start of the game
     void startText() {
-      lcd.setCursor(0, 0);
-      lcd.print("Once upon a time");
-      lcd.setCursor(1, 1);
-      lcd.print("lived Marinel");
+      // advancing with the intro as time passes
+      if (millis() - startIntroTime > INTRO_SECTIONS_INTERVAL && introSection != ANIMATION_SECTION) {
+        // changing current intro section
+        clear();
+        introSection++;
+        startIntroTime = millis();
 
-      delay(INTRO_SECTIONS_INTERVAL);
-      lcd.clear();
+        if (introSection == ANIMATION_SECTION) {
+          // initializing animation variables
+          startAnimationTime = millis();
+          animationCursor = 0;
+        }
+      }
 
-      lcd.setCursor(0, 0);
-      lcd.print("A dog with a big");
-      lcd.setCursor(0, 1);
-      lcd.print("passion for food");
+      if (introSection == TEXT_SECTION_1) {
+        lcd.setCursor(0, 0);
+        lcd.print("Once upon a time");
+        lcd.setCursor(1, 1);
+        lcd.print("lived Marinel");
+      } else if (introSection == TEXT_SECTION_2) {
+        lcd.setCursor(0, 0);
+        lcd.print("A dog with a big");
+        lcd.setCursor(0, 1);
+        lcd.print("passion for food");
+      } else if (introSection == TEXT_SECTION_3) {
+        lcd.setCursor(2, 0);
+        lcd.print("But in order");
+        lcd.setCursor(3, 1);
+        lcd.print("to get it");
+      } else if (introSection == TEXT_SECTION_4) {
+        lcd.setCursor(0, 0);
+        lcd.print("He had to travel");
+        lcd.setCursor(0, 1);
+        lcd.print("uncharted ground");
+      } else if (introSection == ANIMATION_SECTION) {
+        if (millis() - startAnimationTime > INTRO_ANIMATION_INTERVAL) {
+          animationCursor ++;
+          startAnimationTime = millis();
+        }
 
-      delay(INTRO_SECTIONS_INTERVAL);
-      lcd.clear();
-
-      lcd.setCursor(2, 0);
-      lcd.print("But in order");
-      lcd.setCursor(3, 1);
-      lcd.print("to get it");
-
-      delay(INTRO_SECTIONS_INTERVAL);
-      lcd.clear();
-
-      lcd.setCursor(0, 0);
-      lcd.print("He had to travel");
-      lcd.setCursor(0, 1);
-      lcd.print("uncharted ground");
-
-      delay(INTRO_SECTIONS_INTERVAL);
-      lcd.clear();
-
-      for (int i = 0; i < DISPLAY_COLUMNS; i++) {
-        lcd.setCursor(i, i % 2);
-        lcd.write((byte)0);
-        delay(300);
+        if (animationCursor < DISPLAY_COLUMNS) {
+          lcd.setCursor(animationCursor, animationCursor % 2);
+          lcd.write((byte)0);
+        } else {
+          isDoneIntro = true;
+        }
       }
     }
 
