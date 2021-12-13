@@ -38,8 +38,8 @@ class Display {
     int introSection;
     int animationCursor = 0;
     bool isDoneIntro;
-    unsigned int startIntroTime;
-    unsigned int startAnimationTime;
+    int startIntroTime;
+    int startAnimationTime;
 
     // principal menu
     String principalMenu[PRINCIPAL_MENU_ITEMS] = {
@@ -140,9 +140,19 @@ class Display {
     }
 
     // showing the cursor at a given position on the display
-    void showCursor(int row, int col) {
-      lcd.setCursor(row, col);
+    void showCursor(int col, int row) {
+      lcd.setCursor(col, row);
       lcd.write(0b00111110);
+    }
+
+    // showing a menu option at a given position
+    void showMenuOption(int col, int row, String menuOption) {
+      lcd.setCursor(col, row);
+      if (menuOption.length() < MENU_ITEM_LENGTH) {
+        lcd.print(menuOption);
+      } else {
+        lcd.print(menuOption.substring(0, MENU_ITEM_LENGTH));
+      }
     }
 
     // showing the given menu
@@ -151,20 +161,16 @@ class Display {
       if (cursorPosition == noItems - 1) {
         // the cursor is on the last item of the menu
         // => showing the last 2 items
-        lcd.setCursor(OPTIONS_OFFSET, 0);
-        lcd.print(menu[cursorPosition - 1].substring(0, MENU_ITEM_LENGTH));
-        lcd.setCursor(OPTIONS_OFFSET, 1);
-        lcd.print(menu[cursorPosition].substring(0, MENU_ITEM_LENGTH));
+        showMenuOption(OPTIONS_OFFSET, 0, menu[cursorPosition - 1]);
+        showMenuOption(OPTIONS_OFFSET, 1, menu[cursorPosition]);
 
         // showing where the cursor is currently
         showCursor(0, 1);
 
       } else {
         // showing the item the cursor is pointing at + the next one
-        lcd.setCursor(OPTIONS_OFFSET, 0);
-        lcd.print(menu[cursorPosition].substring(0, MENU_ITEM_LENGTH));
-        lcd.setCursor(OPTIONS_OFFSET, 1);
-        lcd.print(menu[cursorPosition + 1].substring(0, MENU_ITEM_LENGTH));
+        showMenuOption(OPTIONS_OFFSET, 0, menu[cursorPosition]);
+        showMenuOption(OPTIONS_OFFSET, 1, menu[cursorPosition + 1]);
 
         // showing where the cursor is currently
         showCursor(0, 0);
@@ -297,11 +303,21 @@ class Display {
     }
 
     // --- GAME ---
+    // shwoing the start game display
+    void showStartGameDisplay() {
+      lcd.setCursor(6, 0);
+      lcd.print("OKAY,");
+      lcd.setCursor(4, 1);
+      lcd.print("LET'S GO!");    
+    }
+    
     // showing the in game display
     void showGameDisplay(int level, int lives, int score) {
       // showing the level of the game
       lcd.setCursor(0, 0);
-      lcd.print("Level: " + String(level));
+      lcd.print("Level:");
+      lcd.setCursor(7, 0);
+      lcd.print(level);
 
       // showing the number of lives of the player
       for (int i = 0; i < lives; i++) {
@@ -311,7 +327,9 @@ class Display {
 
       // showing the current score of the player
       lcd.setCursor(0, 1);
-      lcd.print("Score: " + String(score));
+      lcd.print("Score:");
+      lcd.setCursor(7, 1);
+      lcd.print(score);
     }
 
     // showing the lost game display
@@ -333,9 +351,14 @@ class Display {
     // shwoing the statistics of the game
     void showStatistics(int lives, int score) {
       lcd.setCursor(0, 0);
-      lcd.print("Lives: " + String(lives));
+      lcd.print("Lives:");
+      lcd.setCursor(7, 0);
+      lcd.print(lives);
+      
       lcd.setCursor(0, 1);
-      lcd.print("Score: " + String(score));
+      lcd.print("Score:");
+      lcd.setCursor(7, 1);
+      lcd.print(score);
     }
 
     // showing the beat highscore displays
@@ -352,14 +375,7 @@ class Display {
       lcd.setCursor(3, 1);
       lcd.print("your name");
     }
-
-    void showNameRestrictionsDisplay() {
-      lcd.setCursor(1, 0);
-      lcd.print("Name must have");
-      lcd.setCursor(1, 1);
-      lcd.print("max " + String(MAX_NAME_LENGTH) + " charact.");
-    }
-
+    
 
     // --- PAUSE GAME MENU ---
     // getting the pause game menu cursor
@@ -408,7 +424,9 @@ class Display {
 
       // the name is always showing on the first row of the display
       lcd.setCursor(0, 0);
-      lcd.print("Name: " + name);
+      lcd.print("Name:");
+      lcd.setCursor(6, 0);
+      lcd.print(name);
 
       lcd.setCursor(OPTIONS_OFFSET, 1);
 

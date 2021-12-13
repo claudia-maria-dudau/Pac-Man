@@ -5,16 +5,20 @@
 class Matrix {
     // matrix
     LedControl lc = LedControl(DIN_PIN, CLOCK_PIN, LOAD_PIN, 1);
-
+    
     // matrix settings
     int intensity;
 
     // map of the game
-    int matrixSize;
+    int mapSize;
 
     // blinking objects states
     bool playerState;
     bool enemiesState;
+
+    // done level animation
+    int animationStep;
+    unsigned long moveAnimation;
 
   public:
     // matrix initialization
@@ -31,7 +35,7 @@ class Matrix {
 
     // initializing the matrix
     void initialize(int size) {
-      matrixSize = size;
+      mapSize = size;
 
       // reinitializing the matrix (0 on al positions)
       clear();
@@ -43,8 +47,8 @@ class Matrix {
 
     // clearing the matrix
     void clear() {
-      for (int i = 0; i < matrixSize; i++) {
-        for (int j = 0; j < matrixSize; j++) {
+      for (int i = 0; i < mapSize; i++) {
+        for (int j = 0; j < mapSize; j++) {
           lc.setLed(0, i, j, 0);
         }
       }
@@ -113,6 +117,37 @@ class Matrix {
     // removing a food item from the map
     void removeFoodItem(int* position) {
       lc.setLed(0, position[0], position[1], 0);
+    }
+
+    // intializing animation variables
+    void startDoneLevelAnimation() {
+      moveAnimation = millis();
+      animationStep = 0;
+    }
+
+    // showing done level animation
+    void showDoneLevelAnimation() {
+      if (millis() - moveAnimation > ANIMATION_INTERVAL) {
+        clear();
+        animationStep++;
+        moveAnimation = millis();
+      }
+
+      for (int i = 0; i < MATRIX_SIZE - animationStep; i++) {
+        int step = animationStep + i;
+        
+        if (HALF_MATRIX_SIZE - step > 0) {
+          // point of the arrow
+          for (int j = HALF_MATRIX_SIZE - step; j <= HALF_MATRIX_SIZE + step; j++) {
+            lc.setLed(0, i, j, 1);
+          }
+        } else {
+          // body of the arrow
+          for (int j = HALF_MATRIX_SIZE - 1; j <= HALF_MATRIX_SIZE + 1; j++) {
+            lc.setLed(0, i, j, 1);
+          }
+        }
+      }
     }
 
 

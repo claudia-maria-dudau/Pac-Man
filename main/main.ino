@@ -22,6 +22,9 @@ void loop() {
   } else if (systemState == TRANSITION_FROM_PRINCIPAL_MENU_STATE) {
     // in transition from principal menu
     game.changeFromPrincipalMenu();
+  } else if (systemState == START_GAME_STATE) {
+    // in start game
+    game.startGame();
   } else if (systemState == IN_GAME_STATE) {
     // in game
     game.playGame();

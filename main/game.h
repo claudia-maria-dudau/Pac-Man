@@ -41,7 +41,7 @@ class Game {
     int mapSize;
 
     // timers
-    unsigned long startEndSectionTime;
+    unsigned long lastChangedGameSection;
 
     // end sections
     bool shownMessage;
@@ -289,6 +289,22 @@ class Game {
       lastChangedEnemiesBlinking = millis();
     }
 
+    // showing the start game display
+    void showStartGame() {
+      display.clear();
+      display.showStartGameDisplay();
+    }
+
+    // starting the game
+    void startGame() {
+      if (millis() - lastChangedGameSection > BETWEEN_LEVELS_INTERVAL) {
+        // initializing the first level of the game
+        resetGame();
+        initializeLevel();
+        joystick.setSystemState(IN_GAME_STATE);
+      }
+    }
+
     // decreasing the number of lives of the player
     void decreaseLife() {
       if ( lives > 1) {
@@ -451,6 +467,7 @@ class Game {
         // no more food items on the map => leve is done
         joystick.setSystemState(DONE_LEVEL_STATE);
         matrix.clear();
+        matrix.startDoneLevelAnimation();
 
         // memorying the time when the level was finished
         doneLevelTime = millis();
@@ -494,6 +511,8 @@ class Game {
           level++;
           initializeLevel();
           joystick.setSystemState(IN_GAME_STATE);
+        } else {
+          matrix.showDoneLevelAnimation();
         }
       } else {
         // the player has completed the last level of the game => the game is done
@@ -518,7 +537,7 @@ class Game {
     // moving to the statistics section
     void moveToStatistics() {
       joystick.setSystemState(STATISTICS_STATE);
-      startEndSectionTime = millis();
+      lastChangedGameSection = millis();
       shownStatistics = false;
     }
 
@@ -532,16 +551,16 @@ class Game {
     // statistics of the game
     void statistics() {
       // taking a few moments before the statistics are shown
-      if (millis() - startEndSectionTime > BETWEEN_END_SECTIONS && !shownStatistics) {
+      if (millis() - lastChangedGameSection > BETWEEN_END_SECTIONS && !shownStatistics) {
         showStatistics();
 
         if (currentScore > scores[HIGHSCORE_TOP - 1]) {
           // the current score of the player is in greater than the last score in the highscore board
           joystick.setSystemState(BEAT_HIGHSCORE_STATE);
           highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
-          startEndSectionTime = millis();
+          lastChangedGameSection = millis();
         }
-      } else if (millis() - startEndSectionTime > 2 * BETWEEN_END_SECTIONS) {
+      } else if (millis() - lastChangedGameSection > 2 * BETWEEN_END_SECTIONS) {
         joystick.setSystemState(END_GAME_STATE);
         display.setEndGameMenuCursor(0);
         showEndGameMenu();
@@ -560,31 +579,24 @@ class Game {
       display.showEnterNameTextDisplay();
     }
 
-    void showNameRestrictions() {
-      display.clear();
-      display.showNameRestrictionsDisplay();
-    }
-
     // the player has beaten the highscore
     void beatHighscore() {
       // taking a few moments before changing between the messages
-      if (millis() - startEndSectionTime > BETWEEN_END_SECTIONS) {
+      if (millis() - lastChangedGameSection > BETWEEN_END_SECTIONS) {
         highscoreDisplay++;
         
         if (highscoreDisplay == BEAT_HIGHSCORE_DISPLAY) {
           showBeatHighscore();
         } else if (highscoreDisplay == ENTER_NAME_TEXT_DISPLAY) {
           showEnterNameText();
-        } else if (highscoreDisplay == NAME_RESTRICTIONS_DISPLAY) {
-          showNameRestrictions();
-        } else if (highscoreDisplay == ENTER_NAME_DISPLAY) {
+        }  else if (highscoreDisplay == ENTER_NAME_DISPLAY) {
           joystick.setSystemState(ENTER_NAME_STATE);
           display.setEnterNameMenuCursorX(0);
           display.setEnterNameMenuCursorY(0);
           showEnterNameMenu();
         }
 
-        startEndSectionTime = millis();
+        lastChangedGameSection = millis();
       }
     }
 
@@ -866,9 +878,9 @@ class Game {
 
       if (cursorPosition == START_GAME_POSITION) {
         // start game
-        joystick.setSystemState(IN_GAME_STATE);
-        resetGame();
-        initializeLevel();
+        joystick.setSystemState(START_GAME_STATE);
+        showStartGame();
+        lastChangedGameSection = millis();
       } else if (cursorPosition == HIGHSCORE_POSITION) {
         // highscore
         joystick.setSystemState(HIGHSCORE_BOARD_STATE);
@@ -912,13 +924,13 @@ class Game {
       if (shownMessage && !shownStatistics && !shownBeatHighscore) {
         // moving to statistics display
         joystick.setSystemState(STATISTICS_STATE);
-        startEndSectionTime = millis() - BETWEEN_END_SECTIONS;
+        lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
       } else if (shownStatistics && !shownBeatHighscore) {
         if (currentScore > scores[HIGHSCORE_TOP - 1]) {
            // moving to beat highscore display
            joystick.setSystemState(BEAT_HIGHSCORE_STATE);
            highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
-           startEndSectionTime = millis() - BETWEEN_END_SECTIONS;
+           lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
          } else {
            // moving to end game dispaly
            joystick.setSystemState(END_GAME_STATE);
@@ -928,7 +940,7 @@ class Game {
       } else if (shownBeatHighscore) {
         // moving to the next display of the beat highscore state
         joystick.setSystemState(BEAT_HIGHSCORE_STATE);
-        startEndSectionTime = millis() - BETWEEN_END_SECTIONS;
+        lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
     }
   }
 
