@@ -11,7 +11,7 @@ class Display {
     LiquidCrystal lcd = LiquidCrystal(RS, ENABLE, D4, D5, D6, D7);
 
     // dog character
-    byte dogChar[LINES] = {
+    const byte dogChar[LINES] = {
       B00000,
       B00000,
       B01000,
@@ -23,7 +23,7 @@ class Display {
     };
 
     // down arrow character
-    byte downArrowChar[LINES] = {
+    const byte downArrowChar[LINES] = {
       B00000,
       B00000,
       B00000,
@@ -42,7 +42,7 @@ class Display {
     int startAnimationTime;
 
     // principal menu
-    String principalMenu[PRINCIPAL_MENU_ITEMS] = {
+    const String principalMenu[PRINCIPAL_MENU_ITEMS] = {
       "Start game",
       "Highscore",
       "Settings",
@@ -51,37 +51,29 @@ class Display {
     int principalMenuCursor = 0;
 
     // pause game menu
-    String pauseGameMenu[PAUSE_GAME_MENU_ITEMS] = {
-      "Resume",
-      "Exit",
-    };
     int pauseGameMenuCursor = 0;
-    String pauseGameMenuTitle = "PAUSE";
+    const String pauseGameMenuTitle = "PAUSE";
 
     // enter name menu
-    String keyboard[KEYBOARD_LINES] = {
+    const String keyboard[KEYBOARD_LINES] = {
       "abcdefghijklm",
       "nopqrstuvwxyz"
     };
-    String enterNameMenu[ENTER_NAME_MENU_OPTIONS] = {
+    const String enterNameMenu[ENTER_NAME_MENU_OPTIONS] = {
       "Delete",
       "Done"
     };
     int enterNameMenuCursor[2] = { 0 , 0 };
 
     // end game menu
-    String endGameMenu[END_GAME_MENU_ITEMS] = {
-      "Restart",
-      "Exit",
-    };
     int endGameMenuCursor = 0;
-    String endGameMenuTitle = "END GAME";
+    const String endGameMenuTitle = "END GAME";
 
     // highscore board
     int highscoreBoardCursor = 0;
 
     // settings menu
-    String settingsMenu[SETTINGS_MENU_ITEMS] = {
+    const String settingsMenu[SETTINGS_MENU_ITEMS] = {
       "Start level",
       "Contrast",
       "Brightness",
@@ -91,12 +83,12 @@ class Display {
     int settingsMenuCursor = 0;
 
     // about section
-    String aboutSection[ABOUT_SECTION_ITEMS] = {
-      "Name: Marinel's epic quest for food   ",
-      "Creator: Claudia Dudau   ",
-      "Github: https://github.com/claudia-maria-dudau/Pac-Man   ",
-      "Back"
-    };
+//    const String aboutSection[ABOUT_SECTION_ITEMS] = {
+//      "Name: Marinel's epic quest for food   ",
+//      "Creator: Claudia Dudau   ",
+//      "Github: https://github.com/claudia-maria-dudau/Pac-Man   ",
+//      "Back"
+//    };
     int aboutSectionCursor = 0;
     int scrollPosition = 0;
 
@@ -180,7 +172,7 @@ class Display {
     }
 
     // showing the given game menu
-    void showGameMenu(String title, String* menu, int cursorPosition, int noItems) {
+    void showGameMenu(String title, String menuItem, int cursorPosition) {
       // showing the title of the menu
       int offset = (DISPLAY_COLUMNS - title.length()) / 2;
       lcd.setCursor(offset, 0);
@@ -188,9 +180,9 @@ class Display {
 
       // showing the options
       lcd.setCursor(2, 1);
-      lcd.print(menu[noItems - 2]);
+      lcd.print(menuItem);
       lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
-      lcd.print(menu[noItems - 1]);
+      lcd.print(EXIT_BUTTON);
 
       // showing where4 the cursor is currently
       showCursor(cursorPosition * BETWEEN_OPTIONS_OFFSET, 1);
@@ -390,7 +382,7 @@ class Display {
 
     // showing the end game menu
     void showPauseGameMenu() {
-      showGameMenu(pauseGameMenuTitle, pauseGameMenu, pauseGameMenuCursor, PAUSE_GAME_MENU_ITEMS);
+      showGameMenu(PAUSE_GAME_TITLE, RESUME_BUTTON, pauseGameMenuCursor);
     }
 
     // --- ENTER NAME MENU ---
@@ -462,7 +454,7 @@ class Display {
 
     // showing the end game menu
     void showEndGameMenu() {
-      showGameMenu(endGameMenuTitle, endGameMenu, endGameMenuCursor, END_GAME_MENU_ITEMS);
+      showGameMenu(END_GAME_TITLE, RESTART_BUTTON, endGameMenuCursor);
     }
 
 
@@ -505,7 +497,7 @@ class Display {
         showHighscore(names[highscoreBoardCursor - 1], scores[highscoreBoardCursor - 1], 0);
 
         lcd.setCursor(OPTIONS_OFFSET, 1);
-        lcd.print("Back");
+        lcd.print(BACK_BUTTON);
 
         // showing where the cursor is currently
         showCursor(0, 1);
@@ -516,7 +508,7 @@ class Display {
         showHighscore(names[highscoreBoardCursor], scores[highscoreBoardCursor], 0);
 
         lcd.setCursor(OPTIONS_OFFSET, 1);
-        lcd.print("Back");
+        lcd.print(BACK_BUTTON);
 
         // showing where the cursor is currently
         showCursor(0, 0);
@@ -656,30 +648,65 @@ class Display {
 
     // showing the about section
     void showAboutSection() {
-      showMenu(aboutSection, aboutSectionCursor, ABOUT_SECTION_ITEMS);
+//      showMenu(aboutSection, aboutSectionCursor, ABOUT_SECTION_ITEMS);
+
+      if (aboutSectionCursor != ABOUT_SECTION_ITEMS - 1) {
+        if (aboutSectionCursor == NAME_POSITION) {
+          showMenuOption(OPTIONS_OFFSET, 0, NAME);
+          showMenuOption(OPTIONS_OFFSET, 1, CREATOR);
+        } else if (aboutSectionCursor == CREATOR_POSITION) {
+          showMenuOption(OPTIONS_OFFSET, 0, CREATOR);
+          showMenuOption(OPTIONS_OFFSET, 1, GITHUB);
+        } else if (aboutSectionCursor == GUTHUB_POSITION) {
+          showMenuOption(OPTIONS_OFFSET, 0, GITHUB);
+          showMenuOption(OPTIONS_OFFSET, 1, BACK_BUTTON);
+        } 
+
+        // showing where the cursor is currently
+        showCursor(0, 0);
+      } else {
+        showMenuOption(OPTIONS_OFFSET, 0, GITHUB);
+        showMenuOption(OPTIONS_OFFSET, 1, BACK_BUTTON);
+
+        // showing where the cursor is currently
+        showCursor(0, 1);
+      }
+
+      showNavigationArrows();
       scrollPosition = DISPLAY_COLUMNS + 1;
+    }
+
+    // scrolling the current about item
+    void scrollAboutItem(String item) {
+      int startPosition = scrollPosition - DISPLAY_COLUMNS;
+
+        lcd.setCursor(OPTIONS_OFFSET, 0);
+        lcd.print(item.substring(startPosition, startPosition + MENU_ITEM_LENGTH));
+
+        if (item.length() - startPosition < MENU_ITEM_LENGTH) {
+          // the end of the text has been shown on the display
+          // => showing the beginning of the text as well
+          lcd.print(item.substring(0, MENU_ITEM_LENGTH - (item.length() - startPosition)));
+        }
+
+        if (startPosition < item.length() - 1) {
+          scrollPosition++;
+        } else {
+          scrollPosition = DISPLAY_COLUMNS;
+        }
     }
 
     // scrolling the current line in the about section
     void scrollCurrentAboutSection() {
       if (aboutSectionCursor != ABOUT_SECTION_ITEMS - 1) {
-        int startPosition = scrollPosition - DISPLAY_COLUMNS;
-
-        lcd.setCursor(OPTIONS_OFFSET, 0);
-        lcd.print(aboutSection[aboutSectionCursor].substring(startPosition, startPosition + MENU_ITEM_LENGTH));
-
-        if (aboutSection[aboutSectionCursor].length() - startPosition < MENU_ITEM_LENGTH) {
-          // the end of the text has been shown on the display
-          // => showing the beginning of the text as well
-          lcd.print(aboutSection[aboutSectionCursor].substring(0, MENU_ITEM_LENGTH - (aboutSection[aboutSectionCursor].length() - startPosition)));
-        }
-
-        if (startPosition < aboutSection[aboutSectionCursor].length() - 1) {
-          scrollPosition++;
-        } else {
-          scrollPosition = DISPLAY_COLUMNS;
-        }
-
+        if (aboutSectionCursor == NAME_POSITION) {
+          scrollAboutItem(NAME);
+        } else if (aboutSectionCursor == CREATOR_POSITION) {
+          scrollAboutItem(CREATOR);
+        } else if (aboutSectionCursor == GUTHUB_POSITION) {
+          scrollAboutItem(GITHUB);
+        } 
+        
         showNavigationArrows();
       }
     }

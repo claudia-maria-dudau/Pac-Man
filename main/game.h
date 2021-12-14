@@ -1107,9 +1107,9 @@ class Game {
         showPrincipalMenu();
       } else {
         // "restart" option => restarting the game
-        joystick.setSystemState(IN_GAME_STATE);
-        resetGame();
-        initializeLevel();
+        joystick.setSystemState(START_GAME_STATE);
+        showStartGame();
+        lastChangedGameSection = millis();
       }
     }
 

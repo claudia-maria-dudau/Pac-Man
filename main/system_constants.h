@@ -90,6 +90,7 @@
 #define TEXT_SECTION_4 4
 #define ANIMATION_SECTION 5
 
+
 // --- PRINCIPAL MENU ---
 #define PRINCIPAL_MENU_ITEMS 4
 #define OPTIONS_OFFSET 2
@@ -145,9 +146,16 @@
 #define ENTER_NAME_TEXT_DISPLAY 1
 #define ENTER_NAME_DISPLAY 2
 
+
 // --- PAUSE GAME MENU ---
 #define PAUSE_GAME_MENU_ITEMS 2
 #define BETWEEN_OPTIONS_OFFSET 10
+#define PAUSE_GAME_TITLE "PAUSE"
+
+// pause game menu items
+#define RESUME_BUTTON "Resume"
+#define EXIT_BUTTON "Exit"
+
 
 // --- ENTER NAME MENU ---
 #define KEYBOARD_LINES 2
@@ -156,13 +164,19 @@
 #define ENTER_NAME_MENU_OPTIONS 2
 #define ENTER_NAME_MENU_ITEMS KEYBOARD_LINES + ENTER_NAME_MENU_OPTIONS
 
+
 // --- END GAME MENU ---
 #define END_GAME_MENU_ITEMS 2
+#define END_GAME_TITLE "END GAME"
+
+// end game menu items
+#define RESTART_BUTTON "Restart"
 
 
 // --- HIGHSCORE BOARD ---
 #define HIGHSCORE_TOP 5
 #define MAX_NAME_LENGTH 8
+#define BACK_BUTTON "Back"
 
 
 // --- SETTINGS MENU ---
@@ -190,6 +204,17 @@
 // --- ABOUT SECTION ---
 #define ABOUT_SECTION_ITEMS 4
 #define SCROLL_ABOUT_SECTION_INTERVAL 500
+
+// about items' corresponding positions
+#define NAME_POSITION 0
+#define CREATOR_POSITION 1
+#define GUTHUB_POSITION 2
+
+// about items
+#define NAME "Name: Marinel's epic quest for food   "
+#define CREATOR "Creator: Claudia Dudau   "
+#define GITHUB "Github: https://github.com/claudia-maria-dudau/Pac-Man   "
+
 
 // --- MEMORY ADDRESSES ---
 // settings
