@@ -19,6 +19,9 @@
 #define CLOCK_PIN 11
 #define LOAD_PIN 10
 
+// buzzer pins
+#define BUZZER_PIN 1
+
 
 // --- SYSTEM STATES ---
 #define INTRO_STATE 0
@@ -72,6 +75,12 @@
 #define HALF_MATRIX_SIZE (int)(MATRIX_SIZE / 2)
 #define ANIMATION_INTERVAL 150
 
+
+// --- BUZZER CONSTANTS ---
+#define SONG_TEMPO 105
+#define WHOLENOTE (60000 * 4) / SONG_TEMPO
+
+
 // --- INTRO ---
 #define INTRO_SECTIONS_INTERVAL 4000
 #define INTRO_ANIMATION_INTERVAL 300
@@ -109,16 +118,10 @@
 
 // map constants
 #define MAP_STEP 4
-#define MAPS 1
+#define MAPS 2
 #define MIN_MAP_SIZE 8
 #define MAX_MAP_SIZE MIN_MAP_SIZE + MAP_STEP * (MAPS - 1)
 #define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS + 1)
-
-// symbols
-#define EMPTY_SYMBOL '#'
-#define PLAYER_SYMBOL 'P'
-#define ENEMY_SYMBOL 'E'
-#define FOOD_ITEM_SYMBOL 'F'
 
 // enemies
 #define ENEMIES_STEP 2
@@ -127,7 +130,7 @@
 #define ENEMIES_SPEED_STEP 100
 #define ENEMIES_MAX_SPEED 400
 #define ENEMIES_MIN_SPEED ENEMIES_MAX_SPEED + MAX_LEVEL * ENEMIES_SPEED_STEP
-#define ENEMIES_BLINKING_INTERVAL 300
+#define ENEMIES_BLINKING_INTERVAL 200
 #define MOVES 8
 
 // food items

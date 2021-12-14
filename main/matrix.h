@@ -9,9 +9,6 @@ class Matrix {
     // matrix settings
     int intensity;
 
-    // map of the game
-    int mapSize;
-
     // blinking objects states
     bool playerState;
     bool enemiesState;
@@ -30,13 +27,11 @@ class Matrix {
       lc.clearDisplay(0);
       showIntensity();
 
-      initialize(MIN_MAP_SIZE);
+      initialize();
     }
 
     // initializing the matrix
-    void initialize(int size) {
-      mapSize = size;
-
+    void initialize() {
       // reinitializing the matrix (0 on al positions)
       clear();
 
@@ -47,8 +42,8 @@ class Matrix {
 
     // clearing the matrix
     void clear() {
-      for (int i = 0; i < mapSize; i++) {
-        for (int j = 0; j < mapSize; j++) {
+      for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
           lc.setLed(0, i, j, 0);
         }
       }
@@ -87,36 +82,36 @@ class Matrix {
 
 
     // --- GAME ---
-    // setting the position of an object
-    void setPosition(int* position) {
-      lc.setLed(0, position[0], position[1], 1);
+    // setting the position of an element
+    void setPosition(int positionX, int positionY) {
+      lc.setLed(0, positionX, positionY, 1);
     }
 
-    // changing the positon of the player or of an enemy
-    void changePosition(int* lastPosition, int* currentPosition) {
-      lc.setLed(0, lastPosition[0], lastPosition[1], 0);
-      lc.setLed(0, currentPosition[0], currentPosition[1], 1);
+    // resetting the position of an element
+    void resetPosition(int positionX, int positionY) {
+      lc.setLed(0, positionX, positionY, 0);
+    }
+
+    // changing the positon of an element on the matrix
+    void changePosition(int lastPositionX, int lastPositionY, int currentPositionX, int currentPositionY) {
+      resetPosition(lastPositionX, lastPositionY);
+      setPosition(currentPositionX, currentPositionY);
     }
 
     // blinking the player's position
-    void blinkPlayer(int* position) {
+    void blinkPlayer(int positionX, int positionY) {
       playerState = !playerState;
-      lc.setLed(0, position[0], position[1], playerState);
+      lc.setLed(0, positionX, positionY, playerState);
     }
 
     // blinking the enemy's position
-    void blinkEnemy(int* position, bool first) {
-      if (first) {
-        // changing the enemies' state only once for all enemies
-        enemiesState = !enemiesState;
-      }
-
-      lc.setLed(0, position[0], position[1], enemiesState);
+    void blinkEnemy(int positionX, int positionY) {
+      lc.setLed(0, positionX, positionY, enemiesState);
     }
 
-    // removing a food item from the map
-    void removeFoodItem(int* position) {
-      lc.setLed(0, position[0], position[1], 0);
+    // changing the enemies' state only once for all enemies
+    void doneBlinkEnemies() {
+      enemiesState = !enemiesState;
     }
 
     // intializing animation variables

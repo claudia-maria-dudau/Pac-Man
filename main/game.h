@@ -1,13 +1,13 @@
 #include "display.h"
 #include "matrix.h"
 #include "joystick.h"
-
-using namespace std;
+#include "buzzer.h"
 
 class Game {
     Display display = Display();
     Matrix matrix = Matrix();
     Joystick joystick = Joystick();
+    Buzzer buzzer = Buzzer();
 
     // in game variables
     int lives;
@@ -37,8 +37,10 @@ class Game {
     int noFoodItems;
     int foodItems[MAX_FOOD_ITEMS][2]; // each food item has a set of (x, y) coordinates to indicate its position
 
-    // map size
+    // map 
     int mapSize;
+    int firstLine;
+    int firstColumn;
 
     // timers
     unsigned long lastChangedGameSection;
@@ -147,6 +149,24 @@ class Game {
 
 
     // --- GAME ---
+    // showing the start game display
+    void showStartGame() {
+      display.clear();
+      display.showStartGameDisplay();
+
+//      buzzer.startGameSong();
+    }
+
+    // starting the game
+    void startGame() {
+      if (millis() - lastChangedGameSection > BETWEEN_LEVELS_INTERVAL) {
+        // initializing the first level of the game
+        resetGame();
+        initializeLevel();
+        joystick.setSystemState(IN_GAME_STATE);
+      }
+    }
+    
     // resetting game variables
     void resetGame() {
       lives = MAX_LIVES;
@@ -164,13 +184,23 @@ class Game {
       display.showGameDisplay(level, lives, currentScore);
     }
 
+    // verifying whether an element is in the bounds of the given map section or not
+    bool isInSectionBound(int line, int column, int positionX, int positionY) {
+      return (positionX >= line && positionX < line + MATRIX_SIZE) && (positionY >= column && positionY < column + MATRIX_SIZE);
+    }
+
     // intializing the position of the player
     void initializePlayer() {
       // generating a pair of random coordinates for
       // the intial position of the player
       playerPosition[0] = random(mapSize);
       playerPosition[1] = random(mapSize);
-      matrix.setPosition(playerPosition);
+
+      // centering the position of the player on the matrix
+      firstLine = min(max(playerPosition[0] - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
+      firstColumn = min(max(playerPosition[1] - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
+
+      matrix.setPosition(playerPosition[0] - firstLine, playerPosition[1] - firstColumn);
     }
 
     // initializing the positions of the enemies
@@ -209,7 +239,9 @@ class Game {
         enemies[i][0] = xCoord;
         enemies[i][1] = yCoord;
 
-        matrix.setPosition(enemies[i]);
+        if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+          matrix.setPosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
+        }
       }
     }
 
@@ -259,10 +291,76 @@ class Game {
         foodItems[i][0] = xCoord;
         foodItems[i][1] = yCoord;
 
-        matrix.setPosition(foodItems[i]);
+        if (isInSectionBound(firstLine, firstColumn, foodItems[i][0], foodItems[i][1])) {
+          matrix.setPosition(foodItems[i][0] - firstLine, foodItems[i][1] - firstColumn);
+        }
       }
     }
 
+    // showing a section of the map according to the position of the player
+    void showMap(int newPlayerPositionX, int newPlayerPositionY) {
+      int lastFirstLine = min(max(playerPosition[0] - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
+      int lastFirstColumn = min(max(playerPosition[1] - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
+      
+      // centering the position of the player on the matrix
+      firstLine = min(max(newPlayerPositionX - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
+      firstColumn = min(max(newPlayerPositionY - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
+
+      // changing the position of the player on the matrix
+      matrix.changePosition(playerPosition[0] - lastFirstLine, playerPosition[1] - lastFirstColumn, 
+                            newPlayerPositionX - firstLine, newPlayerPositionY - firstColumn);
+
+      if (lastFirstLine != firstLine || lastFirstColumn != firstColumn) {
+        // changing the position of the enemies on the matrix
+        for (int i = 0; i < noEnemies; i++) {
+          if (isInSectionBound(lastFirstLine, lastFirstColumn, enemies[i][0], enemies[i][1])) {
+            // previous position of the enemy was in the bounds of the last section
+            if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+              // actual position of the enemy is in the bounds of the new section
+              // => chnaging the position on the matrix
+              matrix.changePosition(enemies[i][0] - lastFirstLine, enemies[i][1] - lastFirstColumn, 
+                             enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
+            } else {
+              // actual position of the enemy is no longer in the bounds of the new section
+              // => resetting position on the matrix
+              matrix.resetPosition(enemies[i][0] - lastFirstLine, enemies[i][1] - lastFirstColumn);
+            }  
+          } else {
+            // previous position of the enemy was not in the bounds of the last section
+            if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+              // actual position of the enemy is in the bounds of the new section
+              // => setting the position on the matrix
+              matrix.setPosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
+            }
+          }
+        }
+  
+        // changing the position of the food items on the matrix
+        for (int i = 0; i < noFoodItems; i++) {
+          if (isInSectionBound(lastFirstLine, lastFirstColumn, foodItems[i][0], foodItems[i][1])) {
+            // previous position of the food item was in the bounds of the last section
+            if (isInSectionBound(firstLine, firstColumn, foodItems[i][0], foodItems[i][1])) {
+              // actual position of the food item is in the bounds of the new section
+              // => chnaging the position on the matrix
+              matrix.changePosition(foodItems[i][0] - lastFirstLine, foodItems[i][1] - lastFirstColumn, 
+                             foodItems[i][0] - firstLine, foodItems[i][1] - firstColumn);
+            } else {
+              // actual position of the food item is no longer in the bounds of the new section
+              // => resetting position on the matrix
+              matrix.resetPosition(foodItems[i][0] - lastFirstLine, foodItems[i][1] - lastFirstColumn);
+            }  
+          } else {
+            // previous position of the food item was not in the bounds of the last section
+            if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+              // actual position of the food item is in the bounds of the new section
+              // => setting the position on the matrix
+              matrix.setPosition(foodItems[i][0] - firstLine, foodItems[i][1] - firstColumn);
+            }
+          }
+        }
+      }
+    }
+    
     // game initialization based on level
     void initializeLevel() {
       showGameDisplay();
@@ -276,9 +374,9 @@ class Game {
       noFoodItems = level * FOOD_ITEMS_STEP;
       mapSize = MIN_MAP_SIZE + (level - 1) / LEVEL_MAP_STEP * MAP_STEP;
 
-      matrix.initialize(mapSize);
+      matrix.initialize();
 
-      initializePlayer();
+      initializePlayer();  
       initializeEnemies();
       initializeFoodItems();
 
@@ -287,22 +385,6 @@ class Game {
       lastChangedPlayerBlinking = millis();
       lastChangedEnemiesPositions = millis();
       lastChangedEnemiesBlinking = millis();
-    }
-
-    // showing the start game display
-    void showStartGame() {
-      display.clear();
-      display.showStartGameDisplay();
-    }
-
-    // starting the game
-    void startGame() {
-      if (millis() - lastChangedGameSection > BETWEEN_LEVELS_INTERVAL) {
-        // initializing the first level of the game
-        resetGame();
-        initializeLevel();
-        joystick.setSystemState(IN_GAME_STATE);
-      }
     }
 
     // decreasing the number of lives of the player
@@ -334,7 +416,7 @@ class Game {
     // removing food item from the map
     void eatFoodItem(int position) {
       // erasing the respective food item form the map
-      matrix.removeFoodItem(foodItems[position]);
+      matrix.resetPosition(foodItems[position][0] - firstLine, foodItems[position][1] - firstColumn);
 
       // erasing the respective food item from the list of food items
       for (int j = position; j < noFoodItems - 1; j++) {
@@ -352,7 +434,7 @@ class Game {
     // blinking the player's position at a given interval
     void blinkPlayer() {
       if (millis() - lastChangedPlayerBlinking > PLAYER_BLINKING_INTERVAL) {
-        matrix.blinkPlayer(playerPosition);
+        matrix.blinkPlayer(playerPosition[0] - firstLine, playerPosition[1] - firstColumn);
 
         lastChangedPlayerBlinking = millis();
       }
@@ -362,8 +444,12 @@ class Game {
     void blinkEnemies() {
       if (millis() - lastChangedEnemiesBlinking > ENEMIES_BLINKING_INTERVAL) {
         for (int i = 0; i < noEnemies; i++) {
-          matrix.blinkEnemy(enemies[i], i == 0);
+          if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+            matrix.blinkEnemy(enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
+          }
         }
+
+        matrix.doneBlinkEnemies();
 
         lastChangedEnemiesBlinking = millis();
       }
@@ -413,7 +499,28 @@ class Game {
             }
           }
 
-          matrix.changePosition(enemies[i], next);
+          // changing the position of the enemy on the matrix
+          if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+            // previous position of the enemy was in the bounds of the last section
+            if (isInSectionBound(firstLine, firstColumn, next[0], next[1])) {
+              // actual position of the enemy is in the bounds of the new section
+              // => chnaging the position on the matrix
+              matrix.changePosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn, 
+                             next[0] - firstLine, next[1] - firstColumn);
+            } else {
+              // actual position of the enemy is no longer in the bounds of the new section
+              // => resetting position on the matrix
+              matrix.resetPosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
+            }  
+          } else {
+            // previous position of the enemy was not in the bounds of the last section
+            if (isInSectionBound(firstLine, firstColumn, next[0], next[1])) {
+              // actual position of the enemy is in the bounds of the new section
+              // => setting the position on the matrix
+              matrix.setPosition(next[0] - firstLine, next[1] - firstColumn);
+            }
+          }
+          
           enemies[i][0] = next[0];
           enemies[i][1] = next[1];
 
@@ -434,7 +541,7 @@ class Game {
 
         // player moved => update position
         if (newPosition[0] != playerPosition[0] || newPosition[1] != playerPosition[1]) {
-          matrix.changePosition(playerPosition, newPosition);
+          showMap(newPosition[0], newPosition[1]);
           playerPosition[0] = newPosition[0];
           playerPosition[1] = newPosition[1];
 
