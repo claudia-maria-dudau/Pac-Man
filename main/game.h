@@ -154,7 +154,8 @@ class Game {
       display.clear();
       display.showStartGameDisplay();
 
-//      buzzer.startGameSong();
+      buzzer.startGameSong();
+      display.showContrast();
     }
 
     // starting the game
