@@ -142,6 +142,7 @@
 #### Start Game Display
  Characteristics:
   - shown at the begining of each game to prepare the player for the start of the game
+  - buzzer plays a song while the screen is shown
   - nothings happenes during this part if the joystick moves or if the button is pressed
 
 #### In Game Display
