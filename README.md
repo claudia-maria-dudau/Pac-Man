@@ -125,7 +125,7 @@
  The difficulty of the game is based on the level, which means the difficulty increases liniary as the game progresses. On each level, there are more food items to gather and the speed of the enemies increases. At given intervals between levels, the size of the map and the number of enemies increases as well.
  <br/>
  <br/>
- Both the player and the enemies are allowed to move up, down, right, left and diagonally. The enemies are not allowed to move to a position where there is either already another enemy, or a food item. If the player finds himself on the same position as an enemy, he loses a life.
+ Both the player and the enemies are allowed to move up, down, right, left and diagonally. The enemies are not allowed to move to a position where there is either already another enemy, or a food item. If the player finds himself on the same position as an enemy, he loses a life. Whenever the player eats a food item or meets with an enemy on the same position, a distinct sound is emmited by the buzzer.
 
 <details>
  <summary>Details about the game's displays</summary>
