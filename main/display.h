@@ -42,53 +42,24 @@ class Display {
     int startAnimationTime;
 
     // principal menu
-    const String principalMenu[PRINCIPAL_MENU_ITEMS] = {
-      "Start game",
-      "Highscore",
-      "Settings",
-      "About"
-    };
     int principalMenuCursor = 0;
 
     // pause game menu
     int pauseGameMenuCursor = 0;
-    const String pauseGameMenuTitle = "PAUSE";
 
     // enter name menu
-    const String keyboard[KEYBOARD_LINES] = {
-      "abcdefghijklm",
-      "nopqrstuvwxyz"
-    };
-    const String enterNameMenu[ENTER_NAME_MENU_OPTIONS] = {
-      "Delete",
-      "Done"
-    };
     int enterNameMenuCursor[2] = { 0 , 0 };
 
     // end game menu
     int endGameMenuCursor = 0;
-    const String endGameMenuTitle = "END GAME";
 
     // highscore board
     int highscoreBoardCursor = 0;
 
     // settings menu
-    const String settingsMenu[SETTINGS_MENU_ITEMS] = {
-      "Start level",
-      "Contrast",
-      "Brightness",
-      "Intensity",
-      "Back"
-    };
     int settingsMenuCursor = 0;
 
     // about section
-//    const String aboutSection[ABOUT_SECTION_ITEMS] = {
-//      "Name: Marinel's epic quest for food   ",
-//      "Creator: Claudia Dudau   ",
-//      "Github: https://github.com/claudia-maria-dudau/Pac-Man   ",
-//      "Back"
-//    };
     int aboutSectionCursor = 0;
     int scrollPosition = 0;
 
@@ -172,7 +143,7 @@ class Display {
     }
 
     // showing the given game menu
-    void showGameMenu(String title, String menuItem, int cursorPosition) {
+    void showGameMenu(String title, String* menu, int cursorPosition, int noItems) {
       // showing the title of the menu
       int offset = (DISPLAY_COLUMNS - title.length()) / 2;
       lcd.setCursor(offset, 0);
@@ -180,9 +151,9 @@ class Display {
 
       // showing the options
       lcd.setCursor(2, 1);
-      lcd.print(menuItem);
+      lcd.print(menu[noItems - 2]);
       lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
-      lcd.print(EXIT_BUTTON);
+      lcd.print(menu[noItems - 1]);
 
       // showing where4 the cursor is currently
       showCursor(cursorPosition * BETWEEN_OPTIONS_OFFSET, 1);
@@ -214,7 +185,7 @@ class Display {
       isDoneIntro = false;
     }
 
-    // claering the display
+    // clearing the display
     void clear() {
       lcd.clear();
     }
@@ -291,6 +262,7 @@ class Display {
 
     // showing the principal game menu
     void showPrincipalMenu() {
+      String principalMenu[PRINCIPAL_MENU_ITEMS] = { START_GAME, HIGHSCORE, SETTINGS, ABOUT };
       showMenu(principalMenu, principalMenuCursor, PRINCIPAL_MENU_ITEMS);
     }
 
@@ -300,9 +272,9 @@ class Display {
       lcd.setCursor(6, 0);
       lcd.print("OKAY,");
       lcd.setCursor(4, 1);
-      lcd.print("LET'S GO!");    
+      lcd.print("LET'S GO!");
     }
-    
+
     // showing the in game display
     void showGameDisplay(int level, int lives, int score) {
       // showing the level of the game
@@ -346,7 +318,7 @@ class Display {
       lcd.print("Lives:");
       lcd.setCursor(7, 0);
       lcd.print(lives);
-      
+
       lcd.setCursor(0, 1);
       lcd.print("Score:");
       lcd.setCursor(7, 1);
@@ -367,7 +339,14 @@ class Display {
       lcd.setCursor(3, 1);
       lcd.print("your name");
     }
-    
+
+    void showNameRestrictionsDisplay() {
+      lcd.setCursor(1, 0);
+      lcd.print("Name must have");
+      lcd.setCursor(1, 1);
+      lcd.print("max " + String(MAX_NAME_LENGTH) + " charact.");
+    }
+
 
     // --- PAUSE GAME MENU ---
     // getting the pause game menu cursor
@@ -382,12 +361,14 @@ class Display {
 
     // showing the end game menu
     void showPauseGameMenu() {
-      showGameMenu(PAUSE_GAME_TITLE, RESUME_BUTTON, pauseGameMenuCursor);
+      String pauseGameMenu[PAUSE_GAME_MENU_ITEMS] = { RESUME_BUTTON, EXIT_BUTTON };
+      showGameMenu(PAUSE_GAME_TITLE, pauseGameMenu, pauseGameMenuCursor, PAUSE_GAME_MENU_ITEMS);
     }
 
     // --- ENTER NAME MENU ---
     // getting the character at a certain position from the keyboard
     char getCharacter(int row, int col) {
+      String keyboard[KEYBOARD_LINES] = { KEYBOARD_LINE_1, KEYBOARD_LINE_2, KEYBOARD_LINE_3 };
       return keyboard[row][col];
     }
 
@@ -424,6 +405,7 @@ class Display {
 
       if (enterNameMenuCursor[0] < KEYBOARD_LINES) {
         // the cursor is on a character on the keyboard
+        String keyboard[KEYBOARD_LINES] = { KEYBOARD_LINE_1, KEYBOARD_LINE_2, KEYBOARD_LINE_3 };
         lcd.print(keyboard[enterNameMenuCursor[0]]);
 
         // showing the selected character on the keyboard
@@ -432,6 +414,8 @@ class Display {
       } else {
         // the cursor is on an option from the menu
         setEnterNameMenuCursorY(0);
+        
+        String enterNameMenu[ENTER_NAME_MENU_ITEMS] = { DELETE_BUTTON, DONE_BUTTON };
         lcd.print(enterNameMenu[enterNameMenuCursor[0] - KEYBOARD_LINES]);
 
         // showing where the cursor is currently
@@ -454,7 +438,8 @@ class Display {
 
     // showing the end game menu
     void showEndGameMenu() {
-      showGameMenu(END_GAME_TITLE, RESTART_BUTTON, endGameMenuCursor);
+      String endGameMenu[END_GAME_MENU_ITEMS] = { RESTART_BUTTON, EXIT_BUTTON };
+      showGameMenu(END_GAME_TITLE, endGameMenu, endGameMenuCursor, END_GAME_MENU_ITEMS);
     }
 
 
@@ -534,6 +519,7 @@ class Display {
 
     // showing the settings menu
     void showSettingsMenu() {
+      String settingsMenu[SETTINGS_MENU_ITEMS] = { START_LEVEL, CONTRAST, BRIGHTNESS, INTENSITY, BACK_BUTTON };
       showMenu(settingsMenu, settingsMenuCursor, SETTINGS_MENU_ITEMS);
     }
 
@@ -648,31 +634,8 @@ class Display {
 
     // showing the about section
     void showAboutSection() {
-//      showMenu(aboutSection, aboutSectionCursor, ABOUT_SECTION_ITEMS);
-
-      if (aboutSectionCursor != ABOUT_SECTION_ITEMS - 1) {
-        if (aboutSectionCursor == NAME_POSITION) {
-          showMenuOption(OPTIONS_OFFSET, 0, NAME);
-          showMenuOption(OPTIONS_OFFSET, 1, CREATOR);
-        } else if (aboutSectionCursor == CREATOR_POSITION) {
-          showMenuOption(OPTIONS_OFFSET, 0, CREATOR);
-          showMenuOption(OPTIONS_OFFSET, 1, GITHUB);
-        } else if (aboutSectionCursor == GUTHUB_POSITION) {
-          showMenuOption(OPTIONS_OFFSET, 0, GITHUB);
-          showMenuOption(OPTIONS_OFFSET, 1, BACK_BUTTON);
-        } 
-
-        // showing where the cursor is currently
-        showCursor(0, 0);
-      } else {
-        showMenuOption(OPTIONS_OFFSET, 0, GITHUB);
-        showMenuOption(OPTIONS_OFFSET, 1, BACK_BUTTON);
-
-        // showing where the cursor is currently
-        showCursor(0, 1);
-      }
-
-      showNavigationArrows();
+      String aboutSection[ABOUT_SECTION_ITEMS] = { NAME, CREATOR, GITHUB, BACK_BUTTON };
+      showMenu(aboutSection, aboutSectionCursor, ABOUT_SECTION_ITEMS);
       scrollPosition = DISPLAY_COLUMNS + 1;
     }
 
@@ -680,33 +643,27 @@ class Display {
     void scrollAboutItem(String item) {
       int startPosition = scrollPosition - DISPLAY_COLUMNS;
 
-        lcd.setCursor(OPTIONS_OFFSET, 0);
-        lcd.print(item.substring(startPosition, startPosition + MENU_ITEM_LENGTH));
+      lcd.setCursor(OPTIONS_OFFSET, 0);
+      lcd.print(item.substring(startPosition, startPosition + MENU_ITEM_LENGTH));
 
-        if (item.length() - startPosition < MENU_ITEM_LENGTH) {
-          // the end of the text has been shown on the display
-          // => showing the beginning of the text as well
-          lcd.print(item.substring(0, MENU_ITEM_LENGTH - (item.length() - startPosition)));
-        }
+      if (item.length() - startPosition < MENU_ITEM_LENGTH) {
+        // the end of the text has been shown on the display
+        // => showing the beginning of the text as well
+        lcd.print(item.substring(0, MENU_ITEM_LENGTH - (item.length() - startPosition)));
+      }
 
-        if (startPosition < item.length() - 1) {
-          scrollPosition++;
-        } else {
-          scrollPosition = DISPLAY_COLUMNS;
-        }
+      if (startPosition < item.length() - 1) {
+        scrollPosition++;
+      } else {
+        scrollPosition = DISPLAY_COLUMNS;
+      }
     }
 
     // scrolling the current line in the about section
     void scrollCurrentAboutSection() {
+      String aboutSection[ABOUT_SECTION_ITEMS] = { NAME, CREATOR, GITHUB, BACK_BUTTON };
       if (aboutSectionCursor != ABOUT_SECTION_ITEMS - 1) {
-        if (aboutSectionCursor == NAME_POSITION) {
-          scrollAboutItem(NAME);
-        } else if (aboutSectionCursor == CREATOR_POSITION) {
-          scrollAboutItem(CREATOR);
-        } else if (aboutSectionCursor == GUTHUB_POSITION) {
-          scrollAboutItem(GITHUB);
-        } 
-        
+        scrollAboutItem(aboutSection[aboutSectionCursor]);
         showNavigationArrows();
       }
     }

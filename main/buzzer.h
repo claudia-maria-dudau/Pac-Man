@@ -4,7 +4,7 @@
 class Buzzer {
     void playTone(int buzzerTone, int duration) {
       tone(BUZZER_PIN, buzzerTone, duration * 0.9);
-//      delay(duration);
+      delay(duration);
       noTone(BUZZER_PIN);
     }
     

@@ -16,11 +16,11 @@
 
 // shift register pins for matrix
 #define DIN_PIN 12
-#define CLOCK_PIN 11
+#define CLOCK_PIN 1
 #define LOAD_PIN 10
 
 // buzzer pins
-#define BUZZER_PIN 1
+#define BUZZER_PIN 11
 
 
 // --- SYSTEM STATES ---
@@ -101,11 +101,17 @@
 #define SETTINGS_POSITION 2
 #define ABOUT_POSITION 3
 
+// principal menu items
+#define START_GAME "Start Game"
+#define HIGHSCORE "Highscore"
+#define SETTINGS "Settings"
+#define ABOUT "About"
+
 
 // --- GAME ---
 // level
 #define MIN_LEVEL 1
-#define MAX_LEVEL 2
+#define MAX_LEVEL 10
 #define LEVEL_STEP 1
 #define BETWEEN_LEVELS_INTERVAL ANIMATION_INTERVAL * MATRIX_SIZE
 
@@ -119,7 +125,7 @@
 
 // map constants
 #define MAP_STEP 4
-#define MAPS 2
+#define MAPS 4
 #define MIN_MAP_SIZE 8
 #define MAX_MAP_SIZE MIN_MAP_SIZE + MAP_STEP * (MAPS - 1)
 #define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS + 1)
@@ -144,7 +150,8 @@
 // beat highscore display
 #define BEAT_HIGHSCORE_DISPLAY 0
 #define ENTER_NAME_TEXT_DISPLAY 1
-#define ENTER_NAME_DISPLAY 2
+#define NAME_RESTRICTIONS_DISPLAY 2
+#define ENTER_NAME_DISPLAY 3
 
 
 // --- PAUSE GAME MENU ---
@@ -158,11 +165,20 @@
 
 
 // --- ENTER NAME MENU ---
-#define KEYBOARD_LINES 2
+#define KEYBOARD_LINES 3
 #define KEYBOARD_COLUMNS 13
 #define KEYBOARD_START_COLUMN 2
 #define ENTER_NAME_MENU_OPTIONS 2
 #define ENTER_NAME_MENU_ITEMS KEYBOARD_LINES + ENTER_NAME_MENU_OPTIONS
+
+// keyboard
+#define KEYBOARD_LINE_1 "abcdefghijklm"
+#define KEYBOARD_LINE_2 "nopqrstuvwxyz"
+#define KEYBOARD_LINE_3 "1234567890-_$"
+
+// enter menu items
+#define DELETE_BUTTON "Delete"
+#define DONE_BUTTON "Done"
 
 
 // --- END GAME MENU ---
@@ -190,6 +206,12 @@
 #define INTENSITY_POSITION 3
 #define BACK_POSITION 4
 
+// settings menu items
+#define START_LEVEL "Start level"
+#define CONTRAST "Contrast"
+#define BRIGHTNESS "Brightness"
+#define INTENSITY "Intensity"
+
 // settings limits
 #define MIN_SETTINGS 0
 #define MAX_SETTINGS_LCD 255
@@ -204,11 +226,6 @@
 // --- ABOUT SECTION ---
 #define ABOUT_SECTION_ITEMS 4
 #define SCROLL_ABOUT_SECTION_INTERVAL 500
-
-// about items' corresponding positions
-#define NAME_POSITION 0
-#define CREATOR_POSITION 1
-#define GUTHUB_POSITION 2
 
 // about items
 #define NAME "Name: Marinel's epic quest for food   "

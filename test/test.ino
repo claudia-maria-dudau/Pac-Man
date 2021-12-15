@@ -1,5 +1,5 @@
 #include "notes.h"
-int BUZZER_PIN = 1;
+int BUZZER_PIN = 11;
 int WHOLENOTE = 60000 * 4 / 105;
 
 void setup() {

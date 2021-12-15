@@ -687,6 +687,11 @@ class Game {
       display.showEnterNameTextDisplay();
     }
 
+    void showNameRestrictions() {
+      display.clear();
+      display.showNameRestrictionsDisplay();
+    }
+
     // the player has beaten the highscore
     void beatHighscore() {
       // taking a few moments before changing between the messages
@@ -697,7 +702,9 @@ class Game {
           showBeatHighscore();
         } else if (highscoreDisplay == ENTER_NAME_TEXT_DISPLAY) {
           showEnterNameText();
-        }  else if (highscoreDisplay == ENTER_NAME_DISPLAY) {
+        } else if (highscoreDisplay == NAME_RESTRICTIONS_DISPLAY) {
+          showNameRestrictions();
+        } else if (highscoreDisplay == ENTER_NAME_DISPLAY) {
           joystick.setSystemState(ENTER_NAME_STATE);
           display.setEnterNameMenuCursorX(0);
           display.setEnterNameMenuCursorY(0);
