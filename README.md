@@ -183,7 +183,7 @@
  
 
 ## Pciture of setup
-<img src="https://user-images.githubusercontent.com/62221313/145267815-c676f33c-b4ff-4640-9214-0565705099f5.jpeg" width="400" height="400" />
+<img src="https://user-images.githubusercontent.com/62221313/146199540-f3c28b32-d60d-4e60-9280-0f0152c128d4.jpeg" width="400" height="400" />
 
 ## Video of setup
 to be added once the game is complete
