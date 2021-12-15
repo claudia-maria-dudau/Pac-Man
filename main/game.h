@@ -154,8 +154,7 @@ class Game {
       display.clear();
       display.showStartGameDisplay();
 
-      buzzer.startGameSong();
-      display.showContrast();
+      buzzer.startSong();
     }
 
     // starting the game
@@ -165,6 +164,9 @@ class Game {
         resetGame();
         initializeLevel();
         joystick.setSystemState(IN_GAME_STATE);
+      } else {
+        // playing the song before the game starts
+        buzzer.playGameSong();
       }
     }
     
@@ -390,6 +392,8 @@ class Game {
 
     // decreasing the number of lives of the player
     void decreaseLife() {
+      buzzer.playMeetEnemy();
+      
       if ( lives > 1) {
         // player loses a life
         lives--;
@@ -416,6 +420,8 @@ class Game {
 
     // removing food item from the map
     void eatFoodItem(int position) {
+      buzzer.playEatFoodItem();
+      
       // erasing the respective food item form the map
       matrix.resetPosition(foodItems[position][0] - firstLine, foodItems[position][1] - firstColumn);
 
@@ -576,6 +582,8 @@ class Game {
         joystick.setSystemState(DONE_LEVEL_STATE);
         matrix.clear();
         matrix.startDoneLevelAnimation();
+
+        buzzer.startSong();
 
         // memorying the time when the level was finished
         doneLevelTime = millis();

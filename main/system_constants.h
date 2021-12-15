@@ -79,11 +79,12 @@
 // --- BUZZER CONSTANTS ---
 #define SONG_TEMPO 105
 #define WHOLENOTE (60000 * 4) / SONG_TEMPO
+#define BETWEEN_NOTES_INTERVAL 100
 
 
 // --- INTRO ---
 #define INTRO_SECTIONS_INTERVAL 4000
-#define INTRO_ANIMATION_INTERVAL 300
+#define INTRO_ANIMATION_INTERVAL 420
 #define TEXT_SECTION_1 1
 #define TEXT_SECTION_2 2
 #define TEXT_SECTION_3 3
@@ -125,7 +126,7 @@
 
 // map constants
 #define MAP_STEP 4
-#define MAPS 4
+#define MAPS 3
 #define MIN_MAP_SIZE 8
 #define MAX_MAP_SIZE MIN_MAP_SIZE + MAP_STEP * (MAPS - 1)
 #define LEVEL_MAP_STEP (int)((MAX_LEVEL - 1) / MAPS + 1)
