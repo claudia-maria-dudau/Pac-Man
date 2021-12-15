@@ -37,7 +37,7 @@ class Game {
     int noFoodItems;
     int foodItems[MAX_FOOD_ITEMS][2]; // each food item has a set of (x, y) coordinates to indicate its position
 
-    // map 
+    // map
     int mapSize;
     int firstLine;
     int firstColumn;
@@ -60,133 +60,8 @@ class Game {
     // about section
     unsigned long lastChangedScrollAbout;
 
-  public:
-    Game() {
-      // memory addresses for highscore top
-      // scores
-      for (int i = 0; i < HIGHSCORE_TOP * 2; i++)
-        scoresAddresses[i] = START_NAMES_ADDRESS + i;
 
-      // names
-      for (int i = 0; i < HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1); i++)
-        namesAddresses[i] = START_SCORES_ADDRESS + i;
-
-      // reading highscore top from memory
-      // scores
-      for (int i = 0; i < HIGHSCORE_TOP; i++) {
-        // int value needs 2 bytes to be stored
-        // => the value is stored into 2 addresses on the EEPROM
-        byte byte1 = EEPROM.read(scoresAddresses[2 * i]);
-        byte byte2 = EEPROM.read(scoresAddresses[2 * i + 1]);
-
-        // reconstrucitng the int value from the 2 bytes:
-        // the first byte needs to be shifted left by 8 then added with the second byte
-        scores[i] = (byte1 << 8) + byte2;
-      }
-
-      // names
-      for (int i = 0; i < HIGHSCORE_TOP; i ++) {
-        // string value has each of its characters stored at consecutive addresses on the EEPROM
-        // the length of the string is also stored in the address right before its characters
-        // in order to know how many characters need to be read to reconstruct the string
-        int length =  EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1)]);
-
-        // reconstructing the string value:
-        // concatenating all the characters
-        for (int j = 1; j < length + 1; j++)
-          names[i] += (char)EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1) + j]);
-
-      }
-
-      startLevelValue = MIN_LEVEL;
-      joystick.setSystemState(INTRO_STATE);
-    }
-
-    // resetting the matrix to the start animation
-    void resetMatrix() {
-      matrix.clear();
-      matrix.startAnimation();
-    }
-
-
-    // --- SYSTEM STATE ---
-    // getting the curent state of the system
-    int getSystemState() {
-      return joystick.getSystemState();
-    }
-
-
-    // --- INTRO ---
-    // showing game intro
-    void intro() {
-      matrix.startAnimation();
-      display.startText();
-
-      if (display.getIsDoneIntro()) {
-        changeFromIntro();
-      }
-    }
-
-
-    // --- PRINCIPAL MENU ---
-    // showing the principal menu of the game
-    void showPrincipalMenu() {
-      display.clear();
-      display.showPrincipalMenu();
-    }
-
-    // navigating through the pricipal menu
-    void navigatePrincipalMenu() {
-      int cursorPosition = display.getPrincipalMenuCursor();
-      int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, PRINCIPAL_MENU_ITEMS);
-
-      // cursor moved => update display
-      if (cursorPosition != newCursorPosition) {
-        display.setPrincipalMenuCursor(newCursorPosition);
-        showPrincipalMenu();
-      }
-    }
-
-
-    // --- GAME ---
-    // showing the start game display
-    void showStartGame() {
-      display.clear();
-      display.showStartGameDisplay();
-
-      buzzer.startSong();
-    }
-
-    // starting the game
-    void startGame() {
-      if (millis() - lastChangedGameSection > BETWEEN_LEVELS_INTERVAL) {
-        // initializing the first level of the game
-        resetGame();
-        initializeLevel();
-        joystick.setSystemState(IN_GAME_STATE);
-      } else {
-        // playing the song before the game starts
-        buzzer.playGameSong();
-      }
-    }
-    
-    // resetting game variables
-    void resetGame() {
-      lives = MAX_LIVES;
-      currentScore = 0;
-      level = startLevelValue;
-      currentName = "";
-      shownMessage = false;
-      shownStatistics = false;
-      shownBeatHighscore = false;
-    }
-
-    // showing the in game display
-    void showGameDisplay() {
-      display.clear();
-      display.showGameDisplay(level, lives, currentScore);
-    }
-
+    // --- GAME LOGIC ---
     // verifying whether an element is in the bounds of the given map section or not
     bool isInSectionBound(int line, int column, int positionX, int positionY) {
       return (positionX >= line && positionX < line + MATRIX_SIZE) && (positionY >= column && positionY < column + MATRIX_SIZE);
@@ -300,100 +175,60 @@ class Game {
       }
     }
 
+    // changing the position of an element (enemy or food item) on the map section
+    void changePosition(int* position, int lastFirstLine, int lastFirstColumn) {
+      if (isInSectionBound(lastFirstLine, lastFirstColumn, position[0], position[1])) {
+        // previous position was in the bounds of the last section
+        if (isInSectionBound(firstLine, firstColumn, position[0], position[1])) {
+          // actual position is in the bounds of the new section
+          // => chnaging the position on the matrix
+          matrix.changePosition(position[0] - lastFirstLine, position[1] - lastFirstColumn,
+                                position[0] - firstLine, position[1] - firstColumn);
+        } else {
+          // actual position is no longer in the bounds of the new section
+          // => resetting position on the matrix
+          matrix.resetPosition(position[0] - lastFirstLine, position[1] - lastFirstColumn);
+        }
+      } else {
+        // previous position was not in the bounds of the last section
+        if (isInSectionBound(firstLine, firstColumn, position[0], position[1])) {
+          // actual position is in the bounds of the new section
+          // => setting the position on the matrix
+          matrix.setPosition(position[0] - firstLine, position[1] - firstColumn);
+        }
+      }
+    }
+
     // showing a section of the map according to the position of the player
     void showMap(int newPlayerPositionX, int newPlayerPositionY) {
       int lastFirstLine = min(max(playerPosition[0] - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
       int lastFirstColumn = min(max(playerPosition[1] - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
-      
+
       // centering the position of the player on the matrix
       firstLine = min(max(newPlayerPositionX - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
       firstColumn = min(max(newPlayerPositionY - HALF_MATRIX_SIZE, 0), mapSize - MATRIX_SIZE);
 
       // changing the position of the player on the matrix
-      matrix.changePosition(playerPosition[0] - lastFirstLine, playerPosition[1] - lastFirstColumn, 
+      matrix.changePosition(playerPosition[0] - lastFirstLine, playerPosition[1] - lastFirstColumn,
                             newPlayerPositionX - firstLine, newPlayerPositionY - firstColumn);
 
       if (lastFirstLine != firstLine || lastFirstColumn != firstColumn) {
         // changing the position of the enemies on the matrix
         for (int i = 0; i < noEnemies; i++) {
-          if (isInSectionBound(lastFirstLine, lastFirstColumn, enemies[i][0], enemies[i][1])) {
-            // previous position of the enemy was in the bounds of the last section
-            if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
-              // actual position of the enemy is in the bounds of the new section
-              // => chnaging the position on the matrix
-              matrix.changePosition(enemies[i][0] - lastFirstLine, enemies[i][1] - lastFirstColumn, 
-                             enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
-            } else {
-              // actual position of the enemy is no longer in the bounds of the new section
-              // => resetting position on the matrix
-              matrix.resetPosition(enemies[i][0] - lastFirstLine, enemies[i][1] - lastFirstColumn);
-            }  
-          } else {
-            // previous position of the enemy was not in the bounds of the last section
-            if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
-              // actual position of the enemy is in the bounds of the new section
-              // => setting the position on the matrix
-              matrix.setPosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
-            }
-          }
+          changePosition(enemies[i], lastFirstLine, lastFirstColumn);
         }
-  
+
         // changing the position of the food items on the matrix
         for (int i = 0; i < noFoodItems; i++) {
-          if (isInSectionBound(lastFirstLine, lastFirstColumn, foodItems[i][0], foodItems[i][1])) {
-            // previous position of the food item was in the bounds of the last section
-            if (isInSectionBound(firstLine, firstColumn, foodItems[i][0], foodItems[i][1])) {
-              // actual position of the food item is in the bounds of the new section
-              // => chnaging the position on the matrix
-              matrix.changePosition(foodItems[i][0] - lastFirstLine, foodItems[i][1] - lastFirstColumn, 
-                             foodItems[i][0] - firstLine, foodItems[i][1] - firstColumn);
-            } else {
-              // actual position of the food item is no longer in the bounds of the new section
-              // => resetting position on the matrix
-              matrix.resetPosition(foodItems[i][0] - lastFirstLine, foodItems[i][1] - lastFirstColumn);
-            }  
-          } else {
-            // previous position of the food item was not in the bounds of the last section
-            if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
-              // actual position of the food item is in the bounds of the new section
-              // => setting the position on the matrix
-              matrix.setPosition(foodItems[i][0] - firstLine, foodItems[i][1] - firstColumn);
-            }
-          }
+          changePosition(foodItems[i], lastFirstLine, lastFirstColumn);
         }
       }
-    }
-    
-    // game initialization based on level
-    void initializeLevel() {
-      showGameDisplay();
-
-      // initializing the seed for the random numbers
-      randomSeed(millis());
-
-      // the level indicates the number of enemies, food items and size of the map
-      noEnemies = (level - 1) / LEVEL_MAP_STEP * ENEMIES_STEP + 1;
-      enemiesSpeed = ENEMIES_MIN_SPEED - level * ENEMIES_SPEED_STEP;
-      noFoodItems = level * FOOD_ITEMS_STEP;
-      mapSize = MIN_MAP_SIZE + (level - 1) / LEVEL_MAP_STEP * MAP_STEP;
-
-      matrix.initialize();
-
-      initializePlayer();  
-      initializeEnemies();
-      initializeFoodItems();
-
-      // resetting timers
-      lastChangedPlayerPosition = millis();
-      lastChangedPlayerBlinking = millis();
-      lastChangedEnemiesPositions = millis();
-      lastChangedEnemiesBlinking = millis();
     }
 
     // decreasing the number of lives of the player
     void decreaseLife() {
       buzzer.playMeetEnemy();
-      
+
       if ( lives > 1) {
         // player loses a life
         lives--;
@@ -421,7 +256,7 @@ class Game {
     // removing food item from the map
     void eatFoodItem(int position) {
       buzzer.playEatFoodItem();
-      
+
       // erasing the respective food item form the map
       matrix.resetPosition(foodItems[position][0] - firstLine, foodItems[position][1] - firstColumn);
 
@@ -512,13 +347,13 @@ class Game {
             if (isInSectionBound(firstLine, firstColumn, next[0], next[1])) {
               // actual position of the enemy is in the bounds of the new section
               // => chnaging the position on the matrix
-              matrix.changePosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn, 
-                             next[0] - firstLine, next[1] - firstColumn);
+              matrix.changePosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn,
+                                    next[0] - firstLine, next[1] - firstColumn);
             } else {
               // actual position of the enemy is no longer in the bounds of the new section
               // => resetting position on the matrix
               matrix.resetPosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn);
-            }  
+            }
           } else {
             // previous position of the enemy was not in the bounds of the last section
             if (isInSectionBound(firstLine, firstColumn, next[0], next[1])) {
@@ -527,7 +362,7 @@ class Game {
               matrix.setPosition(next[0] - firstLine, next[1] - firstColumn);
             }
           }
-          
+
           enemies[i][0] = next[0];
           enemies[i][1] = next[1];
 
@@ -573,6 +408,159 @@ class Game {
 
         lastChangedPlayerPosition = millis();
       }
+    }
+
+  public:
+    Game() {
+      // memory addresses for highscore top
+      // scores
+      for (int i = 0; i < HIGHSCORE_TOP * 2; i++)
+        scoresAddresses[i] = START_NAMES_ADDRESS + i;
+
+      // names
+      for (int i = 0; i < HIGHSCORE_TOP * (MAX_NAME_LENGTH + 1); i++)
+        namesAddresses[i] = START_SCORES_ADDRESS + i;
+
+      // reading highscore top from memory
+      // scores
+      for (int i = 0; i < HIGHSCORE_TOP; i++) {
+        // int value needs 2 bytes to be stored
+        // => the value is stored into 2 addresses on the EEPROM
+        byte byte1 = EEPROM.read(scoresAddresses[2 * i]);
+        byte byte2 = EEPROM.read(scoresAddresses[2 * i + 1]);
+
+        // reconstrucitng the int value from the 2 bytes:
+        // the first byte needs to be shifted left by 8 then added with the second byte
+        scores[i] = (byte1 << 8) + byte2;
+      }
+
+      // names
+      for (int i = 0; i < HIGHSCORE_TOP; i ++) {
+        // string value has each of its characters stored at consecutive addresses on the EEPROM
+        // the length of the string is also stored in the address right before its characters
+        // in order to know how many characters need to be read to reconstruct the string
+        int length =  EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1)]);
+
+        // reconstructing the string value:
+        // concatenating all the characters
+        for (int j = 1; j < length + 1; j++)
+          names[i] += (char)EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1) + j]);
+
+      }
+
+      startLevelValue = MIN_LEVEL;
+      joystick.setSystemState(INTRO_STATE);
+    }
+
+    // resetting the matrix to the start animation
+    void resetMatrix() {
+      matrix.clear();
+      matrix.startAnimation();
+    }
+
+
+    // --- SYSTEM STATE ---
+    // getting the curent state of the system
+    int getSystemState() {
+      return joystick.getSystemState();
+    }
+
+
+    // --- INTRO ---
+    // showing game intro
+    void intro() {
+      matrix.startAnimation();
+      display.startText();
+
+      if (display.getIsDoneIntro()) {
+        changeFromIntro();
+      }
+    }
+
+
+    // --- PRINCIPAL MENU ---
+    // showing the principal menu of the game
+    void showPrincipalMenu() {
+      display.clear();
+      display.showPrincipalMenu();
+    }
+
+    // navigating through the pricipal menu
+    void navigatePrincipalMenu() {
+      int cursorPosition = display.getPrincipalMenuCursor();
+      int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, PRINCIPAL_MENU_ITEMS);
+
+      // cursor moved => update display
+      if (cursorPosition != newCursorPosition) {
+        display.setPrincipalMenuCursor(newCursorPosition);
+        showPrincipalMenu();
+      }
+    }
+
+
+    // --- GAME ---
+    // showing the start game display
+    void showStartGame() {
+      display.clear();
+      display.showStartGameDisplay();
+
+      buzzer.startSong();
+    }
+
+    // starting the game
+    void startGame() {
+      if (millis() - lastChangedGameSection > BETWEEN_LEVELS_INTERVAL) {
+        // initializing the first level of the game
+        resetGame();
+        initializeLevel();
+        joystick.setSystemState(IN_GAME_STATE);
+      } else {
+        // playing the song before the game starts
+        buzzer.playGameSong();
+      }
+    }
+
+    // resetting game variables
+    void resetGame() {
+      lives = MAX_LIVES;
+      currentScore = 0;
+      level = startLevelValue;
+      currentName = "";
+      shownMessage = false;
+      shownStatistics = false;
+      shownBeatHighscore = false;
+    }
+
+    // showing the in game display
+    void showGameDisplay() {
+      display.clear();
+      display.showGameDisplay(level, lives, currentScore);
+    }
+
+    // game initialization based on level
+    void initializeLevel() {
+      showGameDisplay();
+
+      // initializing the seed for the random numbers
+      randomSeed(millis());
+
+      // the level indicates the number of enemies, food items and size of the map
+      noEnemies = (level - 1) / LEVEL_MAP_STEP * ENEMIES_STEP + 1;
+      enemiesSpeed = ENEMIES_MIN_SPEED - level * ENEMIES_SPEED_STEP;
+      noFoodItems = level * FOOD_ITEMS_STEP;
+      mapSize = MIN_MAP_SIZE + (level - 1) / LEVEL_MAP_STEP * MAP_STEP;
+
+      matrix.initialize();
+
+      initializePlayer();
+      initializeEnemies();
+      initializeFoodItems();
+
+      // resetting timers
+      lastChangedPlayerPosition = millis();
+      lastChangedPlayerBlinking = millis();
+      lastChangedEnemiesPositions = millis();
+      lastChangedEnemiesBlinking = millis();
     }
 
     // the flow of the game
@@ -629,6 +617,7 @@ class Game {
           joystick.setSystemState(IN_GAME_STATE);
         } else {
           matrix.showDoneLevelAnimation();
+          buzzer.playGameSong();
         }
       } else {
         // the player has completed the last level of the game => the game is done
@@ -705,7 +694,7 @@ class Game {
       // taking a few moments before changing between the messages
       if (millis() - lastChangedGameSection > BETWEEN_END_SECTIONS) {
         highscoreDisplay++;
-        
+
         if (highscoreDisplay == BEAT_HIGHSCORE_DISPLAY) {
           showBeatHighscore();
         } else if (highscoreDisplay == ENTER_NAME_TEXT_DISPLAY) {
@@ -1050,25 +1039,25 @@ class Game {
         lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
       } else if (shownStatistics && !shownBeatHighscore) {
         if (currentScore > scores[HIGHSCORE_TOP - 1]) {
-           // moving to beat highscore display
-           joystick.setSystemState(BEAT_HIGHSCORE_STATE);
-           highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
-           lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
-         } else {
-           // moving to end game dispaly
-           joystick.setSystemState(END_GAME_STATE);
-           display.setEndGameMenuCursor(0);
-           showEndGameMenu();
-         }
+          // moving to beat highscore display
+          joystick.setSystemState(BEAT_HIGHSCORE_STATE);
+          highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
+          lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
+        } else {
+          // moving to end game dispaly
+          joystick.setSystemState(END_GAME_STATE);
+          display.setEndGameMenuCursor(0);
+          showEndGameMenu();
+        }
       } else if (shownBeatHighscore) {
         // moving to the next display of the beat highscore state
         joystick.setSystemState(BEAT_HIGHSCORE_STATE);
         lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
+      }
     }
-  }
 
-  // changing from enter name menu
-  void changeFromEnterNameMenu() {
+    // changing from enter name menu
+    void changeFromEnterNameMenu() {
       int cursorPositionX = display.getEnterNameMenuCursorX();
       int cursorPositionY = display.getEnterNameMenuCursorY();
 

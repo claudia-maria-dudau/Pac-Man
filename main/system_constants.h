@@ -3,10 +3,10 @@
 #define RS 13
 #define ENABLE 8
 #define D4 7
-#define D5 6
+#define D5 5
 #define D6 4
 #define D7 3
-#define CONTRAST_PIN 5
+#define CONTRAST_PIN 6
 #define BRIGHTNESS_PIN 9
 
 // joystick pins

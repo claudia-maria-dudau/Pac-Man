@@ -36,6 +36,8 @@ class Buzzer {
     Buzzer() {
       // buzzer pin is in OUTPUT mode
       pinMode(BUZZER_PIN, OUTPUT);
+
+      noTone(BUZZER_PIN);
     }
 
 
