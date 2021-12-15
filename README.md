@@ -192,4 +192,4 @@ to be added once the game is complete
 In case you're wondering who Marinel is, here's a picture:
 <br/>
 <br/>
-<img src="https://user-images.githubusercontent.com/62221313/145267826-f689cb21-f235-435f-a546-14fdef400233.jpeg" width="400" height="300" />
+<img src="https://user-images.githubusercontent.com/62221313/146199540-f3c28b32-d60d-4e60-9280-0f0152c128d4.jpeg" width="400" height="300" />
