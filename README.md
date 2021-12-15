@@ -138,6 +138,11 @@
   <li>nothings happenes during this part if the joystick moves</li>
   <li>skipping this part is done by pressing the button of the joystick</li>
  </ul>
+ 
+#### Start Game Display
+ Characteristics:
+  - shown at the begining of each game to prepare the player for the start of the game
+  - nothings happenes during this part if the joystick moves or if the button is pressed
 
 #### In Game Display
  Characteristics:
@@ -162,7 +167,7 @@
  Characteristics:
   - shown when the player has beaten the highscore to anounce him of his accomplishment
   - shows corresponding message
-  - informs the player to enter his name to be saved in the highscore top
+  - informs the player to enter his name and about the name restrictions
   - nothings happenes during this part if the joystick moves
   - skipping this part is done by pressing the button of the joystick
 </details>
