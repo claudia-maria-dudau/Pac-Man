@@ -4,9 +4,9 @@
 #define ENABLE 8
 #define D4 7
 #define D5 6
-#define D6 5
-#define D7 4
-#define CONTRAST_PIN 3
+#define D6 4
+#define D7 3
+#define CONTRAST_PIN 5
 #define BRIGHTNESS_PIN 9
 
 // joystick pins
