@@ -135,8 +135,14 @@
  <br/>
  <ul>
   <li>plays at the begining of the game</li>
-  <li>nothings happenes during this part if the joystick moves or the button is pressed</li>
+  <li>nothings happenes during this part if the joystick moves</li>
+  <li>skipping this part is done by pressing the button of the joystick</li>
  </ul>
+ 
+#### Start Game Display
+ Characteristics:
+  - shown at the begining of each game to prepare the player for the start of the game
+  - nothings happenes during this part if the joystick moves or if the button is pressed
 
 #### In Game Display
  Characteristics:
@@ -148,26 +154,30 @@
 #### Won Game Display / Lost Game Display
  Characteristics:
   - shows corresponding message for the player
-  - nothings happenes during this part if the joystick moves or the button is pressed
+  - nothings happenes during this part if the joystick moves
+  - skipping this part is done by pressing the button of the joystick
 
 #### Statisctics Display
  Characteristics:
   - shows the statistics of the game (lives remaining + score obtained)
-  - nothings happenes during this part if the joystick moves or the button is pressed
+  - nothings happenes during this part if the joystick moves
+  - skipping this part is done by pressing the button of the joystick
 
 #### Beat Highscore Display
  Characteristics:
   - shown when the player has beaten the highscore to anounce him of his accomplishment
   - shows corresponding message
   - informs the player to enter his name and about the name restrictions
-  - nothings happenes during this part if the joystick moves or the button is pressed
+  - nothings happenes during this part if the joystick moves
+  - skipping this part is done by pressing the button of the joystick
 </details>
 
 ## Implementation details
- - The system has 27 states to ensure the flow of the game. The button has attached an interrupt function which helps change between the different states.
+ - The system has 30 states to ensure the flow of the game. The button has attached an interrupt function which helps change between the different states.
+ - For the bigger maps of the game, which exceed the 8x8 bounds of the matrix, the 'moving camera' technique is used to navigate its surface.
  - The highscore top, the display settings and the matrix settings are stored in the EEPROM memory of the ARDUINO UNO.
  - Each component of the game has its own separate class (display, matrix, joystick). There is also a class for the game logic which combines all the components' functionlities and ensures the correct flow of the game.
- - There are 2 custom characters created for the lcd display: a dog and a down arrow. There is also a custom design for the matrix which shows a drawing of PAC-MAN.
+ - There are 2 custom characters created for the lcd display: a dog and a down arrow. There is also a custom design for the matrix which shows a drawing of PAC-MAN and an arrow animation which is shown between levels.
  - The initial positions for the player, enemies and food items are randomly generated using the current system time as the seed, to avoid any repetitiveness which may occur.
  
 
