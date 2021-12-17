@@ -4,7 +4,7 @@
 #include "buzzer.h"
 
 class Game {
-    Display display = Display();
+    Display gameDisplay = Display();
     Matrix matrix = Matrix();
     Joystick joystick = Joystick();
     Buzzer buzzer = Buzzer();
@@ -49,7 +49,7 @@ class Game {
     bool shownMessage;
     bool shownStatistics;
     bool shownBeatHighscore;
-    int highscoreDisplay;
+    int highscoregameDisplay;
 
     // highscore board
     String names[HIGHSCORE_TOP] = { "", "", "", "", "" };
@@ -176,25 +176,25 @@ class Game {
     }
 
     // changing the position of an element (enemy or food item) on the map section
-    void changePosition(int* position, int lastFirstLine, int lastFirstColumn) {
-      if (isInSectionBound(lastFirstLine, lastFirstColumn, position[0], position[1])) {
+    void changePosition(int* objectPosition, int lastFirstLine, int lastFirstColumn) {
+      if (isInSectionBound(lastFirstLine, lastFirstColumn, objectPosition[0], objectPosition[1])) {
         // previous position was in the bounds of the last section
-        if (isInSectionBound(firstLine, firstColumn, position[0], position[1])) {
+        if (isInSectionBound(firstLine, firstColumn, objectPosition[0], objectPosition[1])) {
           // actual position is in the bounds of the new section
           // => chnaging the position on the matrix
-          matrix.changePosition(position[0] - lastFirstLine, position[1] - lastFirstColumn,
-                                position[0] - firstLine, position[1] - firstColumn);
+          matrix.changePosition(objectPosition[0] - lastFirstLine, objectPosition[1] - lastFirstColumn,
+                                objectPosition[0] - firstLine, objectPosition[1] - firstColumn);
         } else {
           // actual position is no longer in the bounds of the new section
           // => resetting position on the matrix
-          matrix.resetPosition(position[0] - lastFirstLine, position[1] - lastFirstColumn);
+          matrix.resetPosition(objectPosition[0] - lastFirstLine, objectPosition[1] - lastFirstColumn);
         }
       } else {
         // previous position was not in the bounds of the last section
-        if (isInSectionBound(firstLine, firstColumn, position[0], position[1])) {
+        if (isInSectionBound(firstLine, firstColumn, objectPosition[0], objectPosition[1])) {
           // actual position is in the bounds of the new section
           // => setting the position on the matrix
-          matrix.setPosition(position[0] - firstLine, position[1] - firstColumn);
+          matrix.setPosition(objectPosition[0] - firstLine, objectPosition[1] - firstColumn);
         }
       }
     }
@@ -236,12 +236,12 @@ class Game {
         // decresing the score
         updateScore(-1 * LIFE_SCORE);
 
-        // player lives changed => update display
-        showGameDisplay();
+        // player lives changed => update gameDisplay
+        showGamegameDisplay();
       } else {
         // the player has no more lives => loses game
         joystick.setSystemState(LOST_GAME_STATE);
-        matrix.clear();
+        matrix.clearMatrix();
       }
     }
 
@@ -249,19 +249,19 @@ class Game {
     void updateScore(int value) {
       currentScore += value;
 
-      // player score changed => update display
-      showGameDisplay();
+      // player score changed => update gameDisplay
+      showGamegameDisplay();
     }
 
     // removing food item from the map
-    void eatFoodItem(int position) {
+    void eatFoodItem(int index) {
       buzzer.playEatFoodItem();
 
       // erasing the respective food item form the map
-      matrix.resetPosition(foodItems[position][0] - firstLine, foodItems[position][1] - firstColumn);
+      matrix.resetPosition(foodItems[index][0] - firstLine, foodItems[index][1] - firstColumn);
 
       // erasing the respective food item from the list of food items
-      for (int j = position; j < noFoodItems - 1; j++) {
+      for (int j = index; j < noFoodItems - 1; j++) {
         foodItems[j][0] = foodItems[j + 1][0];
         foodItems[j][1] = foodItems[j + 1][1];
       }
@@ -300,7 +300,7 @@ class Game {
     // moving enemies at a given interval
     void moveEnemies() {
       if (millis() - lastChangedEnemiesPositions > enemiesSpeed) {
-        int move;
+        int possibleMove;
         int next[2];
 
         // generating a random move for each enemy
@@ -309,9 +309,9 @@ class Game {
 
           while (!moveOk) {
             // generate random move
-            move = random(MOVES);
-            next[0] = enemies[i][0] + movesX[move];
-            next[1] = enemies[i][1] + movesY[move];
+            possibleMove = random(MOVES);
+            next[0] = enemies[i][0] + movesX[possibleMove];
+            next[1] = enemies[i][1] + movesY[possibleMove];
 
             moveOk = true;
 
@@ -439,11 +439,11 @@ class Game {
         // string value has each of its characters stored at consecutive addresses on the EEPROM
         // the length of the string is also stored in the address right before its characters
         // in order to know how many characters need to be read to reconstruct the string
-        int length =  EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1)]);
+        int nameLength =  EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1)]);
 
         // reconstructing the string value:
         // concatenating all the characters
-        for (int j = 1; j < length + 1; j++)
+        for (int j = 1; j < nameLength + 1; j++)
           names[i] += (char)EEPROM.read(namesAddresses[i * (MAX_NAME_LENGTH + 1) + j]);
 
       }
@@ -454,8 +454,8 @@ class Game {
 
     // resetting the matrix to the start animation
     void resetMatrix() {
-      matrix.clear();
-      matrix.startAnimation();
+      matrix.clearMatrix();
+      matrix.showPacMan();
     }
 
 
@@ -469,10 +469,10 @@ class Game {
     // --- INTRO ---
     // showing game intro
     void intro() {
-      matrix.startAnimation();
-      display.startText();
+      matrix.showPacMan();
+      gameDisplay.startText();
 
-      if (display.getIsDoneIntro()) {
+      if (gameDisplay.getIsDoneIntro()) {
         changeFromIntro();
       }
     }
@@ -481,28 +481,28 @@ class Game {
     // --- PRINCIPAL MENU ---
     // showing the principal menu of the game
     void showPrincipalMenu() {
-      display.clear();
-      display.showPrincipalMenu();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showPrincipalMenu();
     }
 
     // navigating through the pricipal menu
     void navigatePrincipalMenu() {
-      int cursorPosition = display.getPrincipalMenuCursor();
+      int cursorPosition = gameDisplay.getPrincipalMenuCursor();
       int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, PRINCIPAL_MENU_ITEMS);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
-        display.setPrincipalMenuCursor(newCursorPosition);
+        gameDisplay.setPrincipalMenuCursor(newCursorPosition);
         showPrincipalMenu();
       }
     }
 
 
     // --- GAME ---
-    // showing the start game display
+    // showing the start game gameDisplay
     void showStartGame() {
-      display.clear();
-      display.showStartGameDisplay();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showStartGameDisplay();
 
       buzzer.startSong();
     }
@@ -531,15 +531,15 @@ class Game {
       shownBeatHighscore = false;
     }
 
-    // showing the in game display
-    void showGameDisplay() {
-      display.clear();
-      display.showGameDisplay(level, lives, currentScore);
+    // showing the in game gameDisplay
+    void showGamegameDisplay() {
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showGameDisplay(level, lives, currentScore);
     }
 
     // game initialization based on level
     void initializeLevel() {
-      showGameDisplay();
+      showGamegameDisplay();
 
       // initializing the seed for the random numbers
       randomSeed(millis());
@@ -568,7 +568,7 @@ class Game {
       if (noFoodItems == 0) {
         // no more food items on the map => leve is done
         joystick.setSystemState(DONE_LEVEL_STATE);
-        matrix.clear();
+        matrix.clearMatrix();
         matrix.startDoneLevelAnimation();
 
         buzzer.startSong();
@@ -588,14 +588,14 @@ class Game {
     // pausing the game
     void changeToPause() {
       joystick.setSystemState(PAUSE_GAME_STATE);
-      display.setPauseGameMenuCursor(0);
+      gameDisplay.setPauseGameMenuCursor(0);
       showPauseGameMenu();
     }
 
-    // showing the lots game display
+    // showing the lots game gameDisplay
     void showLostGame() {
-      display.clear();
-      display.showLostGameDisplay();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showLostGameDisplay();
       shownMessage = true;
     }
 
@@ -625,10 +625,10 @@ class Game {
       }
     }
 
-    // showing the won game display
+    // showing the won game gameDisplay
     void showWonGame() {
-      display.clear();
-      display.showWonGameDisplay();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showWonGameDisplay();
       shownMessage = true;
     }
 
@@ -648,8 +648,8 @@ class Game {
 
     // showing the statistics of the game
     void showStatistics() {
-      display.clear();
-      display.showStatistics(lives, currentScore);
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showStatistics(lives, currentScore);
       shownStatistics = true;
     }
 
@@ -662,49 +662,49 @@ class Game {
         if (currentScore > scores[HIGHSCORE_TOP - 1]) {
           // the current score of the player is in greater than the last score in the highscore board
           joystick.setSystemState(BEAT_HIGHSCORE_STATE);
-          highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
+          highscoregameDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
           lastChangedGameSection = millis();
         }
       } else if (millis() - lastChangedGameSection > 2 * BETWEEN_END_SECTIONS) {
         joystick.setSystemState(END_GAME_STATE);
-        display.setEndGameMenuCursor(0);
+        gameDisplay.setEndGameMenuCursor(0);
         showEndGameMenu();
       }
     }
 
-    // shwoing the beat highscore displays
+    // shwoing the beat highscore gameDisplays
     void showBeatHighscore() {
-      display.clear();
-      display.showBeatHighscoreDisplay();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showBeatHighscoreDisplay();
       shownBeatHighscore = true;
     }
 
     void showEnterNameText() {
-      display.clear();
-      display.showEnterNameTextDisplay();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showEnterNameTextDisplay();
     }
 
     void showNameRestrictions() {
-      display.clear();
-      display.showNameRestrictionsDisplay();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showNameRestrictionsDisplay();
     }
 
     // the player has beaten the highscore
     void beatHighscore() {
       // taking a few moments before changing between the messages
       if (millis() - lastChangedGameSection > BETWEEN_END_SECTIONS) {
-        highscoreDisplay++;
+        highscoregameDisplay++;
 
-        if (highscoreDisplay == BEAT_HIGHSCORE_DISPLAY) {
+        if (highscoregameDisplay == BEAT_HIGHSCORE_DISPLAY) {
           showBeatHighscore();
-        } else if (highscoreDisplay == ENTER_NAME_TEXT_DISPLAY) {
+        } else if (highscoregameDisplay == ENTER_NAME_TEXT_DISPLAY) {
           showEnterNameText();
-        } else if (highscoreDisplay == NAME_RESTRICTIONS_DISPLAY) {
+        } else if (highscoregameDisplay == NAME_RESTRICTIONS_DISPLAY) {
           showNameRestrictions();
-        } else if (highscoreDisplay == ENTER_NAME_DISPLAY) {
+        } else if (highscoregameDisplay == ENTER_NAME_DISPLAY) {
           joystick.setSystemState(ENTER_NAME_STATE);
-          display.setEnterNameMenuCursorX(0);
-          display.setEnterNameMenuCursorY(0);
+          gameDisplay.setEnterNameMenuCursorX(0);
+          gameDisplay.setEnterNameMenuCursorY(0);
           showEnterNameMenu();
         }
 
@@ -716,47 +716,48 @@ class Game {
     // --- PAUSE GAME MENU ---
     // shwoing the pause game menu
     void showPauseGameMenu() {
-      display.clear();
-      display.showPauseGameMenu();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showPauseGameMenu();
     }
 
     // navigating through the pause game menu
     void navigatePauseGameMenu() {
-      int cursorPosition = display.getPauseGameMenuCursor();
+      int cursorPosition = gameDisplay.getPauseGameMenuCursor();
       int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, PAUSE_GAME_MENU_ITEMS);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
-        display.setPauseGameMenuCursor(newCursorPosition);
+        gameDisplay.setPauseGameMenuCursor(newCursorPosition);
         showPauseGameMenu();
       }
     }
 
+
     // --- ENTER NAME MENU ---
     // showing the enter name menu
     void showEnterNameMenu() {
-      display.clear();
-      display.showEnterNameMenu(currentName);
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showEnterNameMenu(currentName);
     }
 
     // navigating through the enter name menu
     void navigateEnterNameMenu() {
       // cursor on the X axis
-      int cursorPositionX = display.getEnterNameMenuCursorX();
+      int cursorPositionX = gameDisplay.getEnterNameMenuCursorX();
       int newCursorPositionX = joystick.updateMenuPositionX(cursorPositionX, ENTER_NAME_MENU_ITEMS);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (newCursorPositionX != cursorPositionX) {
-        display.setEnterNameMenuCursorX(newCursorPositionX);
+        gameDisplay.setEnterNameMenuCursorX(newCursorPositionX);
         showEnterNameMenu();
       }
 
       // cursor on the Y axis
-      int cursorPositionY = display.getEnterNameMenuCursorY();
+      int cursorPositionY = gameDisplay.getEnterNameMenuCursorY();
       int newCursorPositionY = joystick.updateMenuPositionY(cursorPositionY, KEYBOARD_COLUMNS);
 
       if (newCursorPositionY != cursorPositionY) {
-        display.setEnterNameMenuCursorY(newCursorPositionY);
+        gameDisplay.setEnterNameMenuCursorY(newCursorPositionY);
         showEnterNameMenu();
       }
     }
@@ -765,18 +766,18 @@ class Game {
     //--- END GAME MENU ---
     // shwoing the end game menu
     void showEndGameMenu() {
-      display.clear();
-      display.showEndGameMenu();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showEndGameMenu();
     }
 
     // navigating through the end game menu
     void navigateEndGameMenu() {
-      int cursorPosition = display.getEndGameMenuCursor();
+      int cursorPosition = gameDisplay.getEndGameMenuCursor();
       int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, END_GAME_MENU_ITEMS);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
-        display.setEndGameMenuCursor(newCursorPosition);
+        gameDisplay.setEndGameMenuCursor(newCursorPosition);
         showEndGameMenu();
       }
     }
@@ -829,18 +830,18 @@ class Game {
 
     // showing the highscore board of the game
     void showHighscoreBoard() {
-      display.clear();
-      display.showHighscoreBoard(names, scores);
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showHighscoreBoard(names, scores);
     }
 
     // navigating through the highscore board
     void navigateHighscoreBoard() {
-      int cursorPosition = display.getHighscoreBoardCursor();
+      int cursorPosition = gameDisplay.getHighscoreBoardCursor();
       int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, HIGHSCORE_TOP + 1);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
-        display.setHighscoreBoardCursor(newCursorPosition);
+        gameDisplay.setHighscoreBoardCursor(newCursorPosition);
         showHighscoreBoard();
       }
     }
@@ -849,18 +850,18 @@ class Game {
     // --- SETTINGS MENU ---
     // showing the settings menu of the game
     void showSettingsMenu() {
-      display.clear();
-      display.showSettingsMenu();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showSettingsMenu();
     }
 
     // navigating through the settings menu
     void navigateSettingsMenu() {
-      int cursorPosition = display.getSettingsMenuCursor();
+      int cursorPosition = gameDisplay.getSettingsMenuCursor();
       int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, SETTINGS_MENU_ITEMS);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
-        display.setSettingsMenuCursor(newCursorPosition);
+        gameDisplay.setSettingsMenuCursor(newCursorPosition);
         showSettingsMenu();
       }
     }
@@ -869,15 +870,15 @@ class Game {
     // --- START LEVEL SETTINGS SECTION ---
     // showing the start level settings section
     void showStartLevelSettings() {
-      display.clear();
-      display.showStartLevelSettings(startLevelValue);
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showStartLevelSettings(startLevelValue);
     }
 
     // navigating through the levels values
     void navigateStartLevelValues() {
       int newStartLevelValue = joystick.updateValue(startLevelValue, MIN_LEVEL, MAX_LEVEL, LEVEL_STEP);
 
-      // value changed => update display
+      // value changed => update gameDisplay
       if (startLevelValue != newStartLevelValue) {
         startLevelValue = newStartLevelValue;
         showStartLevelSettings();
@@ -887,18 +888,18 @@ class Game {
     // --- CONTRAST SETTINGS SECTION ---
     // showing the contrast settings section
     void showContrastSettings() {
-      display.clear();
-      display.showContrastSettings();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showContrastSettings();
     }
 
     // navigating through the contrast values
     void navigateContrastValues() {
-      int contrastValue = display.getContrast();
-      int newContrastValue = joystick.updateValue(contrastValue, MIN_SETTINGS, MAX_SETTINGS_LCD, CONTRAST_STEP);
+      int contrastValue = gameDisplay.getContrast();
+      int newContrastValue = joystick.updateValue(contrastValue, MIN_CONTRAST, MAX_CONTRAST, CONTRAST_STEP);
 
-      // value changed => update display
+      // value changed => update gameDisplay
       if (contrastValue != newContrastValue) {
-        display.setContrast(newContrastValue);
+        gameDisplay.setContrast(newContrastValue);
         showContrastSettings();
       }
     }
@@ -907,18 +908,18 @@ class Game {
     // --- BRIGHTNESS SETTINGS SECTION ---
     // showing the contrast settings section
     void showBrightnessSettings() {
-      display.clear();
-      display.showBrightnessSettings();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showBrightnessSettings();
     }
 
     // navigating through the contrast values
     void navigateBrightnessValues() {
-      int brightnessValue = display.getBrightness();
-      int newBrightnessValue = joystick.updateValue(brightnessValue, MIN_SETTINGS, MAX_SETTINGS_LCD, BRIGHTNESS_STEP);
+      int brightnessValue = gameDisplay.getBrightness();
+      int newBrightnessValue = joystick.updateValue(brightnessValue, MIN_BRIGHTNESS, MAX_BRIGHTNESS, BRIGHTNESS_STEP);
 
-      // value changed => update display
+      // value changed => update gameDisplay
       if (brightnessValue != newBrightnessValue) {
-        display.setBrightness(newBrightnessValue);
+        gameDisplay.setBrightness(newBrightnessValue);
         showBrightnessSettings();
       }
     }
@@ -927,16 +928,16 @@ class Game {
     // --- INTENSITY SETTINGS SECTION ---
     // showing the contrast settings section
     void showIntensitySettings() {
-      display.clear();
-      display.showIntensitySettings(matrix.getIntensity());
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showIntensitySettings(matrix.getIntensity());
     }
 
     // navigating through the contrast values
     void navigateIntensityValues() {
       int intensityValue = matrix.getIntensity();
-      int newIntensityValue = joystick.updateValue(intensityValue, MIN_SETTINGS, MAX_SETTINGS_LC, INTENSITY_STEP);
+      int newIntensityValue = joystick.updateValue(intensityValue, MIN_INTENSITY, MAX_INTENSITY, INTENSITY_STEP);
 
-      // value changed => update display
+      // value changed => update gameDisplay
       if (intensityValue != newIntensityValue) {
         matrix.setIntensity(newIntensityValue);
         showIntensitySettings();
@@ -947,18 +948,18 @@ class Game {
     // --- ABOUT SECTION ---
     // showing the about section
     void showAbout() {
-      display.clear();
-      display.showAboutSection();
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showAboutSection();
     }
 
     // navigate through the about section
     void navigateAbout() {
-      int cursorPosition = display.getAboutSectionCursor();
+      int cursorPosition = gameDisplay.getAboutSectionCursor();
       int newCursorPosition = joystick.updateMenuPositionX(cursorPosition, ABOUT_SECTION_ITEMS);
 
-      // cursor moved => update display
+      // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
-        display.setAboutSectionCursor(newCursorPosition);
+        gameDisplay.setAboutSectionCursor(newCursorPosition);
         showAbout();
 
         // resetting scrolling timer
@@ -973,7 +974,7 @@ class Game {
 
     // scrolling the text in the about section
     void scrollAbout() {
-      display.scrollCurrentAboutSection();
+      gameDisplay.scrollCurrentAboutSection();
     }
 
 
@@ -986,7 +987,7 @@ class Game {
 
     // changing from the principal menu to one of the options
     void changeFromPrincipalMenu() {
-      int cursorPosition = display.getPrincipalMenuCursor();
+      int cursorPosition = gameDisplay.getPrincipalMenuCursor();
 
       if (cursorPosition == START_GAME_POSITION) {
         // start game
@@ -996,12 +997,12 @@ class Game {
       } else if (cursorPosition == HIGHSCORE_POSITION) {
         // highscore
         joystick.setSystemState(HIGHSCORE_BOARD_STATE);
-        display.setHighscoreBoardCursor(0);
+        gameDisplay.setHighscoreBoardCursor(0);
         showHighscoreBoard();
       } else if (cursorPosition == SETTINGS_POSITION) {
         // settings menu
         joystick.setSystemState(SETTINGS_MENU_STATE);
-        display.setSettingsMenuCursor(0);
+        gameDisplay.setSettingsMenuCursor(0);
         showSettingsMenu();
       } else {
         // about section
@@ -1009,48 +1010,48 @@ class Game {
         lastChangedScrollAbout = millis();
 
         joystick.setSystemState(ABOUT_STATE);
-        display.setAboutSectionCursor(0);
+        gameDisplay.setAboutSectionCursor(0);
         showAbout();
       }
     }
 
     // changing from pause game menu to one of the options
     void changeFromPauseGameMenu() {
-      int cursorPosition = display.getPauseGameMenuCursor();
+      int cursorPosition = gameDisplay.getPauseGameMenuCursor();
 
       if (cursorPosition == PAUSE_GAME_MENU_ITEMS - 1) {
         // "exit" option => going back to the principal menu
         resetMatrix();
         joystick.setSystemState(PRINCIPAL_MENU_STATE);
-        display.setPrincipalMenuCursor(0);
+        gameDisplay.setPrincipalMenuCursor(0);
         showPrincipalMenu();
       } else {
         // "resume" option => resuming the game
         joystick.setSystemState(IN_GAME_STATE);
-        showGameDisplay();
+        showGamegameDisplay();
       }
     }
 
     // changing from one end section to another
     void changeFromEndSections() {
       if (shownMessage && !shownStatistics && !shownBeatHighscore) {
-        // moving to statistics display
+        // moving to statistics gameDisplay
         joystick.setSystemState(STATISTICS_STATE);
         lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
       } else if (shownStatistics && !shownBeatHighscore) {
         if (currentScore > scores[HIGHSCORE_TOP - 1]) {
-          // moving to beat highscore display
+          // moving to beat highscore gameDisplay
           joystick.setSystemState(BEAT_HIGHSCORE_STATE);
-          highscoreDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
+          highscoregameDisplay = BEAT_HIGHSCORE_DISPLAY - 1;
           lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
         } else {
           // moving to end game dispaly
           joystick.setSystemState(END_GAME_STATE);
-          display.setEndGameMenuCursor(0);
+          gameDisplay.setEndGameMenuCursor(0);
           showEndGameMenu();
         }
       } else if (shownBeatHighscore) {
-        // moving to the next display of the beat highscore state
+        // moving to the next gameDisplay of the beat highscore state
         joystick.setSystemState(BEAT_HIGHSCORE_STATE);
         lastChangedGameSection = millis() - BETWEEN_END_SECTIONS;
       }
@@ -1058,15 +1059,15 @@ class Game {
 
     // changing from enter name menu
     void changeFromEnterNameMenu() {
-      int cursorPositionX = display.getEnterNameMenuCursorX();
-      int cursorPositionY = display.getEnterNameMenuCursorY();
+      int cursorPositionX = gameDisplay.getEnterNameMenuCursorX();
+      int cursorPositionY = gameDisplay.getEnterNameMenuCursorY();
 
       if (cursorPositionX < KEYBOARD_LINES) {
         // one of the characters has been selected
         if (currentName.length() < MAX_NAME_LENGTH) {
           // adding the character to the existing name only if the name dones't
           // surpasses the maxim accepted length
-          currentName += display.getCharacter(cursorPositionX, cursorPositionY);
+          currentName += gameDisplay.getCharacter(cursorPositionX, cursorPositionY);
         }
 
         joystick.setSystemState(ENTER_NAME_STATE);
@@ -1081,7 +1082,7 @@ class Game {
 
             // going to the next state
             joystick.setSystemState(END_GAME_STATE);
-            display.setEndGameMenuCursor(0);
+            gameDisplay.setEndGameMenuCursor(0);
             showEndGameMenu();
           } else {
             joystick.setSystemState(ENTER_NAME_STATE);
@@ -1103,12 +1104,12 @@ class Game {
 
     // changing from end game menu to one of the options
     void changeFromEndGameMenu() {
-      int cursorPosition = display.getEndGameMenuCursor();
+      int cursorPosition = gameDisplay.getEndGameMenuCursor();
 
       if (cursorPosition == END_GAME_MENU_ITEMS - 1) {
         // "exit" option => going back to the principal menu
         joystick.setSystemState(PRINCIPAL_MENU_STATE);
-        display.setPrincipalMenuCursor(0);
+        gameDisplay.setPrincipalMenuCursor(0);
         showPrincipalMenu();
       } else {
         // "restart" option => restarting the game
@@ -1120,7 +1121,7 @@ class Game {
 
     // changing from the highscore board
     void changeFromHighscoreBoard() {
-      int cursorPosition = display.getHighscoreBoardCursor();
+      int cursorPosition = gameDisplay.getHighscoreBoardCursor();
 
       if (cursorPosition == HIGHSCORE_TOP) {
         // going back to the principal menu
@@ -1135,7 +1136,7 @@ class Game {
 
     // changing from the settings menu to one of the options
     void changeFromSettingsMenu() {
-      int cursorPosition = display.getSettingsMenuCursor();
+      int cursorPosition = gameDisplay.getSettingsMenuCursor();
 
       if (cursorPosition == START_LEVEL_POSITION) {
         // starting level
@@ -1168,7 +1169,7 @@ class Game {
 
     // changing from the about section
     void changeFromAbout() {
-      int cursorPosition = display.getAboutSectionCursor();
+      int cursorPosition = gameDisplay.getAboutSectionCursor();
 
       if (cursorPosition == ABOUT_SECTION_ITEMS - 1) {
         // going back to the principal menu

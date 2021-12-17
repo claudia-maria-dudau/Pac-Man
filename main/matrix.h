@@ -33,15 +33,15 @@ class Matrix {
     // initializing the matrix
     void initialize() {
       // reinitializing the matrix (0 on al positions)
-      clear();
+      clearMatrix();
 
       //resetting blinking objects states
       playerState = false;
       enemiesState = false;
     }
 
-    // clearing the matrix
-    void clear() {
+    // clearMatrixing the matrix
+    void clearMatrix() {
       for (int i = 0; i < MATRIX_SIZE; i++) {
         for (int j = 0; j < MATRIX_SIZE; j++) {
           lc.setLed(0, i, j, 0);
@@ -52,31 +52,22 @@ class Matrix {
 
     // --- INTRO ---
     // showing animation at the start of the game
-    void startAnimation() {
-      int i;
+    void showPacMan() {
+      bool pacMan[MATRIX_SIZE][MATRIX_SIZE] = {
+        { LOW, LOW, HIGH, HIGH, HIGH, LOW, LOW, LOW },
+        { LOW, HIGH, LOW, HIGH, HIGH, HIGH, LOW, LOW },
+        { HIGH, HIGH, HIGH, HIGH, HIGH, LOW, LOW, LOW },
+        { HIGH, HIGH, HIGH, HIGH, LOW, LOW, LOW, HIGH },
+        { HIGH, HIGH, HIGH, HIGH, HIGH, LOW, LOW, LOW },
+        { LOW, HIGH, HIGH, HIGH, HIGH, HIGH, LOW, LOW },
+        { LOW, LOW, HIGH, HIGH, HIGH, LOW, LOW, LOW },
+        { LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW }
+      };
 
-      for (i = 2; i <= 4; i++) {
-        lc.setLed(0, 0, i, 1);
-      }
-      for (i = 1; i <= 5; i++) {
-        if (i != 2)
-          lc.setLed(0, 1, i, 1);
-      }
-      for (i = 0; i <= 4; i++) {
-        lc.setLed(0, 2, i, 1);
-      }
-      for (i = 0; i <= 3; i++) {
-        lc.setLed(0, 3, i, 1);
-      }
-      lc.setLed(0, 3, 7, 1);
-      for (i = 0; i <= 4; i++) {
-        lc.setLed(0, 4, i, 1);
-      }
-      for (i = 1; i <= 5; i++) {
-        lc.setLed(0, 5, i, 1);
-      }
-      for (i = 2; i <= 4; i++) {
-        lc.setLed(0, 6, i, 1);
+      for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+          lc.setLed(0, i, j, pacMan[i][j]);
+        }
       }
     }
 
@@ -123,17 +114,17 @@ class Matrix {
     // showing done level animation
     void showDoneLevelAnimation() {
       if (millis() - moveAnimation > ANIMATION_INTERVAL) {
-        clear();
+        clearMatrix();
         animationStep++;
         moveAnimation = millis();
       }
 
       for (int i = 0; i < MATRIX_SIZE - animationStep; i++) {
-        int step = animationStep + i;
+        int currentStep = animationStep + i;
         
-        if (HALF_MATRIX_SIZE - step > 0) {
+        if (HALF_MATRIX_SIZE - currentStep > 0) {
           // point of the arrow
-          for (int j = HALF_MATRIX_SIZE - step; j <= HALF_MATRIX_SIZE + step; j++) {
+          for (int j = HALF_MATRIX_SIZE - currentStep; j <= HALF_MATRIX_SIZE + currentStep; j++) {
             lc.setLed(0, i, j, 1);
           }
         } else {

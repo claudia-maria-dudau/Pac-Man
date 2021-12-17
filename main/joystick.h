@@ -112,7 +112,7 @@ class Joystick {
 
     // --- MENUS NAVIGATION ---
     // updating the position of a cursor on the X axis
-    int updateMenuPositionX(int position, int noItems) {
+    int updateMenuPositionX(int currentPosition, int noItems) {
       // reading value from joystick
       int xValue = analogRead(X_PIN);
 
@@ -120,8 +120,8 @@ class Joystick {
       if (xValue < MIN_THRESHOLD && !joyMovedX) {
         joyMovedX = true;
 
-        if (position > 0) {
-          return --position;
+        if (currentPosition > 0) {
+          return --currentPosition;
         }
       }
 
@@ -129,8 +129,8 @@ class Joystick {
       if (xValue > MAX_THRESHOLD && !joyMovedX) {
         joyMovedX = true;
 
-        if (position < noItems - 1) {
-          return ++position;
+        if (currentPosition < noItems - 1) {
+          return ++currentPosition;
         }
       }
 
@@ -138,11 +138,11 @@ class Joystick {
         joyMovedX = false;
       }
 
-      return position;
+      return currentPosition;
     }
 
     // updating the position of a cursor on the Y axis
-    int updateMenuPositionY(int position, int noItems) {
+    int updateMenuPositionY(int currentPosition, int noItems) {
       // reading value from joystick
       int yValue = analogRead(Y_PIN);
 
@@ -150,8 +150,8 @@ class Joystick {
       if (yValue < MIN_THRESHOLD && !joyMovedY) {
         joyMovedY = true;
 
-        if (position < noItems - 1) {
-          return ++position;
+        if (currentPosition < noItems - 1) {
+          return ++currentPosition;
         }
       }
 
@@ -159,8 +159,8 @@ class Joystick {
       if (yValue > MAX_THRESHOLD && !joyMovedY) {
         joyMovedY = true;
 
-        if (position > 0) {
-          return --position;
+        if (currentPosition > 0) {
+          return --currentPosition;
         }
       }
 
@@ -168,13 +168,13 @@ class Joystick {
         joyMovedY = false;
       }
 
-      return position;
+      return currentPosition;
     }
 
 
     // --- VALUE EDITING ---
     // updating the value of a setting
-    int updateValue(int value, int minVal, int maxVal, int step) {
+    int updateValue(int value, int minVal, int maxVal, int valueStep) {
       // reading value from joystick
       int xValue = analogRead(X_PIN);
 
@@ -182,7 +182,7 @@ class Joystick {
       if (xValue < MIN_THRESHOLD && !joyMovedX) {
         joyMovedX = true;
 
-        int newVal = value + step;
+        int newVal = value + valueStep;
         if (newVal < maxVal + 1) {
           return newVal;
         }
@@ -192,7 +192,7 @@ class Joystick {
       if (xValue > MAX_THRESHOLD && !joyMovedX) {
         joyMovedX = true;
 
-        int newVal = value - step;
+        int newVal = value - valueStep;
         if (newVal > minVal - 1) {
           return newVal;
         }
@@ -208,41 +208,41 @@ class Joystick {
 
     // --- GAME NAVIGATION ---
     // moving the player on the rows
-    int movePlayerX(int position, int matrixSize) {
+    int movePlayerX(int currentPositionX, int matrixSize) {
       int xValue = analogRead(X_PIN);
 
       // moving up
       if (xValue < MIN_THRESHOLD) {
-        if (position > 0)
-          return --position;
+        if (currentPositionX > 0)
+          return --currentPositionX;
       }
 
       // moving down
       if (xValue > MAX_THRESHOLD) {
-        if (position < matrixSize - 1)
-          return ++position;
+        if (currentPositionX < matrixSize - 1)
+          return ++currentPositionX;
       }
 
-      return position;
+      return currentPositionX;
     }
 
     // moving the player on the columns
-    int movePlayerY(int position, int matrixSize) {
+    int movePlayerY(int currentPositionY, int matrixSize) {
       int yValue = analogRead(Y_PIN);
 
       // moving left
       if (yValue > MAX_THRESHOLD) {
-        if (position > 0)
-          return --position;
+        if (currentPositionY > 0)
+          return --currentPositionY;
       }
 
       // moving right
       if (yValue < MIN_THRESHOLD) {
-        if (position < matrixSize - 1)
-          return ++position;
+        if (currentPositionY < matrixSize - 1)
+          return ++currentPositionY;
       }
 
-      return position;
+      return currentPositionY;
     }
 };
 

@@ -170,7 +170,7 @@ class Display {
       contrast = EEPROM.read(CONTRAST_ADDRESS);
       brightness = EEPROM.read(BRIGHTNESS_ADDRESS);
 
-      lcd.begin(16, 2);
+      lcd.begin(DISPLAY_COLUMNS, DISPLAY_LINES);
 
       showContrast();
       showBrightness();
@@ -186,7 +186,7 @@ class Display {
     }
 
     // clearing the display
-    void clear() {
+    void clearGameDisplay() {
       lcd.clear();
     }
 
@@ -201,7 +201,7 @@ class Display {
       // advancing with the intro as time passes
       if (millis() - startIntroTime > INTRO_SECTIONS_INTERVAL && introSection != ANIMATION_SECTION) {
         // changing current intro section
-        clear();
+        clearGameDisplay();
         introSection++;
         startIntroTime = millis();
 
@@ -255,8 +255,8 @@ class Display {
     }
 
     // setting the position of the principal menu cursor
-    void setPrincipalMenuCursor(int position) {
-      principalMenuCursor = position;
+    void setPrincipalMenuCursor(int cursorPosition) {
+      principalMenuCursor = cursorPosition;
       setArrows(principalMenuCursor, PRINCIPAL_MENU_ITEMS);
     }
 
@@ -355,8 +355,8 @@ class Display {
     }
 
     // setting the pause game menu cursor
-    void setPauseGameMenuCursor(int position) {
-      pauseGameMenuCursor = position;
+    void setPauseGameMenuCursor(int cursorPosition) {
+      pauseGameMenuCursor = cursorPosition;
     }
 
     // showing the end game menu
@@ -382,24 +382,24 @@ class Display {
     }
 
     // setting the position of the enter menu cursor
-    void setEnterNameMenuCursorX(int position) {
-      enterNameMenuCursor[0] = position;
+    void setEnterNameMenuCursorX(int cursorPositionX) {
+      enterNameMenuCursor[0] = cursorPositionX;
       setArrows(enterNameMenuCursor[0], ENTER_NAME_MENU_ITEMS + 1);
     }
 
-    void setEnterNameMenuCursorY(int position) {
-      enterNameMenuCursor[1] = position;
+    void setEnterNameMenuCursorY(int cursorPositionY) {
+      enterNameMenuCursor[1] = cursorPositionY;
     }
 
     // showing the enter name menu
-    void showEnterNameMenu(String name) {
+    void showEnterNameMenu(String playerName) {
       showNavigationArrows();
 
       // the name is always showing on the first row of the display
       lcd.setCursor(0, 0);
       lcd.print("Name:");
       lcd.setCursor(6, 0);
-      lcd.print(name);
+      lcd.print(playerName);
 
       lcd.setCursor(OPTIONS_OFFSET, 1);
 
@@ -432,8 +432,8 @@ class Display {
     }
 
     // setting the end game menu cursor
-    void setEndGameMenuCursor(int position) {
-      endGameMenuCursor = position;
+    void setEndGameMenuCursor(int cursorPosition) {
+      endGameMenuCursor = cursorPosition;
     }
 
     // showing the end game menu
@@ -450,15 +450,15 @@ class Display {
     }
 
     // setting the position of the principal menu cursor
-    void setHighscoreBoardCursor(int position) {
-      highscoreBoardCursor = position;
+    void setHighscoreBoardCursor(int cursorPosition) {
+      highscoreBoardCursor = cursorPosition;
       setArrows(highscoreBoardCursor, HIGHSCORE_TOP + 1);
     }
 
     // showing a highscore on the board at a given line
-    void showHighscore(String name, int score, int line) {
+    void showHighscore(String playerName, int score, int line) {
       lcd.setCursor(OPTIONS_OFFSET, line);
-      lcd.print(name);
+      lcd.print(playerName);
 
       // aligning score to the right
       if (score > 999) {
@@ -524,8 +524,8 @@ class Display {
     }
 
     // setting the position of the settingsmenu cursor
-    void setSettingsMenuCursor(int position) {
-      settingsMenuCursor = position;
+    void setSettingsMenuCursor(int cursorPosition) {
+      settingsMenuCursor = cursorPosition;
       setArrows(settingsMenuCursor, SETTINGS_MENU_ITEMS);
     }
 
@@ -627,8 +627,8 @@ class Display {
     }
 
     // setting the position of the about cursor
-    void setAboutSectionCursor(int position) {
-      aboutSectionCursor = position;
+    void setAboutSectionCursor(int cursorPosition) {
+      aboutSectionCursor = cursorPosition;
       setArrows(aboutSectionCursor, ABOUT_SECTION_ITEMS);
     }
 

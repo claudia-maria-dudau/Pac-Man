@@ -58,6 +58,7 @@
 
 // --- DISPLAY CONSTANTS ---
 #define DISPLAY_COLUMNS 16
+#define DISPLAY_LINES 2
 #define MENU_ITEM_LENGTH DISPLAY_COLUMNS - 3
 #define LINES 8
 
@@ -214,13 +215,19 @@
 #define INTENSITY "Intensity"
 
 // settings limits
-#define MIN_SETTINGS 0
-#define MAX_SETTINGS_LCD 255
-#define MAX_SETTINGS_LC 15
-
-// settings steps
+// contrast
+#define MIN_CONTRAST 30
+#define MAX_CONTRAST 60
 #define CONTRAST_STEP 5
+
+// brightness
+#define MIN_BRIGHTNESS 0
+#define MAX_BRIGHTNESS 255
 #define BRIGHTNESS_STEP 10
+
+// intensity
+#define MIN_INTENSITY 0 
+#define MAX_INTENSITY 15
 #define INTENSITY_STEP 1
 
 
