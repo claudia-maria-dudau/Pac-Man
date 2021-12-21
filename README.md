@@ -219,7 +219,7 @@
 <img src="https://user-images.githubusercontent.com/62221313/146199540-f3c28b32-d60d-4e60-9280-0f0152c128d4.jpeg" width="400" height="400" />
 
 ## Video of setup
-to be added once the game is complete
+<a href="https://youtu.be/IfucYv657mc" target="_blank">Video</a>
 
 ## BTW
 In case you're wondering who Marinel is, here's a picture:
