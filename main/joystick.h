@@ -14,7 +14,7 @@ class Joystick {
     static void toggleButton() {
       if (millis() - lastDebounceTime > DEBOUNCE_INTERVAL) {
         if (systemState == INTRO_STATE) {
-          // button was pressed during the intro 
+          // button was pressed during the intro
           // => skipping intro and going to the principal menu
           setSystemState(TRANSITION_FROM_INTRO_STATE);
         }
@@ -87,7 +87,7 @@ class Joystick {
         } else if (systemState == ABOUT_STATE) {
           // button was pressed from within the about section
           setSystemState(TRANSITION_FROM_ABOUT_STATE);
-        } 
+        }
       }
 
       lastDebounceTime = millis();

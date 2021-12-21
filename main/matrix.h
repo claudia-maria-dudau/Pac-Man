@@ -5,7 +5,7 @@
 class Matrix {
     // matrix
     LedControl lc = LedControl(DIN_PIN, CLOCK_PIN, LOAD_PIN, 1);
-    
+
     // matrix settings
     int intensity;
 
@@ -121,7 +121,7 @@ class Matrix {
 
       for (int i = 0; i < MATRIX_SIZE - animationStep; i++) {
         int currentStep = animationStep + i;
-        
+
         if (HALF_MATRIX_SIZE - currentStep > 0) {
           // point of the arrow
           for (int j = HALF_MATRIX_SIZE - currentStep; j <= HALF_MATRIX_SIZE + currentStep; j++) {

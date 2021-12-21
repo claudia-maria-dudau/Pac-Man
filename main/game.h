@@ -359,20 +359,20 @@ class Game {
           } else {
             // the enemy is in the current section of the game
             // => it moves towards the player
-            
+
             // calculating best next step for the enemy
             int stepX = sgn(playerPosition[0] - enemies[i][0]);
             int stepY = sgn(playerPosition[1] - enemies[i][1]);
 
             // verifying if the best future position for the enemy is available
             if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1] + stepY, i)
-            && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] + stepY, noFoodItems)) {
+                && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] + stepY, noFoodItems)) {
               nextX = enemies[i][0] + stepX;
               nextY = enemies[i][1] + stepY;
             } else {
               int possibleSteps[POSSIBLE_STEPS - 1] = { -1, 1 };
 
-              // if one of the steps is 0 then moving diagonally would not be an option 
+              // if one of the steps is 0 then moving diagonally would not be an option
               // => another step (-1 or 1) is randomly chosen
               if (stepX == 0) {
                 stepX = possibleSteps[random(POSSIBLE_STEPS - 1)];
@@ -385,35 +385,35 @@ class Game {
               // verifying the availability of every possible future position for the enemy
               // from the most to least beneficial
               if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1] + stepY, i)
-              && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] + stepY, noFoodItems)) {
+                  && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] + stepY, noFoodItems)) {
                 nextX = enemies[i][0] + stepX;
                 nextY = enemies[i][1] + stepY;
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1], i)
-              && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1], noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1], noFoodItems)) {
                 nextX = enemies[i][0] + stepX;
                 nextY = enemies[i][1];
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0], enemies[i][1] + stepY, i)
-              && verifyNotOverlapingFoodItems(enemies[i][0], enemies[i][1] + stepY, noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0], enemies[i][1] + stepY, noFoodItems)) {
                 nextX = enemies[i][0];
                 nextY = enemies[i][1] + stepY;
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] - stepX, enemies[i][1] + stepY, i)
-              && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1] + stepY, noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1] + stepY, noFoodItems)) {
                 nextX = enemies[i][0] - stepX;
                 nextY = enemies[i][1] + stepY;
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1] - stepY, i)
-              && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] - stepY, noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] - stepY, noFoodItems)) {
                 nextX = enemies[i][0] + stepX;
                 nextY = enemies[i][1] - stepY;
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] - stepX, enemies[i][1], i)
-              && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1], noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1], noFoodItems)) {
                 nextX = enemies[i][0] - stepX;
                 nextY = enemies[i][1];
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0], enemies[i][1] - stepY, i)
-              && verifyNotOverlapingFoodItems(enemies[i][0], enemies[i][1] - stepY, noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0], enemies[i][1] - stepY, noFoodItems)) {
                 nextX = enemies[i][0];
                 nextY = enemies[i][1] - stepY;
               } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] - stepX, enemies[i][1] - stepY, i)
-              && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1] - stepY, noFoodItems)) {
+                         && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1] - stepY, noFoodItems)) {
                 nextX = enemies[i][0] - stepX;
                 nextY = enemies[i][1] - stepY;
               } else {

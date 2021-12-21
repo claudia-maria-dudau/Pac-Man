@@ -1,11 +1,11 @@
 /*
- --- CODE ARHITECTURE ---
- The system has 33 states to ensure the correct flow of the system.
+  --- CODE ARHITECTURE ---
+  The system has 33 states to ensure its correct flow.
 
- There are 5 classes:
-  - Display => takes care of the display's functionalities 
+  There are 5 classes:
+  - Display => takes care of the display's functionalities
                (showing different menus, displays, messages, etc)
-  - Joystick => takes care of the joystick's functionalities 
+  - Joystick => takes care of the joystick's functionalities
                 (navigating through the menus, moving player on the map, changing settings' values, etc)
   - Matrix => takes care of the matrix's functionalities
               (showing animations, showing the map of the game, etc)
@@ -29,11 +29,10 @@ void setup() {
 void loop() {
   int systemState = game.getSystemState();
 
-  // each system state has a different flow
   if (systemState == INTRO_STATE) {
     // in intro
     game.intro();
-  } else if (systemState == TRANSITION_FROM_INTRO_STATE){
+  } else if (systemState == TRANSITION_FROM_INTRO_STATE) {
     // in transition from intro
     game.changeFromIntro();
   } else if (systemState == PRINCIPAL_MENU_STATE) {
@@ -90,14 +89,14 @@ void loop() {
   } else if (systemState == HIGHSCORE_BOARD_STATE) {
     // in highscore board
     game.navigateHighscoreBoard();
+  } else if (systemState == TRANSITION_FROM_HIGHSCORE_BOARD_STATE) {
+    // in transition from highscore board
+    game.changeFromHighscoreBoard();
   } else if (systemState == SETTINGS_MENU_STATE) {
     // in settings menu
     game.navigateSettingsMenu();
-  } else if (systemState == TRANSITION_FROM_HIGHSCORE_BOARD_STATE) {
-    // in transition from principal menu
-    game.changeFromHighscoreBoard();
   } else if (systemState == START_LEVEL_SETTINGS_STATE) {
-    // in starting level settings
+    // in start level settings
     game.navigateStartLevelValues();
   } else if (systemState == CONTRAST_SETTINGS_STATE) {
     // in contrast settings
@@ -106,11 +105,14 @@ void loop() {
     // in brightness settings
     game.navigateBrightnessValues();
   } else if (systemState == INTENSITY_SETTINGS_STATE) {
-    // in brightness settings
+    // in intensity settings
     game.navigateIntensityValues();
   } else if (systemState == SOUND_SETTINGS_STATE) {
-    // in sound
+    // in sound settings
     game.navigateSoundValues();
+  } else if (systemState == TRANSITION_FROM_SETTINGS_SECTION_STATE) {
+    // in transition from a section within the settings menu
+    game.changeFromSettingsSection();
   } else if (systemState == RESET_HIGHSCORE_SETTINGS_STATE) {
     // in reset highscore
     game.navigateResetHighscoreMenu();
@@ -120,9 +122,6 @@ void loop() {
   } else if (systemState == TRANSITION_FROM_SETTINGS_MENU_STATE) {
     // in transition from settings menu
     game.changeFromSettingsMenu();
-  } else if (systemState == TRANSITION_FROM_SETTINGS_SECTION_STATE) {
-    // in transition from a section within the settings menu
-    game.changeFromSettingsSection();
   } else if (systemState == ABOUT_STATE) {
     // in about section
     game.navigateAbout();

@@ -269,6 +269,7 @@ class Display {
       showMenu(principalMenu, principalMenuCursor, PRINCIPAL_MENU_ITEMS);
     }
 
+
     // --- GAME ---
     // shwoing the start game display
     void showStartGameDisplay() {
@@ -368,6 +369,7 @@ class Display {
       showGameMenu(PAUSE_GAME_TITLE, pauseGameMenu, pauseGameMenuCursor, PAUSE_GAME_MENU_ITEMS);
     }
 
+
     // --- ENTER NAME MENU ---
     // getting the character at a certain position from the keyboard
     char getCharacter(int row, int col) {
@@ -417,7 +419,7 @@ class Display {
       } else {
         // the cursor is on an option from the menu
         setEnterNameMenuCursorY(0);
-        
+
         String enterNameMenu[ENTER_NAME_MENU_ITEMS] = { DELETE_BUTTON, DONE_BUTTON };
         lcd.print(enterNameMenu[enterNameMenuCursor[0] - KEYBOARD_LINES]);
 
@@ -660,7 +662,7 @@ class Display {
       lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
       lcd.print(resetHighscoreMenu[RESET_HIGHSCORE_MENU_ITEMS - 1]);
 
-      // showing where4 the cursor is currently
+      // showing where the cursor is currently
       showCursor(resetHighscoreMenuCursor * BETWEEN_OPTIONS_OFFSET, 1);
     }
 
@@ -684,7 +686,7 @@ class Display {
       scrollPosition = DISPLAY_COLUMNS + 1;
     }
 
-    // scrolling the current about item
+    // scrolling the current item in the about section
     void scrollAboutItem(String item) {
       int startPosition = scrollPosition - DISPLAY_COLUMNS;
 
