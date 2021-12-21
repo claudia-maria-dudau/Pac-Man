@@ -144,6 +144,7 @@
 #define ENEMIES_MIN_SPEED ENEMIES_MAX_SPEED + MAX_LEVEL * ENEMIES_SPEED_STEP
 #define ENEMIES_BLINKING_INTERVAL 200
 #define MOVES 8
+#define POSSIBLE_STEPS 3
 
 // food items
 #define FOOD_ITEMS_STEP 3
@@ -269,3 +270,7 @@
 // highscore
 #define START_NAMES_ADDRESS 3
 #define START_SCORES_ADDRESS START_NAMES_ADDRESS + HIGHSCORE_TOP * 2
+
+
+// --- FUNCTIONS ---
+#define sgn(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0))

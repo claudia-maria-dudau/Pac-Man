@@ -304,42 +304,125 @@ class Game {
       }
     }
 
+    // verifing wheter a position is in the bounds of the map or not
+    bool isInMapBounds(int positionX, int positionY) {
+      return (positionX >= 0 || positionX < mapSize || positionY >= 0 || positionY < mapSize);
+    }
+
     // moving enemies at a given interval
     void moveEnemies() {
       if (millis() - lastChangedEnemiesPositions > enemiesSpeed) {
-        int possibleMove;
-        int nextX;
-        int nextY;
-
         // generating a move for each enemy
         for (int i = 0; i < noEnemies; i++) {
-          bool moveOk = false;
+          int possibleMove;
+          int nextX;
+          int nextY;
 
-          while (!moveOk) {
-            // generate random move
-            possibleMove = random(MOVES);
-            nextX = enemies[i][0] + movesX[possibleMove];
-            nextY = enemies[i][1] + movesY[possibleMove];
+          if (!isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
+            // the enemy is not in the current section of the map
+            // => it moves at random
+            int tries = 0;
+            bool moveOk = false;
 
-            moveOk = true;
+            while (!moveOk && tries < MOVES) {
+              tries++;
 
-            // verifying the move is valid
-            // the next position doesn't exced the bounds of the map
-            if (nextX < 0 || nextX > mapSize - 1 || nextY < 0 || nextY > mapSize - 1)
-              moveOk = false;
+              // generate random move
+              possibleMove = random(MOVES);
+              nextX = enemies[i][0] + movesX[possibleMove];
+              nextY = enemies[i][1] + movesY[possibleMove];
 
-            if (moveOk) {
-              // verifying that the next position is not already occupied by another enemy
-              moveOk = verifyNotOverlapingEnemies(nextX, nextY, i);
+              moveOk = true;
+
+              // verifying the move is valid
+              // the next position doesn't exced the bounds of the map
+              if (!isInMapBounds(nextX, nextY))
+                moveOk = false;
+
+              if (moveOk) {
+                // verifying that the next position is not already occupied by another enemy
+                moveOk = verifyNotOverlapingEnemies(nextX, nextY, i);
+              }
+
+              if (moveOk) {
+                // verifying that the next position is not already occupied by a food item
+                moveOk = verifyNotOverlapingFoodItems(nextX, nextY, noFoodItems);
+              }
             }
 
-            if (moveOk) {
-              // verifying that the next position is not already occupied by a food item
-              moveOk = verifyNotOverlapingFoodItems(nextX, nextY, noFoodItems);
+            if (tries == MOVES) {
+              // the enemy has no available position
+              // => it stays on its initial position
+              nextX = enemies[i][0];
+              nextY = enemies[i][1];
+            }
+          } else {
+            // the enemy is in the current section of the game
+            // => it moves towards the player
+            
+            // calculating best next step for the enemy
+            int stepX = sgn(playerPosition[0] - enemies[i][0]);
+            int stepY = sgn(playerPosition[1] - enemies[i][1]);
+
+            // verifying if the best future position for the enemy is available
+            if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1] + stepY, i)
+            && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] + stepY, noFoodItems)) {
+              nextX = enemies[i][0] + stepX;
+              nextY = enemies[i][1] + stepY;
+            } else {
+              int possibleSteps[POSSIBLE_STEPS - 1] = { -1, 1 };
+
+              // if one of the steps is 0 then moving diagonally would not be an option 
+              // => another step (-1 or 1) is randomly chosen
+              if (stepX == 0) {
+                stepX = possibleSteps[random(POSSIBLE_STEPS - 1)];
+              }
+
+              if (stepY == 0) {
+                stepY = possibleSteps[random(POSSIBLE_STEPS - 1)];
+              }
+
+              // verifying the availability of every possible future position for the enemy
+              // from the most to least beneficial
+              if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1] + stepY, i)
+              && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] + stepY, noFoodItems)) {
+                nextX = enemies[i][0] + stepX;
+                nextY = enemies[i][1] + stepY;
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1], i)
+              && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1], noFoodItems)) {
+                nextX = enemies[i][0] + stepX;
+                nextY = enemies[i][1];
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0], enemies[i][1] + stepY, i)
+              && verifyNotOverlapingFoodItems(enemies[i][0], enemies[i][1] + stepY, noFoodItems)) {
+                nextX = enemies[i][0];
+                nextY = enemies[i][1] + stepY;
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] - stepX, enemies[i][1] + stepY, i)
+              && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1] + stepY, noFoodItems)) {
+                nextX = enemies[i][0] - stepX;
+                nextY = enemies[i][1] + stepY;
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] + stepX, enemies[i][1] - stepY, i)
+              && verifyNotOverlapingFoodItems(enemies[i][0] + stepX, enemies[i][1] - stepY, noFoodItems)) {
+                nextX = enemies[i][0] + stepX;
+                nextY = enemies[i][1] - stepY;
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] - stepX, enemies[i][1], i)
+              && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1], noFoodItems)) {
+                nextX = enemies[i][0] - stepX;
+                nextY = enemies[i][1];
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0], enemies[i][1] - stepY, i)
+              && verifyNotOverlapingFoodItems(enemies[i][0], enemies[i][1] - stepY, noFoodItems)) {
+                nextX = enemies[i][0];
+                nextY = enemies[i][1] - stepY;
+              } else if (isInMapBounds(nextX, nextY) && verifyNotOverlapingEnemies(enemies[i][0] - stepX, enemies[i][1] - stepY, i)
+              && verifyNotOverlapingFoodItems(enemies[i][0] - stepX, enemies[i][1] - stepY, noFoodItems)) {
+                nextX = enemies[i][0] - stepX;
+                nextY = enemies[i][1] - stepY;
+              } else {
+                nextX = enemies[i][0];
+                nextY = enemies[i][1];
+              }
             }
           }
 
-          
           // changing the position of the enemy on the matrix
           if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
             // previous position of the enemy was in the bounds of the last section
@@ -364,7 +447,6 @@ class Game {
 
           enemies[i][0] = nextX;
           enemies[i][1] = nextY;
-
 
           // verifying if the enemy landed on the same position as the player
           if (playerPosition[0] == enemies[i][0] && playerPosition[1] == enemies[i][1])
@@ -393,7 +475,7 @@ class Game {
 
           // verifying id the player landed on the position of a food item
           for (int i = 0; i < noFoodItems; i++) {
-          if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]) {
+            if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]) {
               // player eats the food item
               eatFoodItem(i);
               break;
