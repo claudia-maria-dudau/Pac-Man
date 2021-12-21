@@ -1,9 +1,29 @@
+/*
+ --- CODE ARHITECTURE ---
+ The system has 33 states to ensure the correct flow of the system.
+
+ There are 5 classes:
+  - Display => takes care of the display's functionalities 
+               (showing different menus, displays, messages, etc)
+  - Joystick => takes care of the joystick's functionalities 
+                (navigating through the menus, moving player on the map, changing settings' values, etc)
+  - Matrix => takes care of the matrix's functionalities
+              (showing animations, showing the map of the game, etc)
+  - Buzzer => takes care of the buzzer's functionalities
+              (playing the game's theme song, emitting sounds at certain events, etc)
+  - Game => takes care of the system's logic, combining all the other 4 classes and their functionalities
+
+  There are 2 files with the system's constants:
+    - system_constants.h => all the constants used by the system
+    - tones.h => tones used by the buzzer
+*/
+
+
 #include "game.h"
 
 Game game = Game();
 
 void setup() {
-//   Serial.begin(9600);
 }
 
 void loop() {
