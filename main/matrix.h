@@ -52,16 +52,16 @@ class Matrix {
 
     // --- INTRO ---
     // showing animation at the start of the game
-    void showPacMan() {
+    void showPacManAnimation() {
       bool pacMan[MATRIX_SIZE][MATRIX_SIZE] = {
-        { LOW, LOW, HIGH, HIGH, HIGH, LOW, LOW, LOW },
-        { LOW, HIGH, LOW, HIGH, HIGH, HIGH, LOW, LOW },
-        { HIGH, HIGH, HIGH, HIGH, HIGH, LOW, LOW, LOW },
-        { HIGH, HIGH, HIGH, HIGH, LOW, LOW, LOW, HIGH },
-        { HIGH, HIGH, HIGH, HIGH, HIGH, LOW, LOW, LOW },
-        { LOW, HIGH, HIGH, HIGH, HIGH, HIGH, LOW, LOW },
-        { LOW, LOW, HIGH, HIGH, HIGH, LOW, LOW, LOW },
-        { LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW }
+        { 0, 0, 1, 1, 1, 0, 0, 0 },
+        { 0, 1, 0, 1, 1, 1, 0, 0 },
+        { 1, 1, 1, 1, 1, 0, 0, 0 },
+        { 1, 1, 1, 1, 0, 0, 0, 1 },
+        { 1, 1, 1, 1, 1, 0, 0, 0 },
+        { 0, 1, 1, 1, 1, 1, 0, 0 },
+        { 0, 0, 1, 1, 1, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 0, 0 }
       };
 
       for (int i = 0; i < MATRIX_SIZE; i++) {

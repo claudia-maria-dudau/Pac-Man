@@ -3,7 +3,6 @@
 Game game = Game();
 
 void setup() {
-//  Serial.begin(9600);
 }
 
 void loop() {
@@ -73,9 +72,6 @@ void loop() {
   } else if (systemState == SETTINGS_MENU_STATE) {
     // in settings menu
     game.navigateSettingsMenu();
-  } else if (systemState == ABOUT_STATE) {
-    // in about section
-    game.navigateAbout();
   } else if (systemState == TRANSITION_FROM_HIGHSCORE_BOARD_STATE) {
     // in transition from principal menu
     game.changeFromHighscoreBoard();
@@ -91,12 +87,24 @@ void loop() {
   } else if (systemState == INTENSITY_SETTINGS_STATE) {
     // in brightness settings
     game.navigateIntensityValues();
+  } else if (systemState == SOUND_SETTINGS_STATE) {
+    // in sound
+    game.navigateSoundValues();
+  } else if (systemState == RESET_HIGHSCORE_SETTINGS_STATE) {
+    // in reset highscore
+    game.navigateResetHighscoreMenu();
+  } else if (systemState == TRANSITION_FROM_RESET_HIGHSCORE_MENU_STATE) {
+    // in transition from reset highscore
+    game.changeFromResetHighscoreMenu();
   } else if (systemState == TRANSITION_FROM_SETTINGS_MENU_STATE) {
     // in transition from settings menu
     game.changeFromSettingsMenu();
   } else if (systemState == TRANSITION_FROM_SETTINGS_SECTION_STATE) {
     // in transition from a section within the settings menu
     game.changeFromSettingsSection();
+  } else if (systemState == ABOUT_STATE) {
+    // in about section
+    game.navigateAbout();
   } else if (systemState == TRANSITION_FROM_ABOUT_STATE) {
     // in transition from about section
     game.changeFromAbout();

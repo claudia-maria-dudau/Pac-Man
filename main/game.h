@@ -81,6 +81,28 @@ class Game {
       matrix.setPosition(playerPosition[0] - firstLine, playerPosition[1] - firstColumn);
     }
 
+    // verifing overlaping positions with a port of / all the enemies
+    bool verifyNotOverlapingEnemies(int positionX, int positionY, int limit) {
+      for (int i = 0; i < limit; i++) {
+        if (enemies[i][0] == positionX && enemies[i][1] == positionY) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    // verifing overlaping positions with a port of / all the food items
+    bool verifyNotOverlapingFoodItems(int positionX, int positionY, int limit) {
+      for (int i = 0; i < limit; i++) {
+        if (foodItems[i][0] == positionX && foodItems[i][1] == positionY) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
     // initializing the positions of the enemies
     void initializeEnemies() {
       int xCoord, yCoord;
@@ -104,13 +126,8 @@ class Game {
 
           if (coordOk) {
             // verifying that the position of the coordinates is empty
-            // (there isn;t already another enemy placed there)
-            for (int j = 0; j < i; j++) {
-              if (enemies[j][0] == xCoord && enemies[j][1] == yCoord) {
-                coordOk = false;
-                break;
-              }
-            }
+            // (there isn't already another enemy placed there)
+            coordOk = verifyNotOverlapingEnemies(xCoord, yCoord, i);
           }
         }
 
@@ -146,23 +163,13 @@ class Game {
           if (coordOk) {
             // verifying that the position of the generated coordinates
             // is not already taken by an enemy
-            for (int j = 0; j < noEnemies; j++) {
-              if (enemies[j][0] == xCoord && enemies[j][1] == yCoord) {
-                coordOk = false;
-                break;
-              }
-            }
+            coordOk = verifyNotOverlapingEnemies(xCoord, yCoord, noEnemies);
           }
 
           if (coordOk) {
             // verifying that the position of the generated coordinates
             // is not already taken by another food item
-            for (int j = 0; j < i; j++) {
-              if (foodItems[j][0] == xCoord && foodItems[j][1] == yCoord) {
-                coordOk = false;
-                break;
-              }
-            }
+            coordOk = verifyNotOverlapingFoodItems(xCoord, yCoord, i);
           }
         }
 
@@ -301,54 +308,46 @@ class Game {
     void moveEnemies() {
       if (millis() - lastChangedEnemiesPositions > enemiesSpeed) {
         int possibleMove;
-        int next[2];
+        int nextX;
+        int nextY;
 
-        // generating a random move for each enemy
+        // generating a move for each enemy
         for (int i = 0; i < noEnemies; i++) {
           bool moveOk = false;
 
           while (!moveOk) {
             // generate random move
             possibleMove = random(MOVES);
-            next[0] = enemies[i][0] + movesX[possibleMove];
-            next[1] = enemies[i][1] + movesY[possibleMove];
+            nextX = enemies[i][0] + movesX[possibleMove];
+            nextY = enemies[i][1] + movesY[possibleMove];
 
             moveOk = true;
 
             // verifying the move is valid
             // the next position doesn't exced the bounds of the map
-            if (next[0] < 0 || next[0] > mapSize - 1 || next[1] < 0 || next[1] > mapSize - 1)
+            if (nextX < 0 || nextX > mapSize - 1 || nextY < 0 || nextY > mapSize - 1)
               moveOk = false;
 
             if (moveOk) {
               // verifying that the next position is not already occupied by another enemy
-              for (int j = 0; j < i; j++) {
-                if (enemies[j][0] == next[0] && enemies[j][1] == next[1]) {
-                  moveOk = false;
-                  break;
-                }
-              }
+              moveOk = verifyNotOverlapingEnemies(nextX, nextY, i);
             }
 
             if (moveOk) {
               // verifying that the next position is not already occupied by a food item
-              for (int j = 0; j < noFoodItems; j++) {
-                if (foodItems[j][0] == next[0] && foodItems[j][1] == next[1]) {
-                  moveOk = false;
-                  break;
-                }
-              }
+              moveOk = verifyNotOverlapingFoodItems(nextX, nextY, noFoodItems);
             }
           }
 
+          
           // changing the position of the enemy on the matrix
           if (isInSectionBound(firstLine, firstColumn, enemies[i][0], enemies[i][1])) {
             // previous position of the enemy was in the bounds of the last section
-            if (isInSectionBound(firstLine, firstColumn, next[0], next[1])) {
+            if (isInSectionBound(firstLine, firstColumn, nextX, nextY)) {
               // actual position of the enemy is in the bounds of the new section
               // => chnaging the position on the matrix
               matrix.changePosition(enemies[i][0] - firstLine, enemies[i][1] - firstColumn,
-                                    next[0] - firstLine, next[1] - firstColumn);
+                                    nextX - firstLine, nextY - firstColumn);
             } else {
               // actual position of the enemy is no longer in the bounds of the new section
               // => resetting position on the matrix
@@ -356,15 +355,15 @@ class Game {
             }
           } else {
             // previous position of the enemy was not in the bounds of the last section
-            if (isInSectionBound(firstLine, firstColumn, next[0], next[1])) {
+            if (isInSectionBound(firstLine, firstColumn, nextX, nextY)) {
               // actual position of the enemy is in the bounds of the new section
               // => setting the position on the matrix
-              matrix.setPosition(next[0] - firstLine, next[1] - firstColumn);
+              matrix.setPosition(nextX - firstLine, nextY - firstColumn);
             }
           }
 
-          enemies[i][0] = next[0];
-          enemies[i][1] = next[1];
+          enemies[i][0] = nextX;
+          enemies[i][1] = nextY;
 
 
           // verifying if the enemy landed on the same position as the player
@@ -388,17 +387,13 @@ class Game {
           playerPosition[1] = newPosition[1];
 
           //verifying if the player landed on the same position as one of the enemies
-          for (int i = 0; i < noEnemies; i++) {
-            if (enemies[i][0] == playerPosition[0] && enemies[i][1] == playerPosition[1]) {
-              // player loses a life
-              decreaseLife();
-              break;
-            }
+          if (!verifyNotOverlapingEnemies(playerPosition[0], playerPosition[1], noEnemies)) {
+            decreaseLife();
           }
 
           // verifying id the player landed on the position of a food item
           for (int i = 0; i < noFoodItems; i++) {
-            if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]) {
+          if (foodItems[i][0] == playerPosition[0] && foodItems[i][1] == playerPosition[1]) {
               // player eats the food item
               eatFoodItem(i);
               break;
@@ -455,7 +450,7 @@ class Game {
     // resetting the matrix to the start animation
     void resetMatrix() {
       matrix.clearMatrix();
-      matrix.showPacMan();
+      matrix.showPacManAnimation();
     }
 
 
@@ -469,7 +464,7 @@ class Game {
     // --- INTRO ---
     // showing game intro
     void intro() {
-      matrix.showPacMan();
+      matrix.showPacManAnimation();
       gameDisplay.startText();
 
       if (gameDisplay.getIsDoneIntro()) {
@@ -492,6 +487,7 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
         gameDisplay.setPrincipalMenuCursor(newCursorPosition);
         showPrincipalMenu();
       }
@@ -727,6 +723,7 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
         gameDisplay.setPauseGameMenuCursor(newCursorPosition);
         showPauseGameMenu();
       }
@@ -748,6 +745,9 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (newCursorPositionX != cursorPositionX) {
+        if (newCursorPositionX >= KEYBOARD_LINES) {
+          buzzer.playNavigateMenu();
+        }
         gameDisplay.setEnterNameMenuCursorX(newCursorPositionX);
         showEnterNameMenu();
       }
@@ -777,6 +777,7 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
         gameDisplay.setEndGameMenuCursor(newCursorPosition);
         showEndGameMenu();
       }
@@ -803,7 +804,11 @@ class Game {
         }
       }
 
-      // updating values into the memory
+      updateHighscoreBoardInMemory();
+    }
+
+    // updating values into the memory
+    void updateHighscoreBoardInMemory() {
       // scores
       for (int i = 0; i < HIGHSCORE_TOP; i++) {
         // int value needs to be stored into 2 addresses on the EEPROM
@@ -841,6 +846,7 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
         gameDisplay.setHighscoreBoardCursor(newCursorPosition);
         showHighscoreBoard();
       }
@@ -861,6 +867,7 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
         gameDisplay.setSettingsMenuCursor(newCursorPosition);
         showSettingsMenu();
       }
@@ -880,6 +887,7 @@ class Game {
 
       // value changed => update gameDisplay
       if (startLevelValue != newStartLevelValue) {
+        buzzer.playNavigateMenu();
         startLevelValue = newStartLevelValue;
         showStartLevelSettings();
       }
@@ -899,6 +907,7 @@ class Game {
 
       // value changed => update gameDisplay
       if (contrastValue != newContrastValue) {
+        buzzer.playNavigateMenu();
         gameDisplay.setContrast(newContrastValue);
         showContrastSettings();
       }
@@ -906,19 +915,20 @@ class Game {
 
 
     // --- BRIGHTNESS SETTINGS SECTION ---
-    // showing the contrast settings section
+    // showing the brightness settings section
     void showBrightnessSettings() {
       gameDisplay.clearGameDisplay();
       gameDisplay.showBrightnessSettings();
     }
 
-    // navigating through the contrast values
+    // navigating through the brightness values
     void navigateBrightnessValues() {
       int brightnessValue = gameDisplay.getBrightness();
       int newBrightnessValue = joystick.updateValue(brightnessValue, MIN_BRIGHTNESS, MAX_BRIGHTNESS, BRIGHTNESS_STEP);
 
       // value changed => update gameDisplay
       if (brightnessValue != newBrightnessValue) {
+        buzzer.playNavigateMenu();
         gameDisplay.setBrightness(newBrightnessValue);
         showBrightnessSettings();
       }
@@ -926,22 +936,75 @@ class Game {
 
 
     // --- INTENSITY SETTINGS SECTION ---
-    // showing the contrast settings section
+    // showing the intensity settings section
     void showIntensitySettings() {
       gameDisplay.clearGameDisplay();
       gameDisplay.showIntensitySettings(matrix.getIntensity());
     }
 
-    // navigating through the contrast values
+    // navigating through the intensity values
     void navigateIntensityValues() {
       int intensityValue = matrix.getIntensity();
       int newIntensityValue = joystick.updateValue(intensityValue, MIN_INTENSITY, MAX_INTENSITY, INTENSITY_STEP);
 
       // value changed => update gameDisplay
       if (intensityValue != newIntensityValue) {
+        buzzer.playNavigateMenu();
         matrix.setIntensity(newIntensityValue);
         showIntensitySettings();
       }
+    }
+
+
+    // --- SOUND SETTINGS SECTION ---
+    // showing the sound settings section
+    void showSoundSettings() {
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showSoundSettings(buzzer.getSound());
+    }
+
+    // navigating through the sound values
+    void navigateSoundValues() {
+      int soundValue = buzzer.getSound();
+      int newSoundValue = joystick.updateValue(soundValue, MIN_SOUND, MAX_SOUND, SOUND_STEP);
+
+      // value changed => update gameDisplay
+      if (soundValue != newSoundValue) {
+        buzzer.playNavigateMenu();
+        buzzer.setSound(newSoundValue);
+        showSoundSettings();
+      }
+    }
+
+
+    // --- RESET HIGHSCORE MENU ---
+    // shwoing the reset highscore menu
+    void showResetHighscoreMenu() {
+      gameDisplay.clearGameDisplay();
+      gameDisplay.showResetHighscoreMenu();
+    }
+
+    // navigating through the reset highscore menu
+    void navigateResetHighscoreMenu() {
+      int cursorPosition = gameDisplay.getResetHighscoreMenuCursor();
+      int newCursorPosition = joystick.updateMenuPositionY(cursorPosition, RESET_HIGHSCORE_MENU_ITEMS);
+
+      // cursor moved => update gameDisplay
+      if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
+        gameDisplay.setResetHighscoreMenuCursor(newCursorPosition);
+        showResetHighscoreMenu();
+      }
+    }
+
+    // resetting the highscore board
+    void resetHighscore() {
+      for (int i = 0; i < HIGHSCORE_TOP; i++) {
+        scores[i] = 0;
+        names[i] = "";
+      }
+
+      updateHighscoreBoardInMemory();
     }
 
 
@@ -959,6 +1022,7 @@ class Game {
 
       // cursor moved => update gameDisplay
       if (cursorPosition != newCursorPosition) {
+        buzzer.playNavigateMenu();
         gameDisplay.setAboutSectionCursor(newCursorPosition);
         showAbout();
 
@@ -1154,6 +1218,15 @@ class Game {
         // matrix brightness intensity
         joystick.setSystemState(INTENSITY_SETTINGS_STATE);
         showIntensitySettings();
+      } else if (cursorPosition == SOUND_POSITION) {
+        // sound
+        joystick.setSystemState(SOUND_SETTINGS_STATE);
+        showSoundSettings();
+      } else if (cursorPosition == RESET_HIGHSCORE_POSITION) {
+        // reset highscore
+        joystick.setSystemState(RESET_HIGHSCORE_SETTINGS_STATE);
+        gameDisplay.setResetHighscoreMenuCursor(0);
+        showResetHighscoreMenu();
       } else {
         // back to principal menu
         joystick.setSystemState(PRINCIPAL_MENU_STATE);
@@ -1163,6 +1236,19 @@ class Game {
 
     // changing from one of the settings' section back to the settings menu
     void changeFromSettingsSection() {
+      joystick.setSystemState(SETTINGS_MENU_STATE);
+      showSettingsMenu();
+    }
+
+    // changing from reset highscore menu back to the settings menu
+    void changeFromResetHighscoreMenu() {
+      int cursorPosition = gameDisplay.getResetHighscoreMenuCursor();
+
+      if (cursorPosition == RESET_HIGHSCORE_MENU_ITEMS - 1) {
+        // "yes" option => resetting highsdore board
+        resetHighscore();
+      }
+
       joystick.setSystemState(SETTINGS_MENU_STATE);
       showSettingsMenu();
     }

@@ -59,6 +59,9 @@ class Display {
     // settings menu
     int settingsMenuCursor = 0;
 
+    // reset highscore menu
+    int resetHighscoreMenuCursor = 0;
+
     // about section
     int aboutSectionCursor = 0;
     int scrollPosition = 0;
@@ -155,7 +158,7 @@ class Display {
       lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
       lcd.print(menu[noItems - 1]);
 
-      // showing where4 the cursor is currently
+      // showing where the cursor is currently
       showCursor(cursorPosition * BETWEEN_OPTIONS_OFFSET, 1);
     }
 
@@ -519,7 +522,7 @@ class Display {
 
     // showing the settings menu
     void showSettingsMenu() {
-      String settingsMenu[SETTINGS_MENU_ITEMS] = { START_LEVEL, CONTRAST, BRIGHTNESS, INTENSITY, BACK_BUTTON };
+      String settingsMenu[SETTINGS_MENU_ITEMS] = { START_LEVEL, CONTRAST, BRIGHTNESS, INTENSITY, SOUND, RESET_HIGHSCORE, BACK_BUTTON };
       showMenu(settingsMenu, settingsMenuCursor, SETTINGS_MENU_ITEMS);
     }
 
@@ -533,10 +536,10 @@ class Display {
     // --- START LEVEL SETTINGS SECTION ---
     // showing the starting level settings section
     void showStartLevelSettings(int startLevel) {
-      // showing current position
+      // showing section title
       showCursor(0, 0);
       lcd.setCursor(OPTIONS_OFFSET, 0);
-      lcd.print("Start level");
+      lcd.print(START_LEVEL);
 
       // showing starting level value
       lcd.setCursor(SETTINGS_OFFSET, 1);
@@ -564,10 +567,10 @@ class Display {
 
     // showing the scontrast settings section
     void showContrastSettings() {
-      // showing current position
+      // showing section title
       showCursor(0, 0);
       lcd.setCursor(OPTIONS_OFFSET, 0);
-      lcd.print("Contrast");
+      lcd.print(CONTRAST);
 
       // showing contrast value
       lcd.setCursor(SETTINGS_OFFSET, 1);
@@ -595,12 +598,12 @@ class Display {
 
     // showing the brightness settings section
     void showBrightnessSettings() {
-      // showing current position
+      // showing section title
       showCursor(0, 0);
       lcd.setCursor(OPTIONS_OFFSET, 0);
-      lcd.print("Brightness");
+      lcd.print(BRIGHTNESS);
 
-      // showing contrast value
+      // showing brightness value
       lcd.setCursor(SETTINGS_OFFSET, 1);
       lcd.print(brightness);
     }
@@ -609,14 +612,63 @@ class Display {
     // --- INTENSITY SETTINGS SECTION ---
     // showing the intensity settings section
     void showIntensitySettings(int intensity) {
-      // showing current position
+      // showing section title
       showCursor(0, 0);
       lcd.setCursor(OPTIONS_OFFSET, 0);
-      lcd.print("Intensity");
+      lcd.print(INTENSITY);
 
-      // showing starting level value
+      // showing intensity value
       lcd.setCursor(SETTINGS_OFFSET, 1);
       lcd.print(intensity);
+    }
+
+
+    // --- SOUND SETTINGS SECTION ---
+    // showing the sound settings section
+    void showSoundSettings(int sound) {
+      // showing section title
+      showCursor(0, 0);
+      lcd.setCursor(OPTIONS_OFFSET, 0);
+      lcd.print(SOUND);
+
+      // showing sound value
+      lcd.setCursor(SETTINGS_OFFSET, 1);
+      if (sound) {
+        lcd.print(SOUND_ON);
+      } else {
+        lcd.print(SOUND_OFF);
+      }
+    }
+
+
+    // --- RESET HIGHSCORE MENU ---
+    // getting the reset highscore menu cursor
+    int getResetHighscoreMenuCursor() {
+      return resetHighscoreMenuCursor;
+    }
+
+    // setting the end game menu cursor
+    void setResetHighscoreMenuCursor(int cursorPosition) {
+      resetHighscoreMenuCursor = cursorPosition;
+    }
+
+    // showing the reset highscore menu
+    void showResetHighscoreMenu() {
+      String resetHighscoreMenu[RESET_HIGHSCORE_MENU_ITEMS] = { NO_BUTTON, YES_BUTTON };
+
+      // showing section title
+      showCursor(0, 0);
+      lcd.setCursor(OPTIONS_OFFSET, 0);
+      lcd.print(RESET_HIGHSCORE);
+
+      // showing the options
+      lcd.setCursor(2, 1);
+      lcd.print(resetHighscoreMenu[RESET_HIGHSCORE_MENU_ITEMS - 2]);
+      lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
+      lcd.print(resetHighscoreMenu[RESET_HIGHSCORE_MENU_ITEMS - 1]);
+
+      // showing where4 the cursor is currently
+      showCursor(resetHighscoreMenuCursor * BETWEEN_OPTIONS_OFFSET, 1);
     }
 
 

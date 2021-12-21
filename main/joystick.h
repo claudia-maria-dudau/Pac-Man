@@ -60,26 +60,34 @@ class Joystick {
           // button was pressed from within the settings menu state
           // => entering one of the settings
           setSystemState(TRANSITION_FROM_SETTINGS_MENU_STATE);
-        } else if (systemState == ABOUT_STATE) {
-          // button was pressed from within the about section
-          setSystemState(TRANSITION_FROM_ABOUT_STATE);
         } else if (systemState == START_LEVEL_SETTINGS_STATE) {
           // button was pressed from within editing starting level section
           // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         } else if (systemState == CONTRAST_SETTINGS_STATE) {
-          // button was pressed from within editing starting level section
+          // button was pressed from within editing contrast section
           // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         } else if (systemState == BRIGHTNESS_SETTINGS_STATE) {
-          // button was pressed from within editing starting level section
+          // button was pressed from within editing brightness section
           // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
         } else if (systemState == INTENSITY_SETTINGS_STATE) {
-          // button was pressed from within editing starting level section
+          // button was pressed from within editing intensity section
           // => exiting setting
           setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
-        }
+        } else if (systemState == SOUND_SETTINGS_STATE) {
+          // button was pressed from within editing sound section
+          // => exiting setting
+          setSystemState(TRANSITION_FROM_SETTINGS_SECTION_STATE);
+        } else if (systemState == RESET_HIGHSCORE_SETTINGS_STATE) {
+          // button was pressed from within reset highscore section
+          // => exiting setting
+          setSystemState(TRANSITION_FROM_RESET_HIGHSCORE_MENU_STATE);
+        } else if (systemState == ABOUT_STATE) {
+          // button was pressed from within the about section
+          setSystemState(TRANSITION_FROM_ABOUT_STATE);
+        } 
       }
 
       lastDebounceTime = millis();

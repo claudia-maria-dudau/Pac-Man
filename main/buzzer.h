@@ -2,6 +2,9 @@
 #include "tones.h"
 
 class Buzzer {
+    // sound settings (whether the sound is on or off)
+    bool sound;
+  
     // notes
     int currentNote;
 
@@ -38,48 +41,79 @@ class Buzzer {
       pinMode(BUZZER_PIN, OUTPUT);
 
       noTone(BUZZER_PIN);
+      sound = true;
     }
 
-
-    // --- GAME ---
     // intializing variables for playing a song
     void startSong() {
       lastChangedBetweenNotes = millis() - BETWEEN_NOTES_INTERVAL;
       currentNote = 0;
     }
 
+
+    // --- MENUS ---
+    // playing a sound while navigating the menus
+    void playNavigateMenu() {
+      if (sound) {
+        playNote(NOTE_B2, 16);
+        playNote(NOTE_A3, 16);
+        playNote(NOTE_C4, 16);
+      }
+    }
+
+
+    // --- GAME ---
+    // playing game theme song
     void playGameSong() {
-      int pacManMelody[62] = {
-        NOTE_B4, 16, NOTE_B5, 16, NOTE_FS5, 16, NOTE_DS5, 16,
-        NOTE_B5, 32, NOTE_FS5, -16, NOTE_DS5, 8, NOTE_C5, 16,
-        NOTE_C6, 16, NOTE_G6, 16, NOTE_E6, 16, NOTE_C6, 32, NOTE_G6, -16, NOTE_E6, 8,
-
-        NOTE_B4, 16,  NOTE_B5, 16,  NOTE_FS5, 16,   NOTE_DS5, 16,  NOTE_B5, 32,
-        NOTE_FS5, -16, NOTE_DS5, 8,  NOTE_DS5, 32, NOTE_E5, 32,  NOTE_F5, 32,
-        NOTE_F5, 32,  NOTE_FS5, 32,  NOTE_G5, 32,  NOTE_G5, 32, NOTE_GS5, 32,  NOTE_A5, 16, NOTE_B5, 8
-      };
-
-      if (millis() - lastChangedBetweenNotes > BETWEEN_NOTES_INTERVAL) {
-        if (currentNote < 31) {
-          playNote(pacManMelody[currentNote], pacManMelody[currentNote + 1]);
+      if (sound) {
+        int pacManMelody[62] = {
+          NOTE_B4, 16, NOTE_B5, 16, NOTE_FS5, 16, NOTE_DS5, 16,
+          NOTE_B5, 32, NOTE_FS5, -16, NOTE_DS5, 8, NOTE_C5, 16,
+          NOTE_C6, 16, NOTE_G6, 16, NOTE_E6, 16, NOTE_C6, 32, NOTE_G6, -16, NOTE_E6, 8,
+  
+          NOTE_B4, 16,  NOTE_B5, 16,  NOTE_FS5, 16,   NOTE_DS5, 16,  NOTE_B5, 32,
+          NOTE_FS5, -16, NOTE_DS5, 8,  NOTE_DS5, 32, NOTE_E5, 32,  NOTE_F5, 32,
+          NOTE_F5, 32,  NOTE_FS5, 32,  NOTE_G5, 32,  NOTE_G5, 32, NOTE_GS5, 32,  NOTE_A5, 16, NOTE_B5, 8
+        };
+  
+        if (millis() - lastChangedBetweenNotes > BETWEEN_NOTES_INTERVAL) {
+          if (currentNote < 31) {
+            playNote(pacManMelody[currentNote], pacManMelody[currentNote + 1]);
+          }
+  
+          currentNote += 2;
+          lastChangedBetweenNotes = millis();
         }
-
-        currentNote += 2;
-        lastChangedBetweenNotes = millis();
       }
     }
 
     // playing a sound when the player meets and enemy
     void playMeetEnemy() {
-      playNote(NOTE_B5, 16);
-      playNote(NOTE_B5, 16);
-      playNote(NOTE_FS5, 16);
+      if (sound) {
+        playNote(NOTE_B5, 16);
+        playNote(NOTE_B5, 16);
+        playNote(NOTE_FS5, 16);
+      }
     }
 
     // playing a sound when the player eat a food item
     void playEatFoodItem() {
-      playNote(NOTE_DS3, 16);
-      playNote(NOTE_C3, 16);
-      playNote(NOTE_C3, 16);
+      if (sound) {
+        playNote(NOTE_DS3, 16);
+        playNote(NOTE_C3, 16);
+        playNote(NOTE_C3, 16);
+      }
+    }
+
+
+    // --- SOUND SETTINGS ---
+    // getting the state of the sound
+    bool getSound() {
+      return sound;
+    }
+
+    // setting the state of the sound
+    int setSound(bool value) {
+      sound = value;
     }
 };
