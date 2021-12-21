@@ -1082,8 +1082,8 @@ class Game {
     // resetting the highscore board
     void resetHighscore() {
       for (int i = 0; i < HIGHSCORE_TOP; i++) {
-        scores[i] = 0;
-        names[i] = "";
+        scores[i] = MIN_HIGHSCORE;
+        names[i] = DEFAULT_NAME;
       }
 
       updateHighscoreBoardInMemory();

@@ -199,6 +199,9 @@
 #define HIGHSCORE_TOP 5
 #define MAX_NAME_LENGTH 8
 #define BACK_BUTTON "Back"
+#define MIN_HIGHSCORE -4
+#define DEFAULT_NAME "???"
+#define SCORE_OFFSET 14
 
 
 // --- SETTINGS MENU ---

@@ -464,15 +464,8 @@ class Display {
       lcd.print(playerName);
 
       // aligning score to the right
-      if (score > 999) {
-        lcd.setCursor(11, line);
-      } else if (score > 99) {
-        lcd.setCursor(12, line);
-      } else if (score > 9) {
-        lcd.setCursor(13, line);
-      } else {
-        lcd.setCursor(14, line);
-      }
+      int offset = SCORE_OFFSET - String(score).length() + 1;
+      lcd.setCursor(offset, line);
       lcd.print(score);
     }
 
