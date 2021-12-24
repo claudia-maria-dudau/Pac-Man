@@ -218,11 +218,11 @@
  <summary>Details about the technical implementation</summary>
  <h4>5 classes</h4>
  <ul>
-  <li>Display => takes care of the display's functionalities (showing different menus, displays, messages, etc)</li>
-  <li>Joystick => takes care of the joystick's functionalities (navigating through the menus, moving player on the map, changing settings' values, etc)</li>
-  <li>Matrix => takes care of the matrix's functionalities (showing animations, showing the map of the game, etc)</li>
-  <li>Buzzer => takes care of the buzzer's functionalities (playing the game's theme song, emitting sounds at certain events, etc)</li>
-  <li>Game => takes care of the system's logic, combining all the other 4 classes and their functionalities</li>
+  <li>Display class => takes care of the display's functionalities (showing different menus, displays, messages, etc)</li>
+  <li>Joystick class => takes care of the joystick's functionalities (navigating through the menus, moving player on the map, changing settings' values, etc)</li>
+  <li>Matrix class => takes care of the matrix's functionalities (showing animations, showing the map of the game, etc)</li>
+  <li>Buzzer class => takes care of the buzzer's functionalities (playing the game's theme song, emitting sounds at certain events, etc)</li>
+  <li>Game class => takes care of the system's logic, combining all the other 4 classes and their functionalities</li>
  </ul>
 
  #### 2 files with the system's constants
@@ -234,7 +234,7 @@
 <img src="https://user-images.githubusercontent.com/62221313/146199540-f3c28b32-d60d-4e60-9280-0f0152c128d4.jpeg" width="400" height="400" />
 
 ## Video of setup
-<a href="https://youtu.be/IfucYv657mc" target="_blank">Video</a>
+<a href="https://youtu.be/DJSJLxtfpBM" target="_blank">Video</a>
 
 ## BTW
 In case you're wondering who Marinel is, here's a picture:
