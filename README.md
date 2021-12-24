@@ -213,9 +213,24 @@
  - Each component of the game has its own separate class (display, matrix, joystick, buzzer). There is also a class for the game logic which combines all the components' functionlities and ensures the correct flow of the game.
  - There are 2 custom characters created for the lcd display: a dog and a down arrow. There is also a custom design for the matrix which shows a drawing of PAC-MAN and an arrow animation which is shown between levels.
  - The initial positions for the player, enemies and food items are randomly generated using the current system time as the seed, to avoid any repetitiveness which may occur.
- 
 
-## Pciture of setup
+<details>
+ <summary>Details about the technical implementation</summary>
+ <h4>5 classes</h4>
+ <ul>
+  <li>Display => takes care of the display's functionalities (showing different menus, displays, messages, etc)</li>
+  <li>Joystick => takes care of the joystick's functionalities (navigating through the menus, moving player on the map, changing settings' values, etc)</li>
+  <li>Matrix => takes care of the matrix's functionalities (showing animations, showing the map of the game, etc)</li>
+  <li>Buzzer => takes care of the buzzer's functionalities (playing the game's theme song, emitting sounds at certain events, etc)</li>
+  <li>Game => takes care of the system's logic, combining all the other 4 classes and their functionalities</li>
+ </ul>
+
+ #### 2 files with the system's constants
+  - system_constants.h => all the constants used by the system
+  - tones.h => tones used by the buzzer
+</details>
+
+## Picture of setup
 <img src="https://user-images.githubusercontent.com/62221313/146199540-f3c28b32-d60d-4e60-9280-0f0152c128d4.jpeg" width="400" height="400" />
 
 ## Video of setup
