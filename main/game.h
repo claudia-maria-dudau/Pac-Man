@@ -727,7 +727,7 @@ class Game {
     // showing the statistics of the game
     void showStatistics() {
       gameDisplay.clearGameDisplay();
-      gameDisplay.showStatistics(lives, currentScore);
+      gameDisplay.showStatistics(level, currentScore);
       shownStatistics = true;
     }
 

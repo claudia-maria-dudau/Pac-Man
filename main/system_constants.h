@@ -95,6 +95,16 @@
 #define TEXT_SECTION_4 4
 #define ANIMATION_SECTION 5
 
+// intro text
+#define INTRO_TEXT_1 "Once upon a time"
+#define INTRO_TEXT_2 "lived Marinel"
+#define INTRO_TEXT_3 "A dog with a big"
+#define INTRO_TEXT_4 "passion for food"
+#define INTRO_TEXT_5 "But in order"
+#define INTRO_TEXT_6 "to get it"
+#define INTRO_TEXT_7 "He had to travel"
+#define INTRO_TEXT_8 "uncharted ground"
+
 
 // --- PRINCIPAL MENU ---
 #define PRINCIPAL_MENU_ITEMS 4
@@ -153,11 +163,15 @@
 // timers between states
 #define BETWEEN_END_SECTIONS 5000
 
-// beat highscore display
-#define BEAT_HIGHSCORE_DISPLAY 0
-#define ENTER_NAME_TEXT_DISPLAY 1
-#define NAME_RESTRICTIONS_DISPLAY 2
-#define ENTER_NAME_DISPLAY 3
+
+// --- START GAME DISPLAY ---
+#define START_GAME_TEXT_1 "OKAY,"
+#define START_GAME_TEXT_2 "LET'S GO!"
+
+
+// --- IN GAME DISPLAY ---
+#define LEVEL "Level:"
+#define SCORE "Score:"
 
 
 // --- PAUSE GAME MENU ---
@@ -170,12 +184,38 @@
 #define EXIT_BUTTON "Exit"
 
 
+// --- LOST GAME DISPLAY ---
+#define LOST_GAME_TEXT_1 "You lost! :("
+#define LOST_GAME_TEXT_2 "Sad Marinel bark"
+
+
+// --- WON GAME DISPLAY ---
+#define WON_GAME_TEXT_1 "CONGRATULATIONS!"
+#define WON_GAME_TEXT_2 "You won the game"
+
+
+// --- BEAT HIGHSCORE DISPLAYS ---
+#define BEAT_HIGHSCORE_DISPLAY 0
+#define ENTER_NAME_TEXT_DISPLAY 1
+#define NAME_RESTRICTIONS_DISPLAY 2
+#define ENTER_NAME_DISPLAY 3
+
+// text
+#define BEAT_HIGHSCORE_TEXT_1 "You beat the"
+#define BEAT_HIGHSCORE_TEXT_2 "HIGHSCORE!"
+#define ENTER_NAME_TEXT_1 "Please enter"
+#define ENTER_NAME_TEXT_2 "your name"
+#define NAME_RESTRICTIONS_TEXT_1 "Name must have"
+#define NAME_RESTRICTIONS_TEXT_2 "max " + String(MAX_NAME_LENGTH) + " charact."
+
+
 // --- ENTER NAME MENU ---
 #define KEYBOARD_LINES 3
 #define KEYBOARD_COLUMNS 13
 #define KEYBOARD_START_COLUMN 2
 #define ENTER_NAME_MENU_OPTIONS 2
 #define ENTER_NAME_MENU_ITEMS KEYBOARD_LINES + ENTER_NAME_MENU_OPTIONS
+#define NAME_TEXT "Name:"
 
 // keyboard
 #define KEYBOARD_LINE_1 "abcdefghijklm"

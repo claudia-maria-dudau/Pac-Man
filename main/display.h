@@ -145,17 +145,21 @@ class Display {
       showNavigationArrows();
     }
 
+    // calculating the offest needed to center a text
+    int offset(String text) {
+      return (DISPLAY_COLUMNS - text.length()) / 2;
+    }
+
     // showing the given game menu
     void showGameMenu(String title, String* menu, int cursorPosition, int noItems) {
       // showing the title of the menu
-      int offset = (DISPLAY_COLUMNS - title.length()) / 2;
-      lcd.setCursor(offset, 0);
+      lcd.setCursor(offset(title), 0);
       lcd.print(title);
 
       // showing the options
-      lcd.setCursor(2, 1);
+      lcd.setCursor(OPTIONS_OFFSET, 1);
       lcd.print(menu[noItems - 2]);
-      lcd.setCursor(2 + BETWEEN_OPTIONS_OFFSET, 1);
+      lcd.setCursor(OPTIONS_OFFSET + BETWEEN_OPTIONS_OFFSET, 1);
       lcd.print(menu[noItems - 1]);
 
       // showing where the cursor is currently
@@ -216,25 +220,25 @@ class Display {
       }
 
       if (introSection == TEXT_SECTION_1) {
-        lcd.setCursor(0, 0);
-        lcd.print("Once upon a time");
-        lcd.setCursor(1, 1);
-        lcd.print("lived Marinel");
+        lcd.setCursor(offset(INTRO_TEXT_1), 0);
+        lcd.print(INTRO_TEXT_1);
+        lcd.setCursor(offset(INTRO_TEXT_2), 1);
+        lcd.print(INTRO_TEXT_2);
       } else if (introSection == TEXT_SECTION_2) {
-        lcd.setCursor(0, 0);
-        lcd.print("A dog with a big");
-        lcd.setCursor(0, 1);
-        lcd.print("passion for food");
+        lcd.setCursor(offset(INTRO_TEXT_3), 0);
+        lcd.print(INTRO_TEXT_3);
+        lcd.setCursor(offset(INTRO_TEXT_4), 1);
+        lcd.print(INTRO_TEXT_4);
       } else if (introSection == TEXT_SECTION_3) {
-        lcd.setCursor(2, 0);
-        lcd.print("But in order");
-        lcd.setCursor(3, 1);
-        lcd.print("to get it");
+        lcd.setCursor(offset(INTRO_TEXT_5), 0);
+        lcd.print(INTRO_TEXT_5);
+        lcd.setCursor(offset(INTRO_TEXT_6), 1);
+        lcd.print(INTRO_TEXT_6);
       } else if (introSection == TEXT_SECTION_4) {
-        lcd.setCursor(0, 0);
-        lcd.print("He had to travel");
-        lcd.setCursor(0, 1);
-        lcd.print("uncharted ground");
+        lcd.setCursor(offset(INTRO_TEXT_7), 0);
+        lcd.print(INTRO_TEXT_7);
+        lcd.setCursor(offset(INTRO_TEXT_8), 1);
+        lcd.print(INTRO_TEXT_8);
       } else if (introSection == ANIMATION_SECTION) {
         if (millis() - startAnimationTime > INTRO_ANIMATION_INTERVAL) {
           animationCursor ++;
@@ -273,82 +277,74 @@ class Display {
     // --- GAME ---
     // shwoing the start game display
     void showStartGameDisplay() {
-      lcd.setCursor(6, 0);
-      lcd.print("OKAY,");
-      lcd.setCursor(4, 1);
-      lcd.print("LET'S GO!");
+      lcd.setCursor(offset(START_GAME_TEXT_1), 0);
+      lcd.print(START_GAME_TEXT_1);
+      lcd.setCursor(offset(START_GAME_TEXT_2), 1);
+      lcd.print(START_GAME_TEXT_2);
     }
 
     // showing the in game display
     void showGameDisplay(int level, int lives, int score) {
-      // showing the level of the game
-      lcd.setCursor(0, 0);
-      lcd.print("Level:");
-      lcd.setCursor(7, 0);
-      lcd.print(level);
+      showStatistics(level, score);
 
       // showing the number of lives of the player
       for (int i = 0; i < lives; i++) {
         lcd.setCursor(DISPLAY_COLUMNS - 1 - i, 0);
         lcd.write((byte)0);
       }
-
-      // showing the current score of the player
-      lcd.setCursor(0, 1);
-      lcd.print("Score:");
-      lcd.setCursor(7, 1);
-      lcd.print(score);
     }
 
     // showing the lost game display
     void showLostGameDisplay() {
-      lcd.setCursor(2, 0);
-      lcd.print("You lost! :(");
-      lcd.setCursor(0, 1);
-      lcd.print("Sad Marinel bark");
+      lcd.setCursor(offset(LOST_GAME_TEXT_1), 0);
+      lcd.print(LOST_GAME_TEXT_1);
+      lcd.setCursor(offset(LOST_GAME_TEXT_2), 1);
+      lcd.print(LOST_GAME_TEXT_2);
     }
 
     // showing the won game display
     void showWonGameDisplay() {
-      lcd.setCursor(0, 0);
-      lcd.print("CONGRATULATIONS!");
-      lcd.setCursor(0, 1);
-      lcd.print("You won the game");
+      lcd.setCursor(offset(WON_GAME_TEXT_1), 0);
+      lcd.print(WON_GAME_TEXT_1);
+      lcd.setCursor(offset(WON_GAME_TEXT_2), 1);
+      lcd.print(WON_GAME_TEXT_2);
     }
 
     // shwoing the statistics of the game
-    void showStatistics(int lives, int score) {
+    void showStatistics(int level, int score) {
+      // showing the level of the game
       lcd.setCursor(0, 0);
-      lcd.print("Lives:");
-      lcd.setCursor(7, 0);
-      lcd.print(lives);
+      lcd.print(LEVEL);
+      lcd.setCursor(sizeof(LEVEL), 0);
+      lcd.print(level);
 
+      // shwoing the score of the player
       lcd.setCursor(0, 1);
-      lcd.print("Score:");
-      lcd.setCursor(7, 1);
+      lcd.print(SCORE);
+      lcd.setCursor(sizeof(SCORE), 1);
       lcd.print(score);
     }
 
     // showing the beat highscore displays
     void showBeatHighscoreDisplay() {
-      lcd.setCursor(2, 0);
-      lcd.print("You beat the");
-      lcd.setCursor(3, 1);
-      lcd.print("HIGHSCORE!");
+      lcd.setCursor(offset(BEAT_HIGHSCORE_TEXT_1), 0);
+      lcd.print(BEAT_HIGHSCORE_TEXT_1);
+      lcd.setCursor(offset(BEAT_HIGHSCORE_TEXT_2), 1);
+      lcd.print(BEAT_HIGHSCORE_TEXT_2);
     }
 
     void showEnterNameTextDisplay() {
-      lcd.setCursor(2, 0);
-      lcd.print("Please enter");
-      lcd.setCursor(3, 1);
-      lcd.print("your name");
+      lcd.setCursor(offset(ENTER_NAME_TEXT_1), 0);
+      lcd.print(ENTER_NAME_TEXT_1);
+      lcd.setCursor(offset(ENTER_NAME_TEXT_2), 1);
+      lcd.print(ENTER_NAME_TEXT_2);
     }
 
     void showNameRestrictionsDisplay() {
-      lcd.setCursor(1, 0);
-      lcd.print("Name must have");
-      lcd.setCursor(1, 1);
-      lcd.print("max " + String(MAX_NAME_LENGTH) + " charact.");
+      lcd.setCursor(offset(NAME_RESTRICTIONS_TEXT_1), 0);
+      lcd.print(NAME_RESTRICTIONS_TEXT_1);
+      lcd.setCursor(offset(NAME_RESTRICTIONS_TEXT_1), 1);
+      lcd.print(NAME_RESTRICTIONS_TEXT_2);
     }
 
 
@@ -402,8 +398,8 @@ class Display {
 
       // the name is always showing on the first row of the display
       lcd.setCursor(0, 0);
-      lcd.print("Name:");
-      lcd.setCursor(6, 0);
+      lcd.print(NAME_TEXT);
+      lcd.setCursor(sizeof(NAME_TEXT), 0);
       lcd.print(playerName);
 
       lcd.setCursor(OPTIONS_OFFSET, 1);
